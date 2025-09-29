@@ -132,22 +132,22 @@ const Page2 = () => {
                     <div className="w-full bg-white p-3">
                         <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>New Lead List</h1>
                         <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Add New Lead
                             </button>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Warm Client
                             </button>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Hot Client
                             </button>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Confirm Client
                             </button>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Cold Client
                             </button>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
                                 Raw Data List
                             </button>
                         </div>

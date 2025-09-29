@@ -91,13 +91,13 @@ const Page1 = () => {
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
                     <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">COMPANY DETAILS</h1>
                     <div className="flex flex-wrap gap-2">
-                        <button className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
                             Upload Exhibitor
                         </button>
-                        <button className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
                             Master List
                         </button>
-                        <button className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
                             Exhibitor List
                         </button>
                     </div>
@@ -431,7 +431,7 @@ const Page1 = () => {
                             <span className="text-red-500 text-sm">*</span> Required Fields
                         </p>
                         <div className="flex gap-2">
-                            <button className="px-4 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200 flex items-center gap-1">
+                            <button className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200 flex items-center gap-1">
                                 Save <IoIosArrowDroprightCircle />
                             </button>
                             <button className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200">

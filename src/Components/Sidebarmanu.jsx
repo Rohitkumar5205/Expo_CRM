@@ -24,7 +24,7 @@ const SidebarMenu = () => {
     return (
         <>
             {/* Hamburger Menu for Mobile */}
-            <div className="md:hidden fixed top-0 left-0 w-full bg-gray-800 text-white p-4 flex items-center justify-between z-50">
+            <div className="md:hidden fixed top-0 left-0 w-full bg-[#4f5a67] text-white p-4 flex items-center justify-between z-50">
                 <button
                     onClick={handleSidebarToggle}
                     aria-label="Toggle sidebar"
@@ -37,7 +37,7 @@ const SidebarMenu = () => {
 
             {/* Sidebar */}
             <div
-                className={`fixed top-0 left-0 h-full z-40 bg-gray-800 text-gray-200 font-lato transition-transform duration-300 ease-in-out overflow-y-auto
+                className={`fixed top-0 left-0 h-full z-40 bg-[#4f5a67] text-gray-200 font-lato transition-transform duration-300 ease-in-out overflow-y-auto
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-72 w-64`}
             >
                 {/* Close Button for Mobile */}
@@ -58,7 +58,7 @@ const SidebarMenu = () => {
                 </div>
 
                 {/* Main Heading 1 */}
-                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-gray-500 whitespace-nowrap">IHWE SECTION</h2>
+                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-[#D3DAD9] whitespace-nowrap">IHWE SECTION</h2>
                 <hr className="my-2 border-gray-700" />
 
                 {/* Dropdown list 1 */}
@@ -197,7 +197,7 @@ const SidebarMenu = () => {
                 </div>
 
                 {/* Main Heading 2 */}
-                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-gray-500 whitespace-nowrap">ORGANIC EXPO SECTION</h2>
+                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-[#DDDDDD] whitespace-nowrap">ORGANIC EXPO SECTION</h2>
                 <hr className="my-2 border-gray-700" />
 
                 {/* Dropdown list 4 */}
@@ -500,7 +500,7 @@ const SidebarMenu = () => {
                 <hr className="border-gray-700" />
 
                 {/* Main Heading 3 */}
-                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-gray-500 whitespace-nowrap">ADMIN SECTION</h2>
+                <h2 className="px-4 pt-4 text-xs font-semibold uppercase text-[#DDDDDD] whitespace-nowrap">ADMIN SECTION</h2>
                 <hr className="my-2 border-gray-700" />
 
                 {/* Dropdown list 11 */}
