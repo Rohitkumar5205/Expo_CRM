@@ -192,7 +192,7 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
         className="overflow-x-auto mx-auto printable-table-container"
       >
         <div>
-          <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 md:mb-20 w-full min-w-max">
+          <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 md:mb-5 w-full min-w-max">
             <thead>
               <tr className="bg-[#555555] text-white">
                 <th className="h-8 w-[60px] pl-3 border border-gray-200 print-hidden">

@@ -10,6 +10,7 @@ import Page6 from '../Pages of Section One/Page6';
 import Page7 from '../Pages of Section One/Page7';
 import Page8 from '../Pages of Section One/Page8';
 import { Link } from 'react-router-dom';
+import History from '../Pages of Section One/History';
 
 const Dashboard = () => {
   return (
@@ -36,7 +37,7 @@ const Dashboard = () => {
       */}
 
       {/* Routes Section */}
-      <div className="p-2 sm:p-4">
+      
         <Routes>
           <Route path="/page1" element={<Page1 />} />
           <Route path="/page2" element={<Page2 />} />
@@ -46,8 +47,9 @@ const Dashboard = () => {
           <Route path="/page6" element={<Page6 />} />
           <Route path="/page7" element={<Page7 />} />
           <Route path="/page8" element={<Page8 />} />
+          <Route path='/history' element={<History/>}/>
         </Routes>
-      </div>
+      
     </div>
   );
 };

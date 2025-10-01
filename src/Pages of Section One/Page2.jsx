@@ -122,42 +122,46 @@ const Page2 = () => {
             ) : (
                 // When no client is selected, show the list and the Textarea below it
                 <>
-                    <div className="w-full bg-white shadow-md border-b">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-                            <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
+                    <div className="w-full bg-white shadow-md ">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 mb-4">
+                            <h1 className="text-xl  text-gray-700 mb-2 lg:mb-0">
                                 CLIENT DATA 2023
                             </h1>
                         </div>
                     </div>
-                    <div className="w-full bg-white p-3">
-                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>New Lead List</h1>
-                        <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                    
+                    <div className="w-full bg-white mx-4 my-6">
+                        
+                        <div className='flex justify-between pr-4' >
+                            <h1 className='text-md font-semibold text-[#4f5a67] pl-4 pt-1'>NEW LEAD LIST</h1>
+                           <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
+                             <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Add New Lead
                             </button>
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Warm Client
                             </button>
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Hot Client
                             </button>
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Confirm Client
                             </button>
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Cold Client
                             </button>
-                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium">
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Raw Data List
                             </button>
+                           </div>
                         </div>
-                        <hr className="opacity-10 mb-2" />
+                        <hr className="opacity-10 mb-2 " />
                         <div className="text-xs">
                             <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} />
                         </div>
                     </div>
                     {/* The Textarea component is now placed outside of the table's container */}
-                    <div className="bg-white shadow-md m-3 p-4 rounded-md">
+                    <div className="bg-white shadow-md m-4 p-4 rounded-md">
                         <Textarea />
                     </div>
                 </>
