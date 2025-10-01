@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 const SidebarMenu = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+   
+    
 
     const handleDropdownToggle = (id) => {
         setOpenDropdown(openDropdown === id ? null : id);
@@ -20,6 +22,15 @@ const SidebarMenu = () => {
     const handleSidebarToggle = () => {
         setSidebarOpen(!sidebarOpen);
     };
+
+
+
+    
+
+
+
+
+
 
     return (
         <>
@@ -119,8 +130,16 @@ const SidebarMenu = () => {
                                 Raw Data List
                             </Link>
                         </li>
+                        
                     </ul>
                 </div>
+ 
+            
+
+
+
+
+
                 <hr className="border-gray-700" />
 
                 {/* Dropdown list 2 */}
@@ -142,12 +161,14 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            {/* Link to old.jsx */}
+                            <Link to="/old" className="block pl-10 py-2">
                                 Old Visitor List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            {/* Link to visitors.jsx */}
+                            <Link to="/visitors" className="block pl-10 py-2">
                                 Upload Visitor List
                             </Link>
                         </li>
@@ -174,22 +195,22 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/newvisitor" className="block pl-10 py-2">
                                 Add New Visitors
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/generalvisitor" className="block pl-10 py-2">
                                 General Visitors List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/corporatevisitor" className="block pl-10 py-2">
                                 Corporate Visitors List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/healthcamp" className="block pl-10 py-2">
                                 Health Camp Visitors List
                             </Link>
                         </li>
