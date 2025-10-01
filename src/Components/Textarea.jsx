@@ -2,15 +2,36 @@ import React from 'react'
 
 const Textarea = () => {
   return (
-    <div className='bg-[#fff] mt-5 mb-8  ml-6 mr-6 h-auto w-auto p-5'>
-      <label htmlFor="">Message</label>
-     
-         <textarea className='h-auto w-full border border-gray-300 hover:border-blue-600' name="textstatus" id="" rows="3" placeholder='Update Status....' maxLength="160" required></textarea>
-     
-    <div className='flex justify-between pt-2'>
-         <p className='text-[#e43a45] text-sm'>Maximum character limit 160</p>
-         <button1 name="submit" className='w-14 h-8 text-sm pt-1 bg-[#3598dc] border border-[#3598dc] text-[#FFFFFF] text-center'>POST</button1>
-    </div>
+    <div className="bg-white mt-4 mb-6 p-4 ">
+      {/* Label */}
+      <label
+        htmlFor="textstatus"
+        className="block text-sm font-semibold text-gray-700 mb-2"
+      >
+        Message
+      </label>
+
+      {/* Textarea */}
+      <textarea
+        className="w-full border border-gray-300  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm "
+        name="textstatus"
+        id="textstatus"
+        rows="3"
+        placeholder="Update Status...."
+        maxLength="160"
+        required
+      ></textarea>
+
+      {/* Footer Row */}
+      <div className="flex justify-between items-center pt-2">
+        <p className="text-red-500 text-xs">Maximum character limit 160</p>
+        <button
+          type="submit"
+          className="px-4 py-1.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm"
+        >
+          POST
+        </button>
+      </div>
     </div>
   )
 }
