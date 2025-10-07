@@ -1,6 +1,5 @@
 import React from 'react';
-import { FiPrinter } from "react-icons/fi";
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Page1 from '../Pages of Section One/Page1';
 import Page2 from '../Pages of Section One/Page2';
 import Page3 from '../Pages of Section One/Page3';
@@ -13,15 +12,12 @@ import Old from '../Old Vistors Data/old';
 import Visitors from '../Old Vistors Data/visitors';
 import NewVisitor from "../webvisitordata/newvisitor";
 import GeneralVisitor from "../webvisitordata/generalvisitor";
-// import GeneralVisitor from "../webvisitordata/generalvisitor";
-// import CorporateVisitor from "../webvisitordata/corporatevisitor";
-// import HealthCamp from "../webvisitordata/healthcamp";
 import AddNew from '../OrganicExpo2026/addnew';
 import NewLead from '../OrganicExpo2026/newlead';
 import Warm from '../OrganicExpo2026/warm';
 import Hot from '../OrganicExpo2026/hot';
 import Confirm from '../OrganicExpo2026/confirm';
-import Cold from '../OrganicExpo2026/cold'; // Ensure this path is correct
+import Cold from '../OrganicExpo2026/cold';
 import Master from '../OrganicExpo2026/master';
 import Raw from '../OrganicExpo2026/raw';
 import MainComponent from './maincomponent';
@@ -36,28 +32,21 @@ import DataSource from '../AddAdmin/datasource';
 import Status from '../AddAdmin/status';
 import AddBank from '../AddAdmin/addbank';
 import PerformaInvoice from './performainvoice';
+import OtpPage from '../OtpPage';
 
 const Dashboard = () => {
+  const location = useLocation();
+  
+  // Check if current route is OTP page
+  const isOtpPage = location.pathname === '/otp';
+
+  // If OTP page, return only OtpPage without Dashboard wrapper
+  if (isOtpPage) {
+    return <OtpPage />;
+  }
+
   return (
     <div className="w-full flex-1 overflow-auto bg-[#eef1f5]">
-      {/* <div className="bg-white flex justify-between items-center h-10 px-4 sm:px-6 shadow-md">
-        <Link to="/">
-          <h1 className="font-medium text-xl text-[#4f5a67] hidden sm:block">DASHBOARD</h1>
-          <h1 className="font-medium text-lg text-[#4f5a67] sm:hidden">DASH</h1>
-        </Link>
-        <div className="flex items-center gap-2">
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md text-center truncate sm:w-auto">
-            Add Lead
-          </button>
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md text-center truncate sm:w-auto">
-            Activity Log
-          </button>
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md flex items-center justify-center gap-1 sm:w-auto">
-            <FiPrinter /> Print
-          </button>
-        </div>
-      </div> */}
-     
       <Routes>
         <Route path="/" element={<MainComponent />} />
         <Route path="/page1" element={<Page1 />} />
@@ -75,8 +64,6 @@ const Dashboard = () => {
         {/* Web Visitor Data Routes */}
         <Route path="/newvisitor" element={<NewVisitor />} />
         <Route path="/generalvisitor" element={<GeneralVisitor />} />
-        {/* <Route path="/corporatevisitor" element={<CorporateVisitor />} />
-        <Route path="/healthcamp" element={<HealthCamp />} /> */}
         <Route path="/addnew" element={<AddNew />} />
         <Route path="/organicexpo2026/newlead" element={<NewLead />} />
         <Route path="/organicexpo2026/warm" element={<Warm />} />

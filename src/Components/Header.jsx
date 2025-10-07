@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import toast from 'react-hot-toast'; // ✅ Import for Toast Notifications
+
 import { MdGroups } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
 import { FaPaypal } from "react-icons/fa";
@@ -15,6 +18,8 @@ const Header = () => {
     const dropdownRef = useRef(null);
     const searchRef = useRef(null);
 
+    const navigate = useNavigate();
+
     const toggleDropdown = () => {
         setIsOpen(prev => !prev);
         setIsSearchOpen(false); // Close search when dropdown opens
@@ -23,6 +28,45 @@ const Header = () => {
     const toggleSearch = () => {
         setIsSearchOpen(prev => !prev);
         setIsOpen(false); // Close dropdown when search opens
+    };
+
+    const handleLogout = () => {
+        // 1. Close the dropdown
+        setIsOpen(false); 
+
+        // --- Add your actual logout logic here (e.g., clear tokens) ---
+        // localStorage.removeItem('userToken');
+        // localStorage.removeItem('userData');
+        // ------------------------------------------------------------
+        
+        // 2. Display the success toast message with PREMIUM styling
+        toast.success('Successfully Logged Out!', {
+            duration: 1500, 
+            
+            // 👇️ Premium Toast Styling
+            style: {
+                // Background is a soft, dark gray/blue to match your header
+                background: '#202A35', 
+                color: '#fff',      
+                borderRadius: '12px', // Softer, more modern corners
+                padding: '14px 22px', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                // Deep, soft shadow for a lifted effect
+                boxShadow: '0 8px 18px rgba(0, 0, 0, 0.5)', 
+            },
+            // Customizing the icon color
+            iconTheme: {
+                primary: '#48BB78', // Success Green
+                secondary: '#fff',
+            },
+        });
+
+        // 3. Navigate the user to the Login page after a small delay
+        // This delay ensures the user sees the beautiful toast message.
+        setTimeout(() => {
+            navigate('/login'); 
+        }, 1500); 
     };
 
     useEffect(() => {
@@ -106,7 +150,10 @@ const Header = () => {
                                 <IoMailOpenOutline /> My Inbox
                             </li>
                             <hr className='border-gray-200'/>
-                            <li className='flex items-center gap-2 cursor-pointer px-3 py-2 text-gray-800 text-sm font-medium hover:bg-gray-100 transition-colors duration-200'>
+                            <li 
+                                className='flex items-center gap-2 cursor-pointer px-3 py-2 text-gray-800 text-sm font-medium hover:bg-gray-100 transition-colors duration-200'
+                                onClick={handleLogout} // ✅ Log Out handler attached here
+                            >
                                 <SlKey /> Log Out
                             </li>
                         </ul>
@@ -114,6 +161,7 @@ const Header = () => {
                 </div>
             </ul>
             <style>
+                {/* CSS for dropdown animation */}
                 {`
                     @keyframes dropdown-open {
                         0% {
