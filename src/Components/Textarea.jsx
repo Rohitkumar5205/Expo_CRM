@@ -27,7 +27,7 @@ const Textarea = () => {
         <p className="text-red-500 text-xs">Maximum character limit 160</p>
         <button
           type="submit"
-          className="px-4 py-1.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm"
+          className="px-4 py-1.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white  shadow-sm"
         >
           POST
         </button>

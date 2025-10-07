@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 const Page1 = () => {
+
+// Heading function logic
+
+const location = useLocation();
+
+const heading = location.state?.heading||"Add New Company";
+
+
     const Options = [
         "Select Here",
         "Acupressure/Acupuncture", "Agriculture Equipments", "ANIMAL HUSBANDARY AND DAIRY FIRMING", "Ayurveda", "Ayurveda Medicine", "Ayurveda Products", "AYUSH services via Mobile APP",
@@ -107,7 +116,7 @@ const Page1 = () => {
             {/* Main Form Section */}
             <div className="max-w-full  bg-white shadow-lg m-4 rounded-lg mx-4">
                 <div className="p-4">
-                    <h2 className="text-base font-medium text-gray-700 mb-3">Add New Company</h2>
+                    <h2 className="text-base font-medium text-gray-700 mb-3">{heading}</h2>
                     <hr className="mb-4" />
 
                     {/* Company Details Grid */}

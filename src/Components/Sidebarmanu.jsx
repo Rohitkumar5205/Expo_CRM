@@ -54,7 +54,7 @@ const SidebarMenu = () => {
                 {/* Dashboard Link */}
                 <div className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
                     <AiOutlineHome size={18} className="text-gray-400" />
-                    <span className="text-white font-semibold">Dashboard</span>
+                    <Link to='/'><span className="text-white font-semibold">Dashboard</span></Link>
                 </div>
 
                 {/* Main Heading 1 */}
@@ -219,42 +219,42 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/addnewclients" className="block pl-10 py-2">
                                 Add New Clients
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/newleadlist" className="block pl-10 py-2">
                                 New Lead List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/warmclientlist" className="block pl-10 py-2">
                                 Warm Class List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/hotclientlist" className="block pl-10 py-2">
                                 Hot Client List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/confirmclientlist" className="block pl-10 py-2">
                                 Confirm Client List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/coldcclientlist" className="block pl-10 py-2">
                                 Cold Client List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/masterdata" className="block pl-10 py-2">
                                 Master Data
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/rawdatalist" className="block pl-10 py-2">
                                 Raw Data List
                             </Link>
                         </li>

@@ -79,15 +79,15 @@ const rows = [
             ) : (
                 // When no client is selected, show the list and the Textarea below it
                 <>
-                    <div className="w-full bg-white shadow-md border-b mb-6">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3 ">
+                    <div className="w-full bg-white shadow-md mb-6">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 ">
                              <h1 className="text-xl  text-gray-500 mb-2 lg:mb-0">
                                CLIENT DATA 2025
                             </h1>
                         </div>
                     </div>
                     <div className="w-full bg-white p-3">
-                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>WHATSAPP HISTORY</h1>
+                        <h1 className='text-lg text-[#4f5a67] pl-4 '>WHATSAPP HISTORY</h1>
                         <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
                            
                         </div>
