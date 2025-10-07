@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiPrinter } from "react-icons/fi";
+
 import { Route, Routes } from 'react-router-dom';
 import Page1 from '../Pages of Section One/Page1';
 import Page2 from '../Pages of Section One/Page2';
@@ -9,36 +9,35 @@ import Page5 from '../Pages of Section One/Page5';
 import Page6 from '../Pages of Section One/Page6';
 import Page7 from '../Pages of Section One/Page7';
 import Page8 from '../Pages of Section One/Page8';
-import { Link } from 'react-router-dom';
 import History from '../Pages of Section One/History';
+import Addnewclients from '../Organic_Expo_Data_2026/Addnewclients'
+import Coldcclientlist from '../Organic_Expo_Data_2026/Coldcclientlist'
+import Confirmclientlist from '../Organic_Expo_Data_2026/Confirmclientlist'
+import Hotclientlist from '../Organic_Expo_Data_2026/Hotclientlist'
+import Masterdata from '../Organic_Expo_Data_2026/Masterdata'
+import Newleadlist from '../Organic_Expo_Data_2026/Newleadlist'
+import Rawdatalist from '../Organic_Expo_Data_2026/Rawdatalist'
+import Warmclientlist from '../Organic_Expo_Data_2026/Warmclientlist'
+import MainComponent from './MainComponent';
+import Invoice from '../Pages of Section One/Invoice';
+import PerformaInvoice from './PerformaInvoice';
+import PerformaInvoiceDetail from './PerformaInvoiceDetail';
+import Performabutton from './Performabutton';
+import InvoiceFormButton from './InvoiceFormButton';
+import EditEstimate from './EditEstimate';
+import CreditNoteComponent from './CreditNoteComponent';
+
 
 const Dashboard = () => {
   return (
-    <div className="w-full flex-1 overflow-auto bg-[#eef1f5]">
-      {/* Header Section - Commented out as requested */}
-      {/* 
-      <div className="bg-white flex justify-between items-center h-10 px-4 sm:px-6 shadow-md">
-        <Link to="/">
-          <h1 className="font-medium text-xl text-[#4f5a67] hidden sm:block">DASHBOARD</h1>
-          <h1 className="font-medium text-lg text-[#4f5a67] sm:hidden">DASH</h1>
-        </Link>
-        <div className="flex items-center gap-2">
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md text-center truncate sm:w-auto">
-            Add Lead
-          </button>
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md text-center truncate sm:w-auto">
-            Activity Log
-          </button>
-          <button className="h-7 w-20 border-2 border-[#4f5a67] text-sm bg-white hover:bg-[#ccc] rounded-md flex items-center justify-center gap-1 sm:w-auto">
-            <FiPrinter /> Print
-          </button>
-        </div>
-      </div>
-      */}
+   
+     
+      <div>
 
       {/* Routes Section */}
       
         <Routes>
+          <Route path="/" element={<MainComponent />} />
           <Route path="/page1" element={<Page1 />} />
           <Route path="/page2" element={<Page2 />} />
           <Route path="/page3" element={<Page3 />} />
@@ -48,6 +47,22 @@ const Dashboard = () => {
           <Route path="/page7" element={<Page7 />} />
           <Route path="/page8" element={<Page8 />} />
           <Route path='/history' element={<History/>}/>
+          <Route path='/invoice' element={<Invoice/>}/>
+          <Route path="/performaInvoice" element={<PerformaInvoice />} />
+          <Route path="/creditnotecomponent" element={<CreditNoteComponent />} />
+          <Route path="/performaInvoicemain" element={<PerformaInvoiceDetail />} />
+          <Route path="/editestimate" element={<EditEstimate/>} />
+           <Route path="/performabutton" element={<Performabutton />} />
+          <Route path="/addnewclients" element={<Addnewclients/>} />
+          <Route path="/coldcclientlist" element={<Coldcclientlist />} />
+          <Route path="/confirmclientlist" element={<Confirmclientlist />} />
+          <Route path="/hotclientlist" element={<Hotclientlist />} />
+          <Route path="/masterdata" element={<Masterdata />} />
+          <Route path="/newleadlist" element={<Newleadlist />} />
+          <Route path="/rawdatalist " element={<Rawdatalist />} />
+          <Route path="/warmclientlist" element={<Warmclientlist />} />
+         
+         <Route path="/invoiceformbutton" element={<InvoiceFormButton />} />
         </Routes>
       
     </div>

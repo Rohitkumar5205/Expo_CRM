@@ -169,9 +169,9 @@ const rows = [
                             </h1>
                         </div>
                     </div>
+
                     <div className="w-full bg-white mx-4 my-6">
-                        
-                        <div className='flex justify-between pr-4'>
+                        <div className='flex justify-between pr-4 pt-1'>
                           <h1 className='text-md font-semibold text-[#4f5a67] pl-4 pt-1'>COLD CLIENT LIST</h1>
                             <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
                                 <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
@@ -200,7 +200,7 @@ const rows = [
                         </div>
                     </div>
                     {/* The Textarea component is now placed outside of the table's container */}
-                    <div className="bg-white shadow-md m-4 p-4 rounded-md">
+                    <div className="bg-white shadow-md m-4 p-4 rounded-md w-full">
                         <Textarea />
                     </div>
                 </>

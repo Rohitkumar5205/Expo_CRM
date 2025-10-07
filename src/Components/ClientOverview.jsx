@@ -5,6 +5,7 @@ import { IoCallSharp } from "react-icons/io5";
 import AccountsComponent from "./AccountsComponent";
 import PaymentsComponent from "./PaymentsComponent";
 import HeaderComponent from "./HeaderComponent";
+import { Link } from "react-router-dom";
 
 const ClientOverview = ({ client, onBack }) => {
   const [showAccounts, setShowAccounts] = useState(false);
@@ -12,7 +13,7 @@ const ClientOverview = ({ client, onBack }) => {
   const [popUp, setPopUp] = useState(false);
   const [Flip, setFlip] = useState(false);
 
-  const baseInputClass = "mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
+  const baseInputClass = "mt-1 block w-full p-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
 
   // Communication history data with onClick handler reference
   const communicationHistoryData = [
@@ -248,13 +249,13 @@ const ClientOverview = ({ client, onBack }) => {
               >
                 Payments
               </button>
-              <button
+              <Link to="/page1" state={{heading:"Edit Client Details"}}><button
                 onClick={handleEdit}
                 className="flex items-center justify-center w-8 h-8 rounded-sm text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"
                 aria-label="Edit"
               >
                 <FaPencilAlt className="w-3 h-3" />
-              </button>
+              </button></Link>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600 border-b pb-4 mb-4">
