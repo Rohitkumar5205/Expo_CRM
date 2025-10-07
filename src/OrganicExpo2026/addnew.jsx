@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { v4 as uuidv4 } from 'uuid';
 
-const Page1 = () => {
+const addnew = () => {
     const Options = [
         "Select Here",
         "Acupressure/Acupuncture", "Agriculture Equipments", "ANIMAL HUSBANDARY AND DAIRY FIRMING", "Ayurveda", "Ayurveda Medicine", "Ayurveda Products", "AYUSH services via Mobile APP",
@@ -87,7 +87,7 @@ const Page1 = () => {
     return (
         <div className="w-full min-h-screen bg-gray-100">
             {/* Heading Section */}
-            <div className="w-full bg-white shadow-md ">
+            <div className="w-full bg-white shadow-md border-b">
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
                     <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">COMPANY DETAILS</h1>
                     <div className="flex flex-wrap gap-2">
@@ -288,8 +288,7 @@ const Page1 = () => {
                             </label>
                             <select className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Select Here</option>
-                                <option value="Expo 2024">Expo 2024</option>
-                                <option value="Expo 2025">Expo 2025</option>
+                                <option value="Organic Expo 2026">Organic Expo 2026</option>
                             </select>
                         </div>
                         
@@ -445,4 +444,4 @@ const Page1 = () => {
     );
 };
 
-export default Page1;
+export default addnew;

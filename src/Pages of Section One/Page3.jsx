@@ -147,8 +147,8 @@ const Page2 = () => {
                 <ClientOverview client={selectedClient} onBack={handleBackClick} />
             ) : (
                 <>
-                    <div className="w-full bg-white shadow-md border-b">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
+                 <div className="w-full bg-white shadow-md">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 mb-4">
                             <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
                                 CLIENT DATA 2023
                             </h1>
