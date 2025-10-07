@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 const SidebarMenu = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+   
+    
 
     const handleDropdownToggle = (id) => {
         setOpenDropdown(openDropdown === id ? null : id);
@@ -20,6 +22,15 @@ const SidebarMenu = () => {
     const handleSidebarToggle = () => {
         setSidebarOpen(!sidebarOpen);
     };
+
+
+
+    
+
+
+
+
+
 
     return (
         <>
@@ -54,7 +65,7 @@ const SidebarMenu = () => {
                 {/* Dashboard Link */}
                 <div className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
                     <AiOutlineHome size={18} className="text-gray-400" />
-                    <Link to='/'><span className="text-white font-semibold">Dashboard</span></Link>
+                 <Link to="/">  <span className="text-white font-semibold">Dashboard</span></Link> 
                 </div>
 
                 {/* Main Heading 1 */}
@@ -119,8 +130,16 @@ const SidebarMenu = () => {
                                 Raw Data List
                             </Link>
                         </li>
+                        
                     </ul>
                 </div>
+ 
+            
+
+
+
+
+
                 <hr className="border-gray-700" />
 
                 {/* Dropdown list 2 */}
@@ -142,12 +161,14 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            {/* Link to old.jsx */}
+                            <Link to="/old" className="block pl-10 py-2">
                                 Old Visitor List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            {/* Link to visitors.jsx */}
+                            <Link to="/visitors" className="block pl-10 py-2">
                                 Upload Visitor List
                             </Link>
                         </li>
@@ -174,22 +195,22 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/newvisitor" className="block pl-10 py-2">
                                 Add New Visitors
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/generalvisitor" className="block pl-10 py-2">
                                 General Visitors List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/corporatevisitor" className="block pl-10 py-2">
                                 Corporate Visitors List
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/healthcamp" className="block pl-10 py-2">
                                 Health Camp Visitors List
                             </Link>
                         </li>
@@ -217,50 +238,50 @@ const SidebarMenu = () => {
                 <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown === 4 ? 'max-h-96' : 'max-h-0'}`}
                 >
-                    <ul className="text-xs">
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/addnewclients" className="block pl-10 py-2">
-                                Add New Clients
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/newleadlist" className="block pl-10 py-2">
-                                New Lead List
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/warmclientlist" className="block pl-10 py-2">
-                                Warm Class List
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/hotclientlist" className="block pl-10 py-2">
-                                Hot Client List
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/confirmclientlist" className="block pl-10 py-2">
-                                Confirm Client List
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/coldcclientlist" className="block pl-10 py-2">
-                                Cold Client List
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/masterdata" className="block pl-10 py-2">
-                                Master Data
-                            </Link>
-                        </li>
-                        <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="/rawdatalist" className="block pl-10 py-2">
-                                Raw Data List
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-                <hr className="border-gray-700" />
+                  <ul className="text-xs">
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/addnew" className="block pl-10 py-2">
+                  Add New Clients
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/newlead" className="block pl-10 py-2">
+                  New Lead List
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/warm" className="block pl-10 py-2">
+                  Warm Class List
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/hot" className="block pl-10 py-2">
+                  Hot Client List
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/confirm" className="block pl-10 py-2">
+                  Confirm Client List
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/cold" className="block pl-10 py-2">
+                  Cold Client List
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/master" className="block pl-10 py-2">
+                  Master Data
+                </Link>
+              </li>
+              <li className="hover:bg-gray-700 transition-colors duration-200">
+                <Link to="/organicexpo2026/raw" className="block pl-10 py-2">
+                  Raw Data List
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <hr className="border-gray-700" />
 
                 {/* Dropdown list 5 */}
                 <div
@@ -626,12 +647,12 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/adduser" className="block pl-10 py-2">
                                 Add User
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/userlist" className="block pl-10 py-2">
                                 User List
                             </Link>
                         </li>
@@ -658,42 +679,42 @@ const SidebarMenu = () => {
                 >
                     <ul className="text-xs">
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/category" className="block pl-10 py-2">
                                 Category
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/remark" className="block pl-10 py-2">
                                 Remark Length Fixed
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/addtarget" className="block pl-10 py-2">
                                 Add Target
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/message" className="block pl-10 py-2">
                                 WhatsApp Message
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/nature" className="block pl-10 py-2">
                                 Nature of Business
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/datasource" className="block pl-10 py-2">
                                 Data Source
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/status" className="block pl-10 py-2">
                                 Status
                             </Link>
                         </li>
                         <li className="hover:bg-gray-700 transition-colors duration-200">
-                            <Link to="#" className="block pl-10 py-2">
+                            <Link to="/addbank" className="block pl-10 py-2">
                                 Add Bank
                             </Link>
                         </li>

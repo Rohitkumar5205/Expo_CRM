@@ -5,123 +5,91 @@ import CreateEstimateComponent from './CreateEstimateComponent';
 import CreditNoteComponent from './CreditNoteComponent'; 
 import { Link } from 'react-router-dom';
 
-
- const stylebutton="text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1"
-
 // This is the table component to display estimate details.
 const EstimateTable = () => {
-    
-  
-
-    // function to pass heading
-   
-    return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-300">
-                <thead className="border  border-gray-300">
-                    <tr>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            S.No.
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Estimate Details
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Performa Inv.
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Invoice Details
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Print
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Updated Details
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white border border-gray-300">
-                    {/* Sample Row */}
-                    <tr>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">1</td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-now-wrap text-xs text-black"><Link to='/performaInvoicemain'><button className='text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1'>NGW/24-25/EST/019 </button></Link>| 21 Dec 24 | 53100</td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                            <Link to='/performaInvoice'><button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">NGW/25-26/PI/116 | 06 Sep 25 | 70800</button></Link>
-                        </td>
-                        
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black ">
-                            <Link to="/invoice" className='flex justify-center'><button className={stylebutton}>
-                                Create INV
-                            </button></Link>
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black"></td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">2025-09-25</td>
-                        <td className=" border border-gray-300 px-4 py-2 whitespace-nowrap text-xs font-medium flex gap-2">
-                            
-                            <button className=" border border-gray-300 text-red-600 hover:text-red-900 px-2 cursor-pointer">
-                                x
-                            </button>
-                        </td>
-                    </tr>
-  <tr>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">1</td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-now-wrap text-xs text-black"> <Link to='/performaInvoicemain'><button className='text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1'>NGW/24-25/EST/019 </button></Link> | 21 Dec 24 | 53100</td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                            <Link to='/performaInvoice'><button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">NGW/25-26/PI/116 | 06 Sep 25 | 70800</button></Link>
-                        </td>
-                        
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                            
-                                NGW/INV/24-25/026 | 19 Feb 25 | 53100
-                            
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2 whitespace-nowrap text-xs text-black ">
-                           <div className='flex justify-between gap-1'> 
-                            <Link to='/performabutton' state={{ heading: "Original Copy" }}><button  className={stylebutton}>O</button></Link>
-                            <Link to='/performabutton' state={{ heading: "Duplicate Copy" }}><button  className={stylebutton}>D</button></Link>
-                            <Link to='/performabutton' state={{ heading: "Triplicate Copy" }}><button  className={stylebutton}>T</button></Link>
-                            </div>
+    return (
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-900">
+                <thead className="bg-gray-300">
+                    <tr>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            S.No.
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Estimate Details
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Performa Inv.
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Invoice Details
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Print
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Updated Details
+                        </th>
+                        <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {/* Sample Row */}
+                    <tr>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-black">1</td>
+                        <td className="px-4 py-2 whitespace-now-wrap text-sm text-black">Estimate #2025-001</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-black">
+                            {/* THIS LINK POINTS TO THE NEW ROUTE */}
+                            <Link to='/performaInvoice'><button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">NGW/25-26/PI/116 | 06 Sep 25 | 70800</button></Link>
                         </td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">2025-09-25</td>
-                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs font-medium flex gap-2">
-                            
-                            <button className="border border-gray-300 text-red-600 hover:text-red-900 px-2 cursor-pointer">
-                                x
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
+                        
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-black">
+                            <Link to="/invoice"><button className="text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1">
+                                Create INV
+                            </button></Link>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-black"></td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-black">2025-09-25</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm font-medium flex gap-2">
+                            <button className="text-blue-600 hover:text-blue-900">
+                                <FaEdit />
+                            </button>
+                            <button className="text-red-600 hover:text-red-900">
+                                <FaTrash />
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
 };
 
 // Main AccountsComponent
 const AccountsComponent = ({ onBackToOverview, client }) => {
-    const companyName = client?.company?.name || 'Loading Company...';
+    const companyName = client?.company?.name || 'Loading Company...';
 
-    // State to toggle between the different views
-    const [currentView, setCurrentView] = useState('estimates'); // 'estimates', 'payments', 'createEstimate', or 'creditNote'
+    // State to toggle between the different views
+    const [currentView, setCurrentView] = useState('estimates'); // 'estimates', 'payments', 'createEstimate', or 'creditNote'
 
-    const handleCreateEstimate = () => {
-        setCurrentView('createEstimate');
-    };
+    const handleCreateEstimate = () => {
+        setCurrentView('createEstimate');
+    };
 
-    const handleViewPayments = () => {
-        setCurrentView('payments');
-    };
-    
-    // New handler for Credit Note
-    const handleViewCreditNote = () => {
-        setCurrentView('creditNote');
-    }
+    const handleViewPayments = () => {
+        setCurrentView('payments');
+    };
+    
+    // New handler for Credit Note
+    const handleViewCreditNote = () => {
+        setCurrentView('creditNote');
+    }
 
-    const handleCancel = () => {
-        setCurrentView('estimates');
-    };
+    const handleCancel = () => {
+        setCurrentView('estimates');
+    };
 
     const renderContent = () => {
         if (currentView === 'createEstimate') {
@@ -154,16 +122,16 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
                                 onClick={handleViewCreditNote} // <-- NEW ONCLICK
                                 className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer" // <-- UPDATED CLASSES
                             >
-                                Credit Note
-                            </button>
-                        </div>
-                    </div>
-                    {/* Table */}
-                    <EstimateTable />
-                </div>
-            );
-        }
-    };
+                                Credit Note
+                            </button>
+                        </div>
+                    </div>
+                    {/* Table */}
+                    <EstimateTable />
+                </div>
+            );
+        }
+    };
 
     return (
         <div className="w-full h-auto bg-[#eef1f5]">
@@ -185,12 +153,12 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
                 </div>
             </div>
 
-            {/* Main content area */}
-            <div className="flex flex-col m-4 gap-4">
-                {renderContent()}
-            </div>
-        </div>
-    );
+            {/* Main content area */}
+            <div className="flex flex-col m-4 gap-4">
+                {renderContent()}
+            </div>
+        </div>
+    );
 };
 
 export default AccountsComponent;

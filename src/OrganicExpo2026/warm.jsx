@@ -4,7 +4,7 @@ import Globallytable from '../Components/Globallytable';
 import Textarea from '../Components/Textarea';
 import ClientOverview from '../Components/ClientOverview';
 
-const Page2 = () => {
+const Warm = () => { // Renamed from Page2 to Warm
     const [selectedClient, setSelectedClient] = useState(null);
     const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ const Page2 = () => {
         { label: "Phone", accessor: "contact.phone" },
         { label: "Category", accessor: "category.main" },
         { label: "Sub Category", accessor: "category.sub" },
-        { label: "Business Type", accessor: "Bussiness.type" },
+        { label: "Business Type", accessor: "Business.type" }, // Fixed typo: "Bussiness" to "Business"
         { label: "City", accessor: "location.city" },
         { label: "State", accessor: "location.state" },
         { label: "Pincode", accessor: "location.pincode" },
@@ -31,7 +31,7 @@ const Page2 = () => {
             company: { name: "Tentamus India Pvt. Ltd", email: "labs@tentamus.com" },
             contact: { person: "Ravi Kumar", phone: "+91 9848042002" },
             category: { main: "Organic Products", sub: "Fertiliser" },
-            Bussiness: { type: "Manufacturer" },
+            Business: { type: "Manufacturer" }, // Fixed typo: "Bussiness" to "Business"
             location: { city: "Hyderabad", pincode: "500001", state: "Telangana" },
             source: { type: "Local Visit", addedBy: "Admin" },
             update: { date: "17 Sep 2025", by: "Sumit" },
@@ -41,7 +41,7 @@ const Page2 = () => {
             company: { name: "AgriLabs Pvt. Ltd", email: "info@agrilabs.com" },
             contact: { person: "Neha Sharma", phone: "+91 9876543210" },
             category: { main: "Dairy", sub: "Milk Testing" },
-            Bussiness: { type: "Manufacturer" },
+            Business: { type: "Manufacturer" },
             location: { city: "Delhi", pincode: "110001", state: "Delhi" },
             source: { type: "Referral", addedBy: "Ramesh" },
             update: { date: "12 Sep 2025", by: "Anita" },
@@ -51,7 +51,7 @@ const Page2 = () => {
             company: { name: "FreshFarms Ltd", email: "contact@freshfarms.com" },
             contact: { person: "Amit Verma", phone: "+91 9123456789" },
             category: { main: "Vegetables", sub: "Export Quality" },
-            Bussiness: { type: "Manufacturer" },
+            Business: { type: "Manufacturer" },
             location: { city: "Mumbai", pincode: "400001", state: "Maharashtra" },
             source: { type: "Exhibition", addedBy: "Seema" },
             update: { date: "05 Sep 2025", by: "Ravi" },
@@ -61,7 +61,7 @@ const Page2 = () => {
             company: { name: "BioCrop Sciences", email: "support@biocrop.com" },
             contact: { person: "Priya Mehta", phone: "+91 9812345678" },
             category: { main: "Seeds", sub: "Hybrid Seeds" },
-            Bussiness: { type: "Manufacturer" },
+            Business: { type: "Manufacturer" },
             location: { city: "Ahmedabad", pincode: "380001", state: "Gujarat" },
             source: { type: "Conference", addedBy: "Karan" },
             update: { date: "10 Aug 2025", by: "Deepak" },
@@ -71,7 +71,7 @@ const Page2 = () => {
             company: { name: "GreenHarvest Pvt Ltd", email: "info@greenharvest.com" },
             contact: { person: "Suresh Patel", phone: "+91 9876500000" },
             category: { main: "Fruits", sub: "Organic Mangoes" },
-            Bussiness: { type: "Exporter" },
+            Business: { type: "Exporter" },
             location: { city: "Pune", pincode: "411001", state: "Maharashtra" },
             source: { type: "Trade Fair", addedBy: "Ritika" },
             update: { date: "20 Jul 2025", by: "Alok" },
@@ -81,7 +81,7 @@ const Page2 = () => {
             company: { name: "NutriAgro Foods", email: "contact@nutriagro.com" },
             contact: { person: "Vikas Singh", phone: "+91 9999998888" },
             category: { main: "Processed Foods", sub: "Snacks" },
-            Bussiness: { type: "Supplier" },
+            Business: { type: "Supplier" },
             location: { city: "Lucknow", pincode: "226001", state: "Uttar Pradesh" },
             source: { type: "Website", addedBy: "Manish" },
             update: { date: "02 Jul 2025", by: "Priya" },
@@ -91,7 +91,7 @@ const Page2 = () => {
             company: { name: "AgroChem Labs", email: "sales@agrochem.com" },
             contact: { person: "Kavita Rao", phone: "+91 9123456000" },
             category: { main: "Chemicals", sub: "Pesticides" },
-            Bussiness: { type: "Distributor" },
+            Business: { type: "Distributor" },
             location: { city: "Chennai", pincode: "600001", state: "Tamil Nadu" },
             source: { type: "Dealer Network", addedBy: "Rohit" },
             update: { date: "18 Jun 2025", by: "Sonal" },
@@ -101,7 +101,7 @@ const Page2 = () => {
             company: { name: "Healthy Harvesters", email: "info@healthyharvest.com" },
             contact: { person: "Arjun Kapoor", phone: "+91 9012345678" },
             category: { main: "Grains", sub: "Organic Wheat" },
-            Bussiness: { type: "Wholesaler" },
+            Business: { type: "Wholesaler" },
             location: { city: "Jaipur", pincode: "302001", state: "Rajasthan" },
             source: { type: "Cold Call", addedBy: "Meena" },
             update: { date: "05 May 2025", by: "Raj" },
@@ -117,28 +117,27 @@ const Page2 = () => {
     };
 
     const handleAddNewLeadClick = () => {
-        navigate('/page1');
+        navigate('/organicexpo2026/addnew'); // Updated to Organic Expo 2026 routing
     };
 
     const handleWarmClientClick = () => {
-        navigate('/page3');
+        navigate('/organicexpo2026/warmclient'); // Updated to self-reference or adjust as needed
     };
 
-    // New navigation handlers for the other buttons
     const handleHotClientClick = () => {
-        navigate('/page4');
+        navigate('/organicexpo2026/hotclient'); // Placeholder path, update as needed
     };
 
     const handleConfirmClientClick = () => {
-        navigate('/page5');
+        navigate('/organicexpo2026/confirmclient'); // Placeholder path, update as needed
     };
 
     const handleColdClientClick = () => {
-        navigate('/page6');
+        navigate('/organicexpo2026/coldclient'); // Placeholder path, update as needed
     };
 
     const handleRawDataListClick = () => {
-        navigate('/page8');
+        navigate('/organicexpo2026/rawdatalist'); // Placeholder path, update as needed
     };
 
     return (
@@ -147,15 +146,15 @@ const Page2 = () => {
                 <ClientOverview client={selectedClient} onBack={handleBackClick} />
             ) : (
                 <>
-                 <div className="w-full bg-white shadow-md">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 mb-4">
+                    <div className="w-full bg-white shadow-md border-b">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
                             <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
-                                CLIENT DATA 2023
+                                ORGANIC EXPO 2026 - WARM CLIENT LIST
                             </h1>
                         </div>
                     </div>
                     <div className="w-full bg-white p-3">
-                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>WARM CLIENT LIST </h1>
+                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>WARM CLIENT LIST</h1>
                         <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
                             <button
                                 onClick={handleAddNewLeadClick}
@@ -208,4 +207,4 @@ const Page2 = () => {
     );
 };
 
-export default Page2;
+export default Warm;

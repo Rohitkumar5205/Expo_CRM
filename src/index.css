@@ -6,7 +6,7 @@ body {
 
 label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 input {
@@ -17,7 +17,6 @@ input {
   height: 32px;
   margin-bottom: 1px;
 }
-
 /* Add this new rule to your index.css file */
 .table-checkbox {
   width: 13px !important;
@@ -25,6 +24,7 @@ input {
   margin-bottom: 0px !important;
   border-color: #999 !important;
 }
+
 /*button{
   background-color:#337ab7;
   width: 100%;

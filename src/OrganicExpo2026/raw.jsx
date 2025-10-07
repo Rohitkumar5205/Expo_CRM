@@ -147,15 +147,15 @@ const Page2 = () => {
                 <ClientOverview client={selectedClient} onBack={handleBackClick} />
             ) : (
                 <>
-                 <div className="w-full bg-white shadow-md">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 mb-4">
+                    <div className="w-full bg-white shadow-md border-b">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
                             <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
                                 CLIENT DATA 2023
                             </h1>
                         </div>
                     </div>
                     <div className="w-full bg-white p-3">
-                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>WARM CLIENT LIST </h1>
+                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>RAW DATA LIST</h1>
                         <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
                             <button
                                 onClick={handleAddNewLeadClick}
