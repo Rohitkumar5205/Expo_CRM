@@ -4,7 +4,7 @@ import { FaEdit, FaPrint, FaTrash } from 'react-icons/fa';
 const EstimateTable = () => {
   return (
     <div className="overflow-x-auto bg-white p-2 rounded-md shadow-md">
-      <table className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full min-h-auto border-collapse">
         <thead className="bg-gray-50">
           <tr>
             <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -40,8 +40,8 @@ const EstimateTable = () => {
             </td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Invoice #INV-001</td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-              <button className="text-blue-600 hover:text-blue-900 font-medium flex items-center gap-1">
-                <FaPrint /> Print
+              <button className="text-blue-600 border border-blue-600 hover:text-blue-900 font-medium flex items-center gap-1">
+                CreateINV
               </button>
             </td>
             <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">2025-09-25</td>
@@ -54,6 +54,29 @@ const EstimateTable = () => {
               </button>
             </td>
           </tr>
+          <tr>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">2</td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Estimate #2025-001</td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+              <button className="text-blue-600 hover:text-blue-900 font-medium">View Performa</button>
+            </td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Invoice #INV-001</td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+              <button className="text-blue-600 border border-blue-600 hover:text-blue-900 font-medium flex items-center gap-1">
+                CreateINV
+              </button>
+            </td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">2025-09-25</td>
+            <td className="px-4 py-2 whitespace-nowrap text-sm font-medium flex gap-2">
+              <button className="text-blue-600 hover:text-blue-900">
+                <FaEdit />
+              </button>
+              <button className="text-red-600 hover:text-red-900">
+                <FaTrash />
+              </button>
+            </td>
+          </tr>
+          
         </tbody>
       </table>
     </div>

@@ -91,36 +91,36 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
         setCurrentView('estimates');
     };
 
-    const renderContent = () => {
-        if (currentView === 'createEstimate') {
-            return <CreateEstimateComponent onCancel={handleCancel} />;
-        } else if (currentView === 'payments') {
-            return <PaymentsComponent onBackToOverview={onBackToOverview} client={client} onBackToAccounts={handleCancel} />;
-        } else if (currentView === 'creditNote') {
-            return <CreditNoteComponent onCancel={handleCancel} />; // <-- RENDER THE NEW COMPONENT
-        } else {
-            return (
-                <div className="bg-white shadow-md p-2 rounded-md w-full">
-                    <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold text-gray-700 mb-2 sm:mb-0">
-                            {companyName} Information
-                        </h2>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            <button
-                                onClick={handleCreateEstimate}
-                                className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer"
-                            >
-                                Create Estimate
-                            </button>
-                            <button
-                                onClick={handleViewPayments} // Updated handler
-                                className="bg-[#337ab7] text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer"
-                            >
-                                Payments
-                            </button>
-                            <button 
+    const renderContent = () => {
+        if (currentView === 'createEstimate') {
+            return <CreateEstimateComponent onCancel={handleCancel} />;
+        } else if (currentView === 'payments') {
+            return <PaymentsComponent onBackToOverview={onBackToOverview} client={client} onBackToAccounts={handleCancel} />;
+        } else if (currentView === 'creditNote') {
+            return <CreditNoteComponent onCancel={handleCancel} />; // <-- RENDER THE NEW COMPONENT
+        } else {
+            return (
+                <div className="bg-white shadow-md p-2 rounded-md w-full">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+                        <h2 className="text-lg  text-gray-700 mb-2 sm:mb-0">
+                            {companyName} Information
+                        </h2>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                            <button
+                                onClick={handleCreateEstimate}
+                                className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer"
+                            >
+                                Create Estimate
+                            </button>
+                            <button
+                                onClick={handleViewPayments} // Updated handler
+                                className="bg-[#337ab7] text-white px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer"
+                            >
+                                Payments
+                            </button>
+                            <button 
                                 onClick={handleViewCreditNote} // <-- NEW ONCLICK
-                                className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer" // <-- UPDATED CLASSES
+                                className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer" // <-- UPDATED CLASSES
                             >
                                 Credit Note
                             </button>
@@ -133,25 +133,25 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
         }
     };
 
-    return (
-        <div className="w-full h-auto bg-[#eef1f5]">
-            {/* Header Section */}
-            <div className="w-full bg-white shadow-md flex flex-col sm:flex-row justify-between items-center px-4 py-1">
-                <h1 className="text-xl font-semibold text-gray-700 mb-2 sm:mb-0">
-                    ACCOUNT SECTION | ESTIMATE
-                </h1>
-                <div className="flex flex-wrap gap-2 justify-center">
-                    <button onClick={onBackToOverview} className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer">
-                        Back to Overview
-                    </button>
-                    <button className="bg-[#337ab7] hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer">
-                        Add Client
-                    </button>
-                    <button className="bg-[#337ab7] hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer">
-                        Master List
-                    </button>
-                </div>
-            </div>
+    return (
+        <div className="w-full h-auto bg-[#eef1f5]">
+            {/* Header Section */}
+            <div className="w-full bg-white shadow-md flex flex-col sm:flex-row justify-between items-center px-4 py-1">
+                <h1 className="text-xl font-semibold text-gray-700 mb-2 sm:mb-0">
+                    ACCOUNT SECTION | ESTIMATE
+                </h1>
+                <div className="flex flex-wrap gap-2 justify-center">
+                    <button onClick={onBackToOverview} className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer">
+                        Back to Overview
+                    </button>
+                    <button className="bg-[#337ab7] hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer">
+                        Add Client
+                    </button>
+                    <button className="bg-[#337ab7] hover:bg-blue-700 text-white px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer">
+                        Master List
+                    </button>
+                </div>
+            </div>
 
             {/* Main content area */}
             <div className="flex flex-col m-4 gap-4">

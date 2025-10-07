@@ -2,7 +2,7 @@ import React from 'react'
 
 const Textarea = () => {
   return (
-    <div className="bg-white mt-4 mb-6 p-4 rounded-lg shadow-sm border border-gray-200">
+    <div className="bg-white mt-4 mb-6 p-4 ">
       {/* Label */}
       <label
         htmlFor="textstatus"
@@ -13,7 +13,7 @@ const Textarea = () => {
 
       {/* Textarea */}
       <textarea
-        className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm resize-none"
+        className="w-full border border-gray-300  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm "
         name="textstatus"
         id="textstatus"
         rows="3"

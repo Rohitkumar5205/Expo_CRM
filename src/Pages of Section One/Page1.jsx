@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 const Page1 = () => {
+
+// Heading function logic
+
+const location = useLocation();
+
+const heading = location.state?.heading||"Add New Company";
+
+
     const Options = [
         "Select Here",
         "Acupressure/Acupuncture", "Agriculture Equipments", "ANIMAL HUSBANDARY AND DAIRY FIRMING", "Ayurveda", "Ayurveda Medicine", "Ayurveda Products", "AYUSH services via Mobile APP",
@@ -85,19 +94,19 @@ const Page1 = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gray-100">
+        <div className="w-full  min-h-screen bg-gray-100">
             {/* Heading Section */}
-            <div className="w-full bg-white shadow-md ">
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-                    <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">COMPANY DETAILS</h1>
+            <div className="w-full h-fit bg-white shadow-md  ">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-2 py-1">
+                    <h1 className="text-xl  text-gray-700 mb-2 lg:mb-0">COMPANY DETAILS</h1>
                     <div className="flex flex-wrap gap-2">
-                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition-colors ">
                             Upload Exhibitor
                         </button>
-                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition-colors ">
                             Master List
                         </button>
-                        <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+                        <button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition-colors ">
                             Exhibitor List
                         </button>
                     </div>
@@ -105,9 +114,9 @@ const Page1 = () => {
             </div>
 
             {/* Main Form Section */}
-            <div className="max-w-full mx-auto bg-white shadow-lg m-4 rounded-lg">
+            <div className="max-w-full  bg-white shadow-lg m-4 rounded-lg mx-4">
                 <div className="p-4">
-                    <h2 className="text-base font-medium text-gray-700 mb-3">Add New Company</h2>
+                    <h2 className="text-base font-medium text-gray-700 mb-3">{heading}</h2>
                     <hr className="mb-4" />
 
                     {/* Company Details Grid */}

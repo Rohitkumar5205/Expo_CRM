@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Globallytable from '../Components/Globallytable';
 import Textarea from '../Components/Textarea';
 import ClientOverview from '../Components/ClientOverview';
+import UploaderTextarea from '../Components/UploaderTextarea';
+import {Routes,Route} from 'react-router-dom';
+import History from './History';
 
-const Page2 = () => {
+const Page8 = () => {
     const [selectedClient, setSelectedClient] = useState(null);
-    const navigate = useNavigate();
 
     const columns = [
         { label: "Company Name", accessor: "company.name" },
@@ -116,96 +117,60 @@ const Page2 = () => {
         setSelectedClient(null);
     };
 
-    const handleAddNewLeadClick = () => {
-        navigate('/page1');
-    };
-
-    const handleWarmClientClick = () => {
-        navigate('/page3');
-    };
-
-    // New navigation handlers for the other buttons
-    const handleHotClientClick = () => {
-        navigate('/page4');
-    };
-
-    const handleConfirmClientClick = () => {
-        navigate('/page5');
-    };
-
-    const handleColdClientClick = () => {
-        navigate('/page6');
-    };
-
-    const handleRawDataListClick = () => {
-        navigate('/page8');
-    };
-
     return (
         <div className="w-full h-auto bg-[#eef1f5]">
             {selectedClient ? (
+                // When a client is selected, show only the ClientOverview component
                 <ClientOverview client={selectedClient} onBack={handleBackClick} />
             ) : (
+                // When no client is selected, show the list and the Textarea below it
                 <>
-                    <div className="w-full bg-white shadow-md border-b">
-                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-                            <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
-                                CLIENT DATA 2023
+                    <div className="w-full bg-white shadow-md  mb-5">
+                        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
+                            <h1 className="text-xl  text-gray-700 mb-2 lg:mb-0">
+                                CLIENT DATA 2025
                             </h1>
                         </div>
                     </div>
-                    <div className="w-full bg-white p-3">
-                        <h1 className='text-lg text-[#4f5a67] pl-4 pt-1'>RAW DATA LIST</h1>
-                        <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                            <button
-                                onClick={handleAddNewLeadClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                    <div className="w-full bg-white mx-4 my-4 pb-1">
+                       
+                        <div className='flex justify-between pr-4 pt-1'>
+                             <h1 className='text-lg text-[#4f5a67] pl-4 pt-1 font-semibold'>RAW DATA LIST</h1>
+                           <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
+                             <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Add New Lead
                             </button>
-                            <button
-                                onClick={handleWarmClientClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Warm Client
                             </button>
-                            <button
-                                onClick={handleHotClientClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Hot Client
                             </button>
-                            <button
-                                onClick={handleConfirmClientClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Confirm Client
                             </button>
-                            <button
-                                onClick={handleColdClientClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Cold Client
                             </button>
-                            <button
-                                onClick={handleRawDataListClick}
-                                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                            >
+                            <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
                                 Raw Data List
                             </button>
+                           </div>
                         </div>
                         <hr className="opacity-10 mb-2" />
                         <div className="text-xs">
                             <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} />
                         </div>
+                       <div className='mx-6 '>
+                         <UploaderTextarea />
+                       </div>
                     </div>
-                    <div className="bg-white shadow-md m-3 p-4 rounded-md">
-                        <Textarea />
-                    </div>
+                    
+                    
                 </>
             )}
         </div>
     );
 };
 
-export default Page2;
+export default Page8;
