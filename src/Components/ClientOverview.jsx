@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { FaTrash, FaUser, FaBuilding, FaPencilAlt } from "react-icons/fa";
 import { IoCallSharp } from "react-icons/io5";
@@ -6,14 +6,28 @@ import AccountsComponent from "./AccountsComponent";
 import PaymentsComponent from "./PaymentsComponent";
 import HeaderComponent from "./HeaderComponent";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCompanies } from "../features/company/companySlice";
+import { useNavigate } from "react-router-dom";
 
 const ClientOverview = ({ client, onBack }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showAccounts, setShowAccounts] = useState(false);
   const [showPayments, setShowPayments] = useState(false);
   const [popUp, setPopUp] = useState(false);
   const [Flip, setFlip] = useState(false);
 
-  const baseInputClass = "mt-1 block w-full p-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
+  // company redux
+  const { companies, loading, error } = useSelector((state) => state.companies);
+  console.log("companies data", companies);
+
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+
+  const baseInputClass =
+    "mt-1 block w-full p-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
 
   // Communication history data with onClick handler reference
   const communicationHistoryData = [
@@ -22,42 +36,24 @@ const ClientOverview = ({ client, onBack }) => {
       title: "FOLLOW-UP CALL FOR ORGANIC EXPO 2026",
       reminder: "CALL THE CLIENT ON 25 SEP 25 AT 15:45",
       isActive: true,
-      details: "Call back required after 7 days, he will visit the office | By: Abhay Raj | On September 20, 2025 at 15:50",
+      details:
+        "Call back required after 7 days, he will visit the office | By: Abhay Raj | On September 20, 2025 at 15:50",
     },
     {
       id: 2,
       title: "FOLLOW-UP CALL FOR ORGANIC EXPO 2026",
       reminder: "CALL THE CLIENT ON 20 SEP 25 AT 12:15",
       isActive: false,
-      details: "Call back required after 7 days, he will visit in office | By: Abhay Raj | On September 19, 2025 at 12:28",
+      details:
+        "Call back required after 7 days, he will visit in office | By: Abhay Raj | On September 19, 2025 at 12:28",
     },
     {
       id: 3,
       title: "FOLLOW-UP CALL ON 19 SEP 25 AT 11:25",
       reminder: "CALL THE CLIENT ON 19 SEP 25 AT 11:25",
       isActive: false,
-      details: "Call not pick will try to connect on whatsapp | By: Abhay Raj | On September 18, 2025 at 15:39",
-    },
-    {
-      id: 4,
-      title: "WARM CLIENT FOR ORGANIC EXPO 2026",
-      reminder: "CALL THE CLIENT ON 18 SEP 25 AT 10:15",
-      isActive: false,
-      details: "Interested layout shared | By: Abhay Raj | On September 17, 2025 at 12:16",
-    },
-    {
-      id: 5,
-      title: "SENT DETAILS FOR ORGANIC EXPO 2026",
-      reminder: "CALL THE CLIENT ON 17 SEP 25 AT 10:15",
-      isActive: false,
-      details: "Details shared | By: Abhay Raj | On September 16, 2025 at 18:15",
-    },
-    {
-      id: 6,
-      title: "NEW LEAD FOR ORGANIC EXPO 2026",
-      reminder: "CALL THE CLIENT ON 16 SEP 25 AT 18:00",
-      isActive: false,
-      details: "New Lead | By: Rishabh Singh | On September 16, 2025 at 18:10",
+      details:
+        "Call not pick will try to connect on whatsapp | By: Abhay Raj | On September 18, 2025 at 15:39",
     },
   ];
 
@@ -84,7 +80,11 @@ const ClientOverview = ({ client, onBack }) => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", `Record with ID ${id} has been deleted.`, "success");
+        Swal.fire(
+          "Deleted!",
+          `Record with ID ${id} has been deleted.`,
+          "success"
+        );
       }
     });
   };
@@ -198,20 +198,34 @@ const ClientOverview = ({ client, onBack }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Sent!", "Your message has been prepared for sending.", "success");
+        Swal.fire(
+          "Sent!",
+          "Your message has been prepared for sending.",
+          "success"
+        );
       }
     });
   };
 
   const handleEdit = () => {
-    console.log("Edit button clicked");
+    navigate("/addNewClients", { state: { heading: "Edit Client Details" } });
   };
 
   if (showAccounts) {
-    return <AccountsComponent client={clientData} onBackToOverview={() => setShowAccounts(false)} />;
+    return (
+      <AccountsComponent
+        client={clientData}
+        onBackToOverview={() => setShowAccounts(false)}
+      />
+    );
   }
   if (showPayments) {
-    return <PaymentsComponent client={clientData} onBack={() => setShowPayments(false)} />;
+    return (
+      <PaymentsComponent
+        client={clientData}
+        onBack={() => setShowPayments(false)}
+      />
+    );
   }
 
   return (
@@ -220,15 +234,23 @@ const ClientOverview = ({ client, onBack }) => {
         title="CLIENT OVERVIEW"
         buttons={[
           { label: "Back to List", onClick: onBack },
-          { label: "Add Client", className: "bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer" },
-          { label: "Master List", className: "bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer" },
+          {
+            label: "Add Client",
+            className:
+              "bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer",
+          },
+          {
+            label: "Master List",
+            className:
+              "bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium cursor-pointer",
+          },
         ]}
       />
       <div className="flex flex-col m-4 gap-4">
         <div className="bg-white shadow-md p-4 rounded-md w-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-gray-700">
-              {clientData.company?.name} | Self Employed Details
+              {clientData.company?.name} | Details
             </h2>
             <div className="flex gap-2">
               <button
@@ -249,67 +271,65 @@ const ClientOverview = ({ client, onBack }) => {
               >
                 Payments
               </button>
-              <Link to="/page1" state={{heading:"Edit Client Details"}}><button
+              {/* <Link
+                to="/addNewClients"
+                state={{ heading: "Edit Client Details" }}
+              > */}
+              <button
                 onClick={handleEdit}
                 className="flex items-center justify-center w-8 h-8 rounded-sm text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"
                 aria-label="Edit"
               >
                 <FaPencilAlt className="w-3 h-3" />
-              </button></Link>
+              </button>
+              {/* </Link> */}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600 border-b pb-4 mb-4">
             <div>
               <p className="font-semibold text-gray-800">Company Details</p>
               <p>
-                {clientData.company?.name} | {clientData.Bussiness?.type} |{" "}
-                {clientData.category?.main}
+                {client.company?.name} | {client.business?.type} |{" "}
+                {client.category?.main}
               </p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Data Source</p>
-              <p>{clientData.source?.type}</p>
+              <p>{client.source?.name}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Website</p>
-              <p className="text-red-500">Pending</p>
+              <p>{client.company?.website || "-"}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Address</p>
               <p>
-                {clientData.location?.city}, {clientData.location?.state}, India,{" "}
-                {clientData.location?.pincode}
+                {client.location?.city}, {client.location?.state}, India
               </p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Email Id</p>
-              <p className="text-blue-600">{clientData.company?.email}</p>
+              <p className="text-blue-600">{client.company?.email}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Landline No.</p>
-              <p className="text-red-500">Pending</p>
+              <p>{client.contact?.landline || "-"}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Contact Details</p>
-              <p>
-                {clientData.contact?.person} | {clientData.contact?.phone}
-              </p>
+              <p>{client.contact?.details}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Added By</p>
-              <p>
-                {clientData.update?.date} | {clientData.update?.by}
-              </p>
+              <p>{client.update?.details}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Updated By</p>
-              <p>
-                {clientData.update?.date} | {clientData.update?.by}
-              </p>
+              <p>{client.update?.details}</p>
             </div>
             <div>
               <p className="font-semibold text-gray-800">Client Status</p>
-              <p>New Client</p>
+              <p>{client.status || "New Client"}</p>
             </div>
           </div>
         </div>
@@ -320,7 +340,10 @@ const ClientOverview = ({ client, onBack }) => {
             <div className="flex flex-col md:flex-row gap-4 md:gap-7">
               {/* Client Status */}
               <div className="w-auto">
-                <label htmlFor="ClientStatus" className="block text-xs font-medium text-gray-700">
+                <label
+                  htmlFor="ClientStatus"
+                  className="block text-xs font-medium text-gray-700"
+                >
                   Client Status
                 </label>
                 <select
@@ -343,28 +366,47 @@ const ClientOverview = ({ client, onBack }) => {
                   <option value="Adv. Recd">Adv. Recd</option>
                   <option value="Visitor Pass Sent">Visitor Pass Sent</option>
                   <option value="Not Interested">Not Interested</option>
-                  <option value="Company Not Available">Company Not Available</option>
+                  <option value="Company Not Available">
+                    Company Not Available
+                  </option>
                   <option value="Wrong Data">Wrong Data</option>
-                  <option value="Under PYMT Followups">Under PYMT Followups</option>
-                  <option value="Reminder Reschedule">Reminder Reschedule</option>
+                  <option value="Under PYMT Followups">
+                    Under PYMT Followups
+                  </option>
+                  <option value="Reminder Reschedule">
+                    Reminder Reschedule
+                  </option>
                 </select>
               </div>
 
               {Flip && (
-                <div className='flex flex-col md:flex-row gap-4 md:gap-7'>
+                <div className="flex flex-col md:flex-row gap-4 md:gap-7">
                   {/* Reminder Date & Time */}
                   <div className="w-auto">
-                    <label htmlFor="ReminderDateTime" className="block text-xs font-medium text-gray-700">
-                      Reminder Date & Time<span className="text-red-700"> * </span>
+                    <label
+                      htmlFor="ReminderDateTime"
+                      className="block text-xs font-medium text-gray-700"
+                    >
+                      Reminder Date & Time
+                      <span className="text-red-700"> * </span>
                     </label>
                     <div className="input-container flex">
-                      <input type="datetime-local" id="ReminderDateTime" name="reminderDateTime" className={baseInputClass} required />
+                      <input
+                        type="datetime-local"
+                        id="ReminderDateTime"
+                        name="reminderDateTime"
+                        className={baseInputClass}
+                        required
+                      />
                     </div>
                   </div>
 
                   {/* Forward To */}
                   <div className="w-auto">
-                    <label htmlFor="ForwardTo" className="block text-xs font-medium text-gray-700">
+                    <label
+                      htmlFor="ForwardTo"
+                      className="block text-xs font-medium text-gray-700"
+                    >
                       Forward To <span className="text-red-700"> * </span>
                     </label>
                     <select
@@ -379,7 +421,9 @@ const ClientOverview = ({ client, onBack }) => {
                       <option value="Reetika Singh">Reetika Singh</option>
                       <option value="Abhay Raj">Abhay Raj</option>
                       <option value="Sumit Mishra">Sumit Mishra</option>
-                      <option value="Chiranjeev Sharma">Chiranjeev Sharma</option>
+                      <option value="Chiranjeev Sharma">
+                        Chiranjeev Sharma
+                      </option>
                       <option value="Shimpi Rawat">Shimpi Rawat</option>
                       <option value="Tanya Jaiswal">Tanya Jaiswal</option>
                       <option value="Prerna Pandey">Prerna Pandey</option>
@@ -391,7 +435,10 @@ const ClientOverview = ({ client, onBack }) => {
 
               {/* Previous Status */}
               <div className="w-auto">
-                <label htmlFor="PreviousStatus" className="block text-xs font-medium text-gray-700">
+                <label
+                  htmlFor="PreviousStatus"
+                  className="block text-xs font-medium text-gray-700"
+                >
                   Previous Status
                 </label>
                 <input
@@ -405,13 +452,13 @@ const ClientOverview = ({ client, onBack }) => {
 
               {/* Event Name */}
               <div className="w-auto">
-                <label htmlFor="EventName" className="block text-xs font-medium text-gray-700">
+                <label
+                  htmlFor="EventName"
+                  className="block text-xs font-medium text-gray-700"
+                >
                   Event Name <span className="text-red-700">*</span>
                 </label>
-                <select
-                  id="EventName"
-                  className={baseInputClass}
-                >
+                <select id="EventName" className={baseInputClass}>
                   <option value="Organic Expo 2026">Organic Expo 2026</option>
                 </select>
               </div>
@@ -419,7 +466,10 @@ const ClientOverview = ({ client, onBack }) => {
 
             {/* Remark Section */}
             <div className="mt-4">
-              <label htmlFor="Remark" className="flex gap-2 text-xs font-medium text-gray-700">
+              <label
+                htmlFor="Remark"
+                className="flex gap-2 text-xs font-medium text-gray-700"
+              >
                 Any Remark <span className="text-red-600">*</span>
               </label>
               <div className="flex flex-col md:flex-row items-start md:items-center gap-2 mt-1">
@@ -440,7 +490,8 @@ const ClientOverview = ({ client, onBack }) => {
         <div className="bg-white shadow-md rounded-md w-full">
           <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 rounded-t-md border-b border-gray-200">
             <p className="flex items-center gap-2">
-              <FaBuilding className="text-lg text-gray-600" /> Communication Status History
+              <FaBuilding className="text-lg text-gray-600" /> Communication
+              Status History
             </p>
           </h3>
           <div className="space-y-0.5 p-2">
@@ -455,11 +506,14 @@ const ClientOverview = ({ client, onBack }) => {
                 <div className="flex-grow flex flex-col">
                   <p className="font-medium text-xs sm:text-sm">
                     <span className="text-blue-400">{entry.title}</span>
-                    <span 
-                      onClick={() => setPopUp(!popUp)} 
-                      className={`${entry.isActive ? 'text-red-500' : 'text-gray-700'} cursor-pointer hover:underline`}
+                    <span
+                      onClick={() => setPopUp(!popUp)}
+                      className={`${
+                        entry.isActive ? "text-red-500" : "text-gray-700"
+                      } cursor-pointer hover:underline`}
                     >
-                      {" "}| ▲ {entry.reminder}
+                      {" "}
+                      | ▲ {entry.reminder}
                     </span>
                   </p>
                   <p className="text-xs text-gray-500 leading-tight">
