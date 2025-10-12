@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+// import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,42 +17,6 @@ import ClientOverview from "./Components/ClientOverview";
 
 // Web Visitor Data
 import NewVisitor from "./webvisitordata/newvisitor";
-import GeneralVisitor from "./webvisitordata/generalvisitor";
-
-// OrganicExpo2026 (Old)
-import AddNew from "./OrganicExpo2026/addnew";
-import NewLead from "./OrganicExpo2026/newlead";
-import Warm from "./OrganicExpo2026/warm";
-import Hot from "./OrganicExpo2026/hot";
-import Confirm from "./OrganicExpo2026/confirm";
-import Cold from "./OrganicExpo2026/cold";
-import Master from "./OrganicExpo2026/master";
-import Raw from "./OrganicExpo2026/raw";
-
-// Organic_Expo_Data_2026 (New)
-import Addnewclients from "./Organic_Expo_Data_2026/Addnewclients";
-import Coldcclientlist from "./Organic_Expo_Data_2026/Coldcclientlist";
-import Confirmclientlist from "./Organic_Expo_Data_2026/Confirmclientlist";
-import Hotclientlist from "./Organic_Expo_Data_2026/Hotclientlist";
-import Masterdata from "./Organic_Expo_Data_2026/Masterdata";
-import Newleadlist from "./Organic_Expo_Data_2026/Newleadlist";
-import Rawdatalist from "./Organic_Expo_Data_2026/Rawdatalist";
-import Warmclientlist from "./Organic_Expo_Data_2026/Warmclientlist";
-
-// User Management
-import AddUser from "./UserList/adduser";
-import UserList from "./UserList/userlist";
-
-// Admin Config
-import Category from "./AddAdmin/category";
-import Remark from "./AddAdmin/remark";
-import AddTarget from "./AddAdmin/addtarget";
-import Message from "./AddAdmin/message";
-import Nature from "./AddAdmin/nature";
-import DataSource from "./AddAdmin/datasource";
-import Status from "./AddAdmin/status";
-import AddBank from "./AddAdmin/addbank";
-
 // Invoice Components
 import Performabutton from "./Components/invoice/TaxInvoiceDetails";
 import EditEstimate from "./Components/EditEstimate";
@@ -75,11 +39,32 @@ import InvoiceNumberDetails from "./Components/invoice/InvoiceNumberDetails";
 import PerformaInvoiceDetails from "./Components/invoice/PerformaInvoiceDetails";
 import EstimateDetails from "./Components/invoice/EstimateDetails";
 import TaxInvoiceDetails from "./Components/invoice/TaxInvoiceDetails";
-
+import GeneralVisitorsList from "./pages/web_visitor_data/GeneralVisitorsList";
+import CorporateVisitorsList from "./pages/web_visitor_data/CorporateVisitorsList";
+import HealthCampVisitorsList from "./pages/web_visitor_data/HealthCampVisitorsList";
+import AddNewVisitors from "./pages/web_visitor_data/add_new_visitor/AddNewVisitors";
+import OrganicAddClients from "./pages/organic_expo_data_2026/organicAddClients";
+import OrganicLeadList from "./pages/organic_expo_data_2026/OrganicLeadList";
+import OrganicWarmList from "./pages/organic_expo_data_2026/OrganicWarmList";
+import OrganicHotClientsList from "./pages/organic_expo_data_2026/OrganicHotClientsList";
+import OrganicConfirmClientList from "./pages/organic_expo_data_2026/OrganicConfirmClientList";
+import OrganicColdClientList from "./pages/organic_expo_data_2026/OrganicColdClientList";
+import OrganicMasterData from "./pages/organic_expo_data_2026/OrganicMasterData";
+import OrganicRawDataList from "./pages/organic_expo_data_2026/OrganicRawDataList";
+import UserList from "./pages/users/UserList";
+import AddUser from "./pages/users/AddUser";
+import AddCategory from "./pages/add_by_admin/AddCategory";
+import AddRemarkLengthFixed from "./pages/add_by_admin/AddRemarkLengthFixed";
+import AddTarget from "./pages/add_by_admin/AddTarget";
+import AddWhatsappMessage from "./pages/add_by_admin/AddWhatsappMessage";
+import AddNatureOfBusiness from "./pages/add_by_admin/AddNatureOfBusiness";
+import AddDataSource from "./pages/add_by_admin/AddDataSource";
+import AddStatus from "./pages/add_by_admin/AddStatus";
+import AddBank from "./pages/add_by_admin/AddBank";
 const App = () => {
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
+      {/* <Toaster position="top-right" reverseOrder={false} /> */}
       <ToastContainer />
 
       <Routes>
@@ -94,14 +79,38 @@ const App = () => {
           <Route path="/client-overview" element={<ClientOverview />} />
 
           {/* Section One */}
-          <Route path="/addNewClients" element={<AddNewClients />} />
-          <Route path="/newLeadList" element={<NewLeadList />} />
-          <Route path="/warmClientList" element={<WarmClientList />} />
-          <Route path="/hotClientList" element={<HotClientList />} />
-          <Route path="/confirmClientList" element={<ConfirmClientList />} />
-          <Route path="/coldClientList" element={<ColdClientList />} />
-          <Route path="/masterData" element={<MasterClientsList />} />
-          <Route path="/rawDataList" element={<RawDataList />} />
+          <Route
+            path="/ihweClientData2026/addNewClients"
+            element={<AddNewClients />}
+          />
+          <Route
+            path="/ihweClientData2026/newLeadList"
+            element={<NewLeadList />}
+          />
+          <Route
+            path="/ihweClientData2026/warmClientList"
+            element={<WarmClientList />}
+          />
+          <Route
+            path="/ihweClientData2026/hotClientList"
+            element={<HotClientList />}
+          />
+          <Route
+            path="/ihweClientData2026/confirmClientList"
+            element={<ConfirmClientList />}
+          />
+          <Route
+            path="/ihweClientData2026/coldClientList"
+            element={<ColdClientList />}
+          />
+          <Route
+            path="/ihweClientData2026/masterData"
+            element={<MasterClientsList />}
+          />
+          <Route
+            path="/ihweClientData2026/rawDataList"
+            element={<RawDataList />}
+          />
           <Route path="/history" element={<History />} />
           <Route path="/createInvoice" element={<CreateInvoice />} />
           <Route
@@ -115,46 +124,81 @@ const App = () => {
           <Route path="/estimateDetails" element={<EstimateDetails />} />
 
           {/* Old Visitor Data */}
-          <Route path="/oldVisitorList" element={<OldVisitorList />} />
-          <Route path="/uploadVisitorList" element={<UploadVisitorList />} />
+          <Route
+            path="/OLDVisitorData/oldVisitorList"
+            element={<OldVisitorList />}
+          />
+          <Route
+            path="/OLDVisitorData/uploadVisitorList"
+            element={<UploadVisitorList />}
+          />
 
           {/* Web Visitor Data */}
-          <Route path="/newvisitor" element={<NewVisitor />} />
-          <Route path="/generalvisitor" element={<GeneralVisitor />} />
+          <Route
+            path="/webVisitorData/addNewVisitors"
+            element={<AddNewVisitors />}
+          />
+          <Route path="/newVisitor" element={<NewVisitor />} />
+          <Route
+            path="/webVisitorData/generalVisitorsList"
+            element={<GeneralVisitorsList />}
+          />
+          <Route
+            path="/webVisitorData/corporateVisitorsList"
+            element={<CorporateVisitorsList />}
+          />
+          <Route
+            path="/webVisitorData/healthCampVisitorsList"
+            element={<HealthCampVisitorsList />}
+          />
 
           {/* OrganicExpo2026 */}
-          <Route path="/addnew" element={<AddNew />} />
-          <Route path="/organicexpo2026/newlead" element={<NewLead />} />
-          <Route path="/organicexpo2026/warm" element={<Warm />} />
-          <Route path="/organicexpo2026/hot" element={<Hot />} />
-          <Route path="/organicexpo2026/confirm" element={<Confirm />} />
-          <Route path="/organicexpo2026/cold" element={<Cold />} />
-          <Route path="/organicexpo2026/master" element={<Master />} />
-          <Route path="/organicexpo2026/raw" element={<Raw />} />
-
-          {/* Organic_Expo_Data_2026 */}
-          <Route path="/addnewclients" element={<Addnewclients />} />
-          <Route path="/coldcclientlist" element={<Coldcclientlist />} />
-          <Route path="/confirmclientlist" element={<Confirmclientlist />} />
-          <Route path="/hotclientlist" element={<Hotclientlist />} />
-          <Route path="/masterdata" element={<Masterdata />} />
-          <Route path="/newleadlist" element={<Newleadlist />} />
-          <Route path="/rawdatalist" element={<Rawdatalist />} />
-          <Route path="/warmclientlist" element={<Warmclientlist />} />
+          <Route
+            path="/organicExpo2026/organicAddClients"
+            element={<OrganicAddClients />}
+          />
+          <Route
+            path="/organicExpo2026/organicLeadList"
+            element={<OrganicLeadList />}
+          />
+          <Route
+            path="/organicExpo2026/organicWarmList"
+            element={<OrganicWarmList />}
+          />
+          <Route
+            path="/organicExpo2026/organicHotClientsList"
+            element={<OrganicHotClientsList />}
+          />
+          <Route
+            path="/organicExpo2026/organicConfirmClientList"
+            element={<OrganicConfirmClientList />}
+          />
+          <Route
+            path="/organicExpo2026/organicColdClientList"
+            element={<OrganicColdClientList />}
+          />
+          <Route
+            path="/organicExpo2026/organicMasterData"
+            element={<OrganicMasterData />}
+          />
+          <Route
+            path="/organicExpo2026/organicRawDataList"
+            element={<OrganicRawDataList />}
+          />
 
           {/* User Management */}
-          <Route path="/adduser" element={<AddUser />} />
-          <Route path="/userlist" element={<UserList />} />
+          <Route path="/users/addUser" element={<AddUser />} />
+          <Route path="/users/userList" element={<UserList />} />
 
           {/* Admin Config */}
-          <Route path="/category" element={<Category />} />
-          <Route path="/remark" element={<Remark />} />
-          <Route path="/addtarget" element={<AddTarget />} />
-          <Route path="/message" element={<Message />} />
-          <Route path="/nature" element={<Nature />} />
-          <Route path="/datasource" element={<DataSource />} />
-          <Route path="/status" element={<Status />} />
-          <Route path="/addbank" element={<AddBank />} />
+          <Route path="/addByAdmin/category" element={<AddCategory />} />
+          <Route path="/addByAdmin/remark" element={<AddRemarkLengthFixed />} />
+          <Route path="/addByAdmin/target" element={<AddTarget />} />
+          <Route path="/addByAdmin/whatsapp" element={<AddWhatsappMessage />} />
+          <Route path="/addByAdmin/nature" element={<AddNatureOfBusiness />} />
+          <Route path="/addByAdmin/dataSource" element={<AddDataSource />} />
+          <Route path="/addByAdmin/status" element={<AddStatus />} />
+          <Route path="/addByAdmin/bank" element={<AddBank />} />
 
           {/* Invoice / Utility */}
 
