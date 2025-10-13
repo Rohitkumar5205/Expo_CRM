@@ -1,46 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-/* ---------------------------
-   Helper components & utils
-   --------------------------- */
-
-/** A small reusable Modal component */
-const Modal = ({
-  open,
-  title,
-  children,
-  onClose,
-  onConfirm,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
-}) => {
-  if (!open) return null;
-  return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalBox}>
-        <div style={styles.modalHeader}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-        </div>
-        <div style={styles.modalBody}>{children}</div>
-        <div style={styles.modalFooter}>
-          <button
-            style={{ ...styles.modalBtn, ...styles.cancelBtn }}
-            onClick={onClose}
-          >
-            {cancelText}
-          </button>
-          <button
-            style={{ ...styles.modalBtn, ...styles.confirmBtn }}
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useSelector, useDispatch } from "react-redux";
+import {
+  createStatusOption,
+  fetchStatusOptions,
+  updateStatusOption,
+  deleteStatusOption,
+} from "../../features/add_by_admin/statusOption/statusOptionSlice";
+import { showError, showSuccess } from "../../utils/toastMessage";
 
 /** Simple Pagination component */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -113,60 +80,34 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-/* ---------------------------
-   Main Status Component
-   --------------------------- */
-
-const LOCAL_STORAGE_KEY = "app_statuses_v1";
-
 const AddStatus = () => {
+  const dispatch = useDispatch();
   const [editingStatus, setEditingStatus] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     status: "Active",
   });
-  const [statuses, setStatuses] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.warn("Failed to parse statuses from localStorage", e);
-    }
-    return [
-      { id: 1, name: "New Lead", status: "Active" },
-      { id: 2, name: "Follow-up", status: "Active" },
-      { id: 3, name: "Contacted", status: "Active" },
-      { id: 4, name: "Qualified", status: "Active" },
-      { id: 5, name: "Proposal Sent", status: "Active" },
-      { id: 6, name: "Negotiation", status: "Active" },
-      { id: 7, name: "Closed Won", status: "Active" },
-      { id: 8, name: "Closed Lost", status: "Inactive" },
-      { id: 9, name: "Pending", status: "Active" },
-      { id: 10, name: "On Hold", status: "Inactive" },
-    ];
-  });
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState({ key: "id", dir: "asc" });
+  const [sortBy, setSortBy] = useState({ key: "name", dir: "asc" });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [statusToDelete, setStatusToDelete] = useState(null);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(statuses));
-    } catch (e) {
-      console.warn("Failed to save statuses to localStorage", e);
-    }
-  }, [statuses]);
+  // Status Options redux
+  const {
+    statusOptions,
+    loading: isLoading,
+    error,
+  } = useSelector((state) => state.statusOptions) || {};
 
-  const showMessage = (text, ms = 2000) => {
-    setMessage(text);
-    window.setTimeout(() => setMessage(null), ms);
-  };
+  console.log("add status option data", statusOptions);
+
+  useEffect(() => {
+    dispatch(fetchStatusOptions());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -181,94 +122,98 @@ const AddStatus = () => {
     setEditingStatus(null);
   };
 
-  const handleAddStatus = () => {
+  const handleAddStatus = async () => {
     if (!formData.name || !formData.name.trim()) {
-      showMessage("Please enter status name!");
+      showError("Please enter a status name!");
       return;
     }
 
     const trimmedName = formData.name.trim();
-    const duplicate = statuses.find(
-      (s) =>
-        s.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
-        (!editingStatus || s.id !== editingStatus.id)
+    const duplicate = (Array.isArray(statusOptions) ? statusOptions : []).find(
+      (item) =>
+        (item?.name || "").trim().toLowerCase() === trimmedName.toLowerCase() &&
+        (!editingStatus || item._id !== editingStatus._id)
     );
     if (duplicate) {
-      showMessage("A status with that name already exists!");
+      showError("A status with that name already exists!");
       return;
     }
 
-    if (editingStatus) {
-      setStatuses((prev) =>
-        prev.map((stat) =>
-          stat.id === editingStatus.id
-            ? { ...stat, name: trimmedName, status: formData.status }
-            : stat
-        )
-      );
-      showMessage("Status updated successfully!");
+    const statusData = {
+      name: trimmedName,
+      status: formData.status.toLowerCase(),
+    };
+
+    try {
+      if (editingStatus) {
+        await dispatch(
+          updateStatusOption({ id: editingStatus._id, data: statusData })
+        ).unwrap();
+        showSuccess("Status updated successfully!");
+      } else {
+        await dispatch(createStatusOption(statusData)).unwrap();
+        showSuccess("Status added successfully!");
+      }
       resetForm();
-    } else {
-      const newId =
-        statuses.length > 0 ? Math.max(...statuses.map((s) => s.id)) + 1 : 1;
-      const newStatus = {
-        id: newId,
-        name: trimmedName,
-        status: formData.status,
-      };
-      setStatuses((prev) => [...prev, newStatus]);
-      showMessage("Status added successfully!");
-      resetForm();
+      dispatch(fetchStatusOptions());
+    } catch (err) {
+      const action = editingStatus ? "update" : "create";
+      showError(`Failed to ${action} status. Please try again.`);
+      console.error(`Failed to ${action} status:`, err);
     }
   };
 
   const handleEdit = (statusId) => {
-    const statusToEdit = statuses.find((stat) => stat.id === statusId);
+    const statusToEdit = statusOptions.find((item) => item?._id === statusId);
     if (statusToEdit) {
       setFormData({
         name: statusToEdit.name,
-        status: statusToEdit.status,
+        status: statusToEdit.status
+          ? statusToEdit.status.charAt(0).toUpperCase() +
+            statusToEdit.status.slice(1)
+          : "Active",
       });
       setEditingStatus(statusToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const openDeleteModal = (statusId) => {
-    const status = statuses.find((s) => s.id === statusId);
-    setStatusToDelete(status);
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setStatusToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!statusToDelete) {
-      closeDeleteModal();
-      return;
+  const handleDelete = async (statusId) => {
+    const statusToDelete = statusOptions.find((item) => item?._id === statusId);
+    if (!statusToDelete) return;
+    {
+      try {
+        await dispatch(deleteStatusOption(statusId)).unwrap();
+        showSuccess("Status deleted successfully!");
+        dispatch(fetchStatusOptions());
+      } catch (err) {
+        showError("Failed to delete status. Please try again.", 3000);
+        console.error("Failed to delete status:", err);
+      }
     }
-    setStatuses((prev) => prev.filter((s) => s.id !== statusToDelete.id));
-    showMessage("Status deleted successfully!");
-    closeDeleteModal();
   };
 
-  const filteredAndSortedStatuses = useMemo(() => {
-    let list = [...statuses];
+  const filteredAndSortedStatusOptions = useMemo(() => {
+    let list = Array.isArray(statusOptions)
+      ? statusOptions.filter(Boolean)
+      : [];
     if (searchText && searchText.trim()) {
       const s = searchText.trim().toLowerCase();
-      list = list.filter((s) => s.name.toLowerCase().includes(s));
+      list = list.filter((item) =>
+        (item?.name || "").toLowerCase().includes(s)
+      );
     }
     if (statusFilter === "Active" || statusFilter === "Inactive") {
-      list = list.filter((s) => s.status === statusFilter);
+      list = list.filter(
+        (item) =>
+          (item?.status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
     }
     const { key, dir } = sortBy;
     list.sort((a, b) => {
       let av = a[key];
       let bv = b[key];
-      if (key === "id") {
+      if (key === "status_id") {
         av = Number(av);
         bv = Number(bv);
       } else {
@@ -280,11 +225,11 @@ const AddStatus = () => {
       return 0;
     });
     return list;
-  }, [statuses, searchText, statusFilter, sortBy]);
+  }, [statusOptions, searchText, statusFilter, sortBy]);
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredAndSortedStatuses.length / rowsPerPage)
+    Math.ceil(filteredAndSortedStatusOptions.length / rowsPerPage)
   );
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -292,8 +237,8 @@ const AddStatus = () => {
 
   const currentPageData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredAndSortedStatuses.slice(start, start + rowsPerPage);
-  }, [filteredAndSortedStatuses, currentPage, rowsPerPage]);
+    return filteredAndSortedStatusOptions.slice(start, start + rowsPerPage);
+  }, [filteredAndSortedStatusOptions, currentPage, rowsPerPage]);
 
   const toggleSort = (key) => {
     setSortBy((prev) => {
@@ -303,50 +248,6 @@ const AddStatus = () => {
         return { key, dir: "asc" };
       }
     });
-  };
-
-  const handleExportJson = () => {
-    const json = JSON.stringify(statuses, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `statuses-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImportJson = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const parsed = JSON.parse(evt.target.result);
-        if (!Array.isArray(parsed)) throw new Error("Invalid file format");
-        const valid = parsed.every((p) => p && (p.name || p.id));
-        if (!valid) throw new Error("Invalid status structure");
-        const maxId =
-          statuses.length > 0 ? Math.max(...statuses.map((s) => s.id)) : 0;
-        const normalized = parsed.map((p, idx) => ({
-          id: p.id || maxId + idx + 1,
-          name: (p.name || "").toString(),
-          status: p.status === "Inactive" ? "Inactive" : "Active",
-        }));
-        const existingLower = new Set(
-          statuses.map((x) => x.name.trim().toLowerCase())
-        );
-        const toAdd = normalized.filter(
-          (n) => !existingLower.has(n.name.trim().toLowerCase())
-        );
-        setStatuses((prev) => [...prev, ...toAdd]);
-        showMessage("Import successful!");
-      } catch (err) {
-        alert("Failed to import: " + err.message);
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   };
 
   return (
@@ -361,7 +262,7 @@ const AddStatus = () => {
       >
         <div className="flex items-center justify-between px-6 py-3">
           <h1 className="text-lg font-normal" style={{ color: "#666" }}>
-            STATUS OPTION
+            STATUS
           </h1>
         </div>
       </div>
@@ -388,7 +289,7 @@ const AddStatus = () => {
               className="text-base font-semibold"
               style={{ color: "#555", margin: 0 }}
             >
-              {editingStatus ? "EDIT STATUS OPTION" : "ADD STATUS OPTION"}
+              {editingStatus ? "EDIT STATUS" : "ADD STATUS"}
             </h2>
           </div>
 
@@ -493,37 +394,6 @@ const AddStatus = () => {
                 </div>
               )}
             </div>
-
-            {/* Extras: Export / Import */}
-            <div
-              style={{
-                marginTop: 14,
-                display: "flex",
-                gap: 12,
-                alignItems: "center",
-              }}
-            >
-              <button onClick={handleExportJson} style={styles.smallActionBtn}>
-                Export JSON
-              </button>
-
-              <label
-                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-              >
-                <input
-                  type="file"
-                  accept="application/json"
-                  onChange={handleImportJson}
-                  style={{ display: "none" }}
-                />
-                <span style={styles.smallActionBtn}>Import JSON</span>
-              </label>
-
-              <span style={{ marginLeft: "auto", color: "#888", fontSize: 13 }}>
-                Total status options:{" "}
-                <strong style={{ color: "#333" }}>{statuses.length}</strong>
-              </span>
-            </div>
           </div>
         </div>
 
@@ -591,7 +461,7 @@ const AddStatus = () => {
             >
               <input
                 type="text"
-                placeholder="Search statuses..."
+                placeholder="Search status..."
                 value={searchText}
                 onChange={(e) => {
                   setSearchText(e.target.value);
@@ -641,16 +511,6 @@ const AddStatus = () => {
                       }}
                     >
                       No.
-                      <button
-                        onClick={() => toggleSort("id")}
-                        style={styles.sortBtn}
-                      >
-                        {sortBy.key === "id"
-                          ? sortBy.dir === "asc"
-                            ? "▲"
-                            : "▼"
-                          : "↕"}
-                      </button>
                     </div>
                   </th>
                   <th
@@ -660,7 +520,7 @@ const AddStatus = () => {
                     <div
                       style={{ display: "flex", alignItems: "center", gap: 8 }}
                     >
-                      Status
+                      Name
                       <button
                         onClick={() => toggleSort("name")}
                         style={styles.sortBtn}
@@ -708,6 +568,21 @@ const AddStatus = () => {
               </thead>
 
               <tbody>
+                {isLoading && (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                      }}
+                    >
+                      Loading status options...
+                    </td>
+                  </tr>
+                )}
+
                 {currentPageData.length === 0 ? (
                   <tr>
                     <td
@@ -718,13 +593,13 @@ const AddStatus = () => {
                         color: "#777",
                       }}
                     >
-                      No statuses found.
+                      No status options found.
                     </td>
                   </tr>
                 ) : (
-                  currentPageData.map((status, index) => (
+                  currentPageData.map((statusItem, index) => (
                     <tr
-                      key={status.id}
+                      key={statusItem._id}
                       style={{
                         borderBottom: "1px solid #ddd",
                         backgroundColor:
@@ -735,29 +610,32 @@ const AddStatus = () => {
                         className="px-4 py-3 text-sm text-center"
                         style={{ color: "#333", width: 80 }}
                       >
-                        {status.id}
+                        {(currentPage - 1) * rowsPerPage + index + 1}
                       </td>
 
                       <td
                         className="px-4 py-3 text-sm"
                         style={{ color: "#333" }}
                       >
-                        {status.name}
+                        {statusItem?.name || ""}
                       </td>
 
                       <td className="px-4 py-3 text-center">
-                        <span
-                          className="inline-block px-3 py-1 text-xs text-white"
-                          style={{
-                            backgroundColor:
-                              status.status === "Active"
-                                ? "#337ab7"
-                                : "#d9534f",
-                            borderRadius: 3,
-                          }}
-                        >
-                          {status.status}
-                        </span>
+                        {statusItem?.status ? (
+                          <span
+                            className="inline-block px-3 py-1 text-xs text-white"
+                            style={{
+                              backgroundColor:
+                                statusItem.status.toLowerCase() === "active"
+                                  ? "#337ab7"
+                                  : "#d9534f",
+                              borderRadius: 3,
+                            }}
+                          >
+                            {statusItem.status.charAt(0).toUpperCase() +
+                              statusItem.status.slice(1)}
+                          </span>
+                        ) : null}
                       </td>
 
                       <td className="px-4 py-3" style={{ textAlign: "center" }}>
@@ -769,7 +647,7 @@ const AddStatus = () => {
                           }}
                         >
                           <button
-                            onClick={() => handleEdit(status.id)}
+                            onClick={() => handleEdit(statusItem._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#337ab7",
@@ -781,7 +659,7 @@ const AddStatus = () => {
                           </button>
 
                           <button
-                            onClick={() => openDeleteModal(status.id)}
+                            onClick={() => handleDelete(statusItem._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#d9534f",
@@ -812,7 +690,7 @@ const AddStatus = () => {
             <div style={{ color: "#666", fontSize: 13 }}>
               Showing{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedStatuses.length === 0
+                {filteredAndSortedStatusOptions.length === 0
                   ? 0
                   : (currentPage - 1) * rowsPerPage + 1}
               </strong>{" "}
@@ -820,12 +698,12 @@ const AddStatus = () => {
               <strong style={{ color: "#333" }}>
                 {Math.min(
                   currentPage * rowsPerPage,
-                  filteredAndSortedStatuses.length
+                  filteredAndSortedStatusOptions.length
                 )}
               </strong>{" "}
               of{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedStatuses.length}
+                {filteredAndSortedStatusOptions.length}
               </strong>{" "}
               entries
             </div>
@@ -837,30 +715,10 @@ const AddStatus = () => {
             />
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          open={isDeleteModalOpen}
-          title="Confirm Delete"
-          onClose={closeDeleteModal}
-          onConfirm={handleConfirmDelete}
-          confirmText="Delete"
-          cancelText="Cancel"
-        >
-          <div>
-            Are you sure you want to delete the status option{" "}
-            <strong>{statusToDelete ? statusToDelete.name : ""}</strong>? This
-            action cannot be undone.
-          </div>
-        </Modal>
       </div>
     </div>
   );
 };
-
-/* ---------------------------
-   Inline styles (kept organized)
-   --------------------------- */
 
 const styles = {
   input: {
@@ -951,56 +809,6 @@ const styles = {
   pageGap: {
     padding: "0 6px",
     color: "#999",
-  },
-
-  // modal
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  modalBox: {
-    width: 520,
-    background: "#fff",
-    borderRadius: 6,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: "12px 16px",
-    borderBottom: "1px solid #eee",
-  },
-  modalBody: {
-    padding: 16,
-    color: "#333",
-  },
-  modalFooter: {
-    padding: 12,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-    borderTop: "1px solid #eee",
-  },
-  modalBtn: {
-    padding: "8px 12px",
-    borderRadius: 4,
-    cursor: "pointer",
-    border: "none",
-  },
-  cancelBtn: {
-    backgroundColor: "#f1f1f1",
-    color: "#333",
-  },
-  confirmBtn: {
-    backgroundColor: "#d9534f",
-    color: "white",
   },
 };
 

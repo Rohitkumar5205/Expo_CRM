@@ -1,46 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-/* ---------------------------
-  Helper components & utils
-  --------------------------- */
-
-/** A small reusable Modal component */
-const Modal = ({
-  open,
-  title,
-  children,
-  onClose,
-  onConfirm,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
-}) => {
-  if (!open) return null;
-  return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalBox}>
-        <div style={styles.modalHeader}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-        </div>
-        <div style={styles.modalBody}>{children}</div>
-        <div style={styles.modalFooter}>
-          <button
-            style={{ ...styles.modalBtn, ...styles.cancelBtn }}
-            onClick={onClose}
-          >
-            {cancelText}
-          </button>
-          <button
-            style={{ ...styles.modalBtn, ...styles.confirmBtn }}
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchNatures,
+  createNature,
+  updateNature,
+  deleteNature,
+} from "../../features/add_by_admin/nature/natureSlice";
+import { showError, showSuccess } from "../../utils/toastMessage";
 
 /** Simple Pagination component */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -113,71 +80,33 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-/* ---------------------------
-  Main Nature Component
-  --------------------------- */
-
-const LOCAL_STORAGE_KEY = "app_nature_of_business_v1";
-
 const AddNatureOfBusiness = () => {
+  const dispatch = useDispatch();
   const [editingNature, setEditingNature] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     status: "Active",
   });
-  const [natureOfBusinesses, setNatureOfBusinesses] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.warn("Failed to parse nature of business from localStorage", e);
-    }
-    return [
-      { id: 1, name: "Agency", status: "Active" },
-      { id: 2, name: "Aggregator", status: "Active" },
-      { id: 3, name: "Digital Media", status: "Active" },
-      { id: 4, name: "Electronic Media", status: "Active" },
-      { id: 5, name: "Print Media", status: "Active" },
-      { id: 6, name: "Research Organisation", status: "Active" },
-      { id: 7, name: "Government Body", status: "Active" },
-      { id: 8, name: "N G O", status: "Active" },
-      { id: 9, name: "Institution", status: "Active" },
-      { id: 10, name: "University", status: "Active" },
-      { id: 11, name: "College", status: "Active" },
-      { id: 12, name: "Association", status: "Active" },
-      { id: 13, name: "Service Provider", status: "Active" },
-      { id: 14, name: "Dealer", status: "Active" },
-      { id: 15, name: "Raw Material Suppplier", status: "Active" },
-      { id: 16, name: "Manufacturer", status: "Active" },
-      { id: 17, name: "Retailer", status: "Active" },
-      { id: 18, name: "Distributor", status: "Active" },
-    ];
-  });
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState({ key: "id", dir: "asc" });
+  const [sortBy, setSortBy] = useState({ key: "nature_id", dir: "asc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [natureToDelete, setNatureToDelete] = useState(null);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify(natureOfBusinesses)
-      );
-    } catch (e) {
-      console.warn("Failed to save nature of business to localStorage", e);
-    }
-  }, [natureOfBusinesses]);
+  // Natures of Business redux
+  const {
+    natures,
+    loading: isLoading,
+    error,
+  } = useSelector((state) => state.natures);
 
-  const showMessage = (text, ms = 2000) => {
-    setMessage(text);
-    window.setTimeout(() => setMessage(null), ms);
-  };
+  console.log("add nature of business data", natures);
+
+  useEffect(() => {
+    dispatch(fetchNatures());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -192,98 +121,107 @@ const AddNatureOfBusiness = () => {
     setEditingNature(null);
   };
 
-  const handleAddNature = () => {
+  const handleAddNature = async () => {
     if (!formData.name || !formData.name.trim()) {
-      showMessage("Please enter a name!");
+      showError("Please enter a name for the nature of business!");
       return;
     }
 
     const trimmedName = formData.name.trim();
-    const duplicate = natureOfBusinesses.find(
-      (c) =>
-        c.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
-        (!editingNature || c.id !== editingNature.id)
+    const duplicate = (Array.isArray(natures) ? natures : []).find(
+      (n) =>
+        (n?.nature_name || "").trim().toLowerCase() ===
+          trimmedName.toLowerCase() &&
+        (!editingNature || n._id !== editingNature._id)
     );
     if (duplicate) {
-      showMessage("A name with that name already exists!");
+      showError("A nature of business with that name already exists!");
       return;
     }
 
-    if (editingNature) {
-      setNatureOfBusinesses((prev) =>
-        prev.map((nat) =>
-          nat.id === editingNature.id
-            ? { ...nat, name: trimmedName, status: formData.status }
-            : nat
-        )
-      );
-      showMessage("Nature of business updated successfully!");
+    const newNatureId =
+      natures && natures.length > 0
+        ? Math.max(...natures.map((n) => n.nature_id || 0)) + 1
+        : 1;
+
+    const natureData = {
+      nature_id: newNatureId,
+      nature_name: trimmedName,
+      nature_status: formData.status.toLowerCase(),
+      added: new Date().toISOString(),
+    };
+
+    try {
+      if (editingNature) {
+        await dispatch(
+          updateNature({ id: editingNature._id, updates: natureData })
+        ).unwrap();
+        showSuccess("Nature of Business updated successfully!");
+      } else {
+        await dispatch(createNature(natureData)).unwrap();
+        showSuccess("Nature of Business added successfully!");
+      }
       resetForm();
-    } else {
-      const newId =
-        natureOfBusinesses.length > 0
-          ? Math.max(...natureOfBusinesses.map((c) => c.id)) + 1
-          : 1;
-      const newNature = {
-        id: newId,
-        name: trimmedName,
-        status: formData.status,
-      };
-      setNatureOfBusinesses((prev) => [...prev, newNature]);
-      showMessage("Nature of business added successfully!");
-      resetForm();
+      dispatch(fetchNatures());
+    } catch (err) {
+      const action = editingNature ? "update" : "create";
+      showError(`Failed to ${action} Nature of Business. Please try again.`);
+      console.error(`Failed to ${action} Nature of Business:`, err);
     }
   };
 
   const handleEdit = (natureId) => {
-    const natureToEdit = natureOfBusinesses.find((nat) => nat.id === natureId);
+    const natureToEdit = natures.find((nat) => nat?._id === natureId);
     if (natureToEdit) {
       setFormData({
-        name: natureToEdit.name,
-        status: natureToEdit.status,
+        name: natureToEdit.nature_name,
+        status: natureToEdit.nature_status
+          ? natureToEdit.nature_status.charAt(0).toUpperCase() +
+            natureToEdit.nature_status.slice(1)
+          : "Active",
       });
       setEditingNature(natureToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const openDeleteModal = (natureId) => {
-    const nature = natureOfBusinesses.find((c) => c.id === natureId);
-    setNatureToDelete(nature);
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setNatureToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!natureToDelete) {
-      closeDeleteModal();
-      return;
+  const handleDelete = async (natureId) => {
+    const natureToDelete = natures.find((n) => n?._id === natureId);
+    if (!natureToDelete) return;
+    {
+      try {
+        await dispatch(deleteNature(natureId)).unwrap();
+        showSuccess("Nature of Business deleted successfully!");
+        dispatch(fetchNatures());
+      } catch (err) {
+        showError(
+          "Failed to delete Nature of Business. Please try again.",
+          3000
+        );
+        console.error("Failed to delete Nature of Business:", err);
+      }
     }
-    setNatureOfBusinesses((prev) =>
-      prev.filter((c) => c.id !== natureToDelete.id)
-    );
-    showMessage("Nature of business deleted successfully!");
-    closeDeleteModal();
   };
 
-  const filteredAndSortedNatureOfBusinesses = useMemo(() => {
-    let list = [...natureOfBusinesses];
+  const filteredAndSortedNatures = useMemo(() => {
+    let list = Array.isArray(natures) ? natures.filter(Boolean) : [];
     if (searchText && searchText.trim()) {
       const s = searchText.trim().toLowerCase();
-      list = list.filter((c) => c.name.toLowerCase().includes(s));
+      list = list.filter((n) =>
+        (n?.nature_name || "").toLowerCase().includes(s)
+      );
     }
     if (statusFilter === "Active" || statusFilter === "Inactive") {
-      list = list.filter((c) => c.status === statusFilter);
+      list = list.filter(
+        (n) =>
+          (n?.nature_status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
     }
     const { key, dir } = sortBy;
     list.sort((a, b) => {
       let av = a[key];
       let bv = b[key];
-      if (key === "id") {
+      if (key === "nature_id") {
         av = Number(av);
         bv = Number(bv);
       } else {
@@ -295,11 +233,11 @@ const AddNatureOfBusiness = () => {
       return 0;
     });
     return list;
-  }, [natureOfBusinesses, searchText, statusFilter, sortBy]);
+  }, [natures, searchText, statusFilter, sortBy]);
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredAndSortedNatureOfBusinesses.length / rowsPerPage)
+    Math.ceil(filteredAndSortedNatures.length / rowsPerPage)
   );
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -307,11 +245,8 @@ const AddNatureOfBusiness = () => {
 
   const currentPageData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredAndSortedNatureOfBusinesses.slice(
-      start,
-      start + rowsPerPage
-    );
-  }, [filteredAndSortedNatureOfBusinesses, currentPage, rowsPerPage]);
+    return filteredAndSortedNatures.slice(start, start + rowsPerPage);
+  }, [filteredAndSortedNatures, currentPage, rowsPerPage]);
 
   const toggleSort = (key) => {
     setSortBy((prev) => {
@@ -334,8 +269,11 @@ const AddNatureOfBusiness = () => {
         style={{ borderBottom: "1px solid #e0e0e0" }}
       >
         <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal" style={{ color: "#666" }}>
-            NATURE OF BUSINESS
+          <h1
+            className="text-lg font-normal uppercase"
+            style={{ color: "#666" }}
+          >
+            Nature of Business
           </h1>
         </div>
       </div>
@@ -349,7 +287,7 @@ const AddNatureOfBusiness = () => {
           </div>
         )}
 
-        {/* Add/Edit Section */}
+        {/* Add/Edit Nature of Business Section */}
         <div className="bg-white mb-5" style={{ border: "1px solid #ddd" }}>
           <div
             className="px-5 py-3"
@@ -359,7 +297,7 @@ const AddNatureOfBusiness = () => {
             }}
           >
             <h2
-              className="text-base font-semibold"
+              className="text-base font-semibold uppercase"
               style={{ color: "#555", margin: 0 }}
             >
               {editingNature
@@ -474,22 +412,6 @@ const AddNatureOfBusiness = () => {
 
         {/* List Section */}
         <div className="bg-white" style={{ border: "1px solid #ddd" }}>
-          {/* Header */}
-          <div
-            className="px-5 py-3"
-            style={{
-              backgroundColor: "#f9f9f9",
-              borderBottom: "1px solid #ddd",
-            }}
-          >
-            <h2
-              className="text-base font-semibold"
-              style={{ color: "#555", margin: 0 }}
-            >
-              NATURE OF BUSINESS LIST
-            </h2>
-          </div>
-
           {/* Filter / Search / Sort Row */}
           <div
             className="px-5 py-3"
@@ -603,10 +525,10 @@ const AddNatureOfBusiness = () => {
                     >
                       No.
                       <button
-                        onClick={() => toggleSort("id")}
+                        onClick={() => toggleSort("nature_id")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "id"
+                        {sortBy.key === "nature_id"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -623,10 +545,10 @@ const AddNatureOfBusiness = () => {
                     >
                       Name
                       <button
-                        onClick={() => toggleSort("name")}
+                        onClick={() => toggleSort("nature_name")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "name"
+                        {sortBy.key === "nature_name"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -648,10 +570,10 @@ const AddNatureOfBusiness = () => {
                     >
                       Status
                       <button
-                        onClick={() => toggleSort("status")}
+                        onClick={() => toggleSort("nature_status")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "status"
+                        {sortBy.key === "nature_status"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -669,6 +591,21 @@ const AddNatureOfBusiness = () => {
               </thead>
 
               <tbody>
+                {isLoading && (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                      }}
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+                )}
+
                 {currentPageData.length === 0 ? (
                   <tr>
                     <td
@@ -685,7 +622,7 @@ const AddNatureOfBusiness = () => {
                 ) : (
                   currentPageData.map((nature, index) => (
                     <tr
-                      key={nature.id}
+                      key={nature._id}
                       style={{
                         borderBottom: "1px solid #ddd",
                         backgroundColor:
@@ -696,29 +633,32 @@ const AddNatureOfBusiness = () => {
                         className="px-4 py-3 text-sm text-center"
                         style={{ color: "#333", width: 80 }}
                       >
-                        {nature.id}
+                        {(currentPage - 1) * rowsPerPage + index + 1}
                       </td>
 
                       <td
                         className="px-4 py-3 text-sm"
                         style={{ color: "#333" }}
                       >
-                        {nature.name}
+                        {nature?.nature_name || ""}
                       </td>
 
                       <td className="px-4 py-3 text-center">
-                        <span
-                          className="inline-block px-3 py-1 text-xs text-white"
-                          style={{
-                            backgroundColor:
-                              nature.status === "Active"
-                                ? "#337ab7"
-                                : "#d9534f",
-                            borderRadius: 3,
-                          }}
-                        >
-                          {nature.status}
-                        </span>
+                        {nature?.nature_status ? (
+                          <span
+                            className="inline-block px-3 py-1 text-xs text-white"
+                            style={{
+                              backgroundColor:
+                                nature.nature_status.toLowerCase() === "active"
+                                  ? "#337ab7"
+                                  : "#d9534f",
+                              borderRadius: 3,
+                            }}
+                          >
+                            {nature.nature_status.charAt(0).toUpperCase() +
+                              nature.nature_status.slice(1)}
+                          </span>
+                        ) : null}
                       </td>
 
                       <td className="px-4 py-3" style={{ textAlign: "center" }}>
@@ -730,7 +670,7 @@ const AddNatureOfBusiness = () => {
                           }}
                         >
                           <button
-                            onClick={() => handleEdit(nature.id)}
+                            onClick={() => handleEdit(nature._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#337ab7",
@@ -742,7 +682,7 @@ const AddNatureOfBusiness = () => {
                           </button>
 
                           <button
-                            onClick={() => openDeleteModal(nature.id)}
+                            onClick={() => handleDelete(nature._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#d9534f",
@@ -773,7 +713,7 @@ const AddNatureOfBusiness = () => {
             <div style={{ color: "#666", fontSize: 13 }}>
               Showing{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedNatureOfBusinesses.length === 0
+                {filteredAndSortedNatures.length === 0
                   ? 0
                   : (currentPage - 1) * rowsPerPage + 1}
               </strong>{" "}
@@ -781,12 +721,12 @@ const AddNatureOfBusiness = () => {
               <strong style={{ color: "#333" }}>
                 {Math.min(
                   currentPage * rowsPerPage,
-                  filteredAndSortedNatureOfBusinesses.length
+                  filteredAndSortedNatures.length
                 )}
               </strong>{" "}
               of{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedNatureOfBusinesses.length}
+                {filteredAndSortedNatures.length}
               </strong>{" "}
               entries
             </div>
@@ -798,30 +738,10 @@ const AddNatureOfBusiness = () => {
             />
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          open={isDeleteModalOpen}
-          title="Confirm Delete"
-          onClose={closeDeleteModal}
-          onConfirm={handleConfirmDelete}
-          confirmText="Delete"
-          cancelText="Cancel"
-        >
-          <div>
-            Are you sure you want to delete the nature of business{" "}
-            <strong>{natureToDelete ? natureToDelete.name : ""}</strong>? This
-            action cannot be undone.
-          </div>
-        </Modal>
       </div>
     </div>
   );
 };
-
-/* ---------------------------
-  Inline styles (kept organized)
-  --------------------------- */
 
 const styles = {
   input: {
@@ -912,56 +832,6 @@ const styles = {
   pageGap: {
     padding: "0 6px",
     color: "#999",
-  },
-
-  // modal
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  modalBox: {
-    width: 520,
-    background: "#fff",
-    borderRadius: 6,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: "12px 16px",
-    borderBottom: "1px solid #eee",
-  },
-  modalBody: {
-    padding: 16,
-    color: "#333",
-  },
-  modalFooter: {
-    padding: 12,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-    borderTop: "1px solid #eee",
-  },
-  modalBtn: {
-    padding: "8px 12px",
-    borderRadius: 4,
-    cursor: "pointer",
-    border: "none",
-  },
-  cancelBtn: {
-    backgroundColor: "#f1f1f1",
-    color: "#333",
-  },
-  confirmBtn: {
-    backgroundColor: "#d9534f",
-    color: "white",
   },
 };
 

@@ -69,8 +69,10 @@ export const deleteNature = createAsyncThunk(
   "natures/deleteNature",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/nature-of-business/${id}`);
-      return id; // return deleted id for state update
+      const response = await axios.delete(
+        `${BASE_URL}/nature-of-business/${id}`
+      );
+      return response.data; // backend might return an object
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -147,7 +149,9 @@ const natureSlice = createSlice({
       })
       .addCase(deleteNature.fulfilled, (state, action) => {
         state.loading = false;
-        state.natures = state.natures.filter((n) => n._id !== action.payload);
+        const deletedId =
+          action.payload?._id || action.payload?.deletedId || action.payload;
+        state.natures = state.natures.filter((c) => c._id !== deletedId);
       })
       .addCase(deleteNature.rejected, (state, action) => {
         state.loading = false;

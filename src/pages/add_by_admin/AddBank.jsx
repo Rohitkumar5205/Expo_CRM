@@ -1,32 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-/* ---------------------------
-   Helper components & utils
-   --------------------------- */
-
-/** A small reusable Modal component */
-const Modal = ({ open, title, children, onClose, onConfirm, confirmText = "Confirm", cancelText = "Cancel" }) => {
-  if (!open) return null;
-  return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalBox}>
-        <div style={styles.modalHeader}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-        </div>
-        <div style={styles.modalBody}>{children}</div>
-        <div style={styles.modalFooter}>
-          <button style={{ ...styles.modalBtn, ...styles.cancelBtn }} onClick={onClose}>
-            {cancelText}
-          </button>
-          <button style={{ ...styles.modalBtn, ...styles.confirmBtn }} onClick={onConfirm}>
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchBanks,
+  addBank,
+  updateBank,
+  deleteBank,
+} from "../../features/add_by_admin/banks/bankSlice";
+import { showError, showSuccess } from "../../utils/toastMessage";
 
 /** Simple Pagination component */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -40,14 +21,20 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        style={{ ...styles.pageBtn, ...(currentPage === 1 ? styles.disabledBtn : {}) }}
+        style={{
+          ...styles.pageBtn,
+          ...(currentPage === 1 ? styles.disabledBtn : {}),
+        }}
       >
         {"<<"}
       </button>
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        style={{ ...styles.pageBtn, ...(currentPage === 1 ? styles.disabledBtn : {}) }}
+        style={{
+          ...styles.pageBtn,
+          ...(currentPage === 1 ? styles.disabledBtn : {}),
+        }}
       >
         {"<"}
       </button>
@@ -72,14 +59,20 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        style={{ ...styles.pageBtn, ...(currentPage === totalPages ? styles.disabledBtn : {}) }}
+        style={{
+          ...styles.pageBtn,
+          ...(currentPage === totalPages ? styles.disabledBtn : {}),
+        }}
       >
         {">"}
       </button>
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        style={{ ...styles.pageBtn, ...(currentPage === totalPages ? styles.disabledBtn : {}) }}
+        style={{
+          ...styles.pageBtn,
+          ...(currentPage === totalPages ? styles.disabledBtn : {}),
+        }}
       >
         {">>"}
       </button>
@@ -87,73 +80,35 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-/* ---------------------------
-   Main AddBank Component
-   --------------------------- */
-
-const LOCAL_STORAGE_KEY = "add_bank_list_v1";
-
 const AddBank = () => {
+  const dispatch = useDispatch();
+
   const [editingBank, setEditingBank] = useState(null);
   const [formData, setFormData] = useState({
-    bankName: "",
-    bankBranch: "",
-    accountNo: "",
-    ifscCode: "",
-    status: "",
-  });
-  const [bankList, setBankList] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.warn("Failed to parse bank list from localStorage", e);
-    }
-    return [
-      {
-        id: 1,
-        bankName: "Punjab National Bank",
-        bankBranch: "Vikas Marg, Preet Vihar",
-        accountNo: "12005015000779",
-        ifscCode: "PUNB0139900",
-        status: "Active",
-        updated: "03 Oct 25",
-        updatedBy: "Admin",
-      },
-      {
-        id: 2,
-        bankName: "Kotak Mahindra Bank",
-        bankBranch: "Jagriti Nagar, Anand Vihar",
-        accountNo: "1611490044",
-        ifscCode: "KKBK0004584",
-        status: "Active",
-        updated: "30 Sep 23",
-        updatedBy: "Mohit Tyagi",
-      },
-    ];
+    bankname: "",
+    bankbranch: "",
+    accountno: "",
+    ifsccode: "",
+    status: "Active",
   });
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState({ key: "id", dir: "asc" });
+  const [sortBy, setSortBy] = useState({ key: "bankname", dir: "asc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [bankToDelete, setBankToDelete] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  const {
+    banks,
+    loading: isLoading,
+    error,
+  } = useSelector((state) => state.banks) || {};
+  console.log("add banks data", banks);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(bankList));
-    } catch (e) {
-      console.warn("Failed to save bank list to localStorage", e);
-    }
-  }, [bankList]);
-
-  const showMessage = (text, ms = 2000) => {
-    setMessage(text);
-    window.setTimeout(() => setMessage(null), ms);
-  };
+    dispatch(fetchBanks());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -161,110 +116,114 @@ const AddBank = () => {
       ...prevData,
       [name]: value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
   const resetForm = () => {
     setFormData({
-      bankName: "",
-      bankBranch: "",
-      accountNo: "",
-      ifscCode: "",
+      bankname: "",
+      bankbranch: "",
+      accountno: "",
+      ifsccode: "",
       status: "Active",
     });
     setEditingBank(null);
   };
 
-  const handleAddOrUpdateBank = () => {
-    if (!formData.bankName || !formData.bankBranch || !formData.accountNo || !formData.ifscCode || !formData.status) {
-      showMessage("All fields marked with * are required!");
+  const handleAddOrUpdateBank = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    const validationErrors = {};
+    if (!formData.bankname.trim())
+      validationErrors.bankname = "Bank Name is required.";
+    if (!formData.bankbranch.trim())
+      validationErrors.bankbranch = "Bank Branch is required.";
+    if (!formData.accountno.trim()) {
+      validationErrors.accountno = "Account No. is required.";
+    } else if (!/^\d+$/.test(formData.accountno)) {
+      validationErrors.accountno = "Account No. must contain only digits.";
+    }
+    if (!formData.ifsccode.trim()) {
+      validationErrors.ifsccode = "IFSC Code is required.";
+    }
+    /* ** Removed the following block as requested: 
+    {
+      validationErrors.ifsccode =
+        "Invalid IFSC Code format (e.g., SBIN0123456).";
+    }
+    */
+    if (!formData.status) validationErrors.status = "Status is required.";
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      showError("Please correct the errors before submitting.");
       return;
     }
-
-    const trimmedAccountNo = formData.accountNo.trim();
-    const duplicate = bankList.find(
+    setErrors({});
+    const trimmedAccountNo = formData.accountno.trim();
+    const duplicate = (Array.isArray(banks) ? banks : []).find(
       (bank) =>
-        bank.accountNo.trim().toLowerCase() === trimmedAccountNo.toLowerCase() &&
-        (!editingBank || bank.id !== editingBank.id)
+        (bank.accountno || "").trim() === trimmedAccountNo &&
+        (!editingBank || bank._id !== editingBank._id)
     );
     if (duplicate) {
-      showMessage("A bank with that account number already exists!");
+      showError("A bank with that account number already exists!");
       return;
     }
 
-    const now = new Date();
-    const updatedDate = `${now.getDate().toString().padStart(2, '0')} ${now.toLocaleString('default', { month: 'short' })} ${now.getFullYear().toString().slice(-2)}`;
-    const updatedBy = "Admin"; // You can replace this with a real user name
-
-    if (editingBank) {
-      setBankList((prev) =>
-        prev.map((item) =>
-          item.id === editingBank.id
-            ? { ...item, ...formData, updated: updatedDate, updatedBy }
-            : item
-        )
-      );
-      showMessage("Bank details updated successfully!");
+    try {
+      if (editingBank) {
+        await dispatch(
+          updateBank({ id: editingBank._id, updatedData: formData })
+        ).unwrap();
+        showSuccess("Bank details updated successfully!");
+      } else {
+        await dispatch(addBank(formData)).unwrap();
+        showSuccess("Bank added successfully!");
+      }
       resetForm();
-    } else {
-      const newId = bankList.length > 0 ? Math.max(...bankList.map((c) => c.id)) + 1 : 1;
-      const newItem = {
-        id: newId,
-        ...formData,
-        updated: updatedDate,
-        updatedBy,
-      };
-      setBankList((prev) => [...prev, newItem]);
-      showMessage("Bank added successfully!");
+      dispatch(fetchBanks());
+    } catch (err) {
+      const action = editingBank ? "update" : "create";
+      showError(`Failed to ${action} bank. Please try again.`);
+      console.error(`Failed to ${action} bank:`, err);
       resetForm();
     }
   };
 
   const handleEdit = (itemId) => {
-    const itemToEdit = bankList.find((item) => item.id === itemId);
+    const itemToEdit = banks.find((item) => item._id === itemId);
     if (itemToEdit) {
-      setFormData({
-        bankName: itemToEdit.bankName,
-        bankBranch: itemToEdit.bankBranch,
-        accountNo: itemToEdit.accountNo,
-        ifscCode: itemToEdit.ifscCode,
-        status: itemToEdit.status,
-      });
+      setFormData(itemToEdit);
       setEditingBank(itemToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const openDeleteModal = (itemId) => {
-    const item = bankList.find((c) => c.id === itemId);
-    setBankToDelete(item);
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setBankToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!bankToDelete) {
-      closeDeleteModal();
-      return;
+  const handleDelete = async (bankId) => {
+    {
+      try {
+        await dispatch(deleteBank(bankId)).unwrap();
+        showSuccess("Bank deleted successfully!");
+        dispatch(fetchBanks());
+      } catch (err) {
+        showError("Failed to delete bank. Please try again.");
+        console.error("Failed to delete bank:", err);
+      }
     }
-    setBankList((prev) => prev.filter((c) => c.id !== bankToDelete.id));
-    showMessage("Bank deleted successfully!");
-    closeDeleteModal();
   };
 
   const filteredAndSortedItems = useMemo(() => {
-    let list = [...bankList];
+    let list = Array.isArray(banks) ? banks.filter(Boolean) : [];
     if (searchText && searchText.trim()) {
       const s = searchText.trim().toLowerCase();
       list = list.filter(
         (bank) =>
-          bank.bankName.toLowerCase().includes(s) ||
-          bank.bankBranch.toLowerCase().includes(s) ||
-          bank.accountNo.toLowerCase().includes(s) ||
-          bank.ifscCode.toLowerCase().includes(s)
+          (bank.bankname || "").toLowerCase().includes(s) ||
+          (bank.bankbranch || "").toLowerCase().includes(s) ||
+          (bank.accountno || "").toLowerCase().includes(s) ||
+          (bank.ifsccode || "").toLowerCase().includes(s)
       );
     }
     if (statusFilter === "Active" || statusFilter === "Inactive") {
@@ -274,10 +233,7 @@ const AddBank = () => {
     list.sort((a, b) => {
       let av = a[key];
       let bv = b[key];
-      if (key === "id") {
-        av = Number(av);
-        bv = Number(bv);
-      } else {
+      if (typeof av === "string") {
         av = (av || "").toString().toLowerCase();
         bv = (bv || "").toString().toLowerCase();
       }
@@ -286,9 +242,12 @@ const AddBank = () => {
       return 0;
     });
     return list;
-  }, [bankList, searchText, statusFilter, sortBy]);
+  }, [banks, searchText, statusFilter, sortBy]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredAndSortedItems.length / rowsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredAndSortedItems.length / rowsPerPage)
+  );
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
   }, [totalPages, currentPage]);
@@ -309,96 +268,148 @@ const AddBank = () => {
   };
 
   return (
-    <div className="w-full" style={{ backgroundColor: "#ecf0f5", minHeight: "100vh", padding: "0" }}>
+    <div
+      className="w-full"
+      style={{ backgroundColor: "#ecf0f5", minHeight: "100vh", padding: "0" }}
+    >
       {/* Header Section */}
-      <div className="w-full bg-white" style={{ borderBottom: "1px solid #e0e0e0" }}>
+      <div
+        className="w-full bg-white"
+        style={{ borderBottom: "1px solid #e0e0e0" }}
+      >
         <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal" style={{ color: "#666" }}>ADD BY ADMIN | ADD BANK</h1>
+          <h1 className="text-lg font-normal" style={{ color: "#666" }}>
+            ADD BY ADMIN | ADD BANK
+          </h1>
         </div>
       </div>
 
       {/* Main Content */}
       <div style={{ padding: "20px" }}>
-        {/* Notification message */}
-        {message && (
-          <div style={styles.messageBox}>
-            <span>{message}</span>
-          </div>
-        )}
-
         {/* Add/Edit Section */}
-        <div className="bg-white mb-5" style={{ border: "1px solid #ddd" }}>
-          <div className="px-5 py-3" style={{ backgroundColor: "#f9f9f9", borderBottom: "1px solid #ddd" }}>
-            <h2 className="text-base font-semibold" style={{ color: "#555", margin: 0 }}>
+        <form
+          onSubmit={handleAddOrUpdateBank}
+          className="bg-white mb-5"
+          style={{ border: "1px solid #ddd" }}
+        >
+          {" "}
+          <div
+            className="px-5 py-3"
+            style={{
+              backgroundColor: "#f9f9f9",
+              borderBottom: "1px solid #ddd",
+            }}
+          >
+            <h2
+              className="text-base font-semibold"
+              style={{ color: "#555", margin: 0 }}
+            >
               {editingBank ? "EDIT BANK" : "ADD BANK"}
             </h2>
           </div>
-
           <div className="p-6">
-            <div className="flex items-start gap-4" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1rem" }}>
+            <div
+              className="flex items-start gap-4"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gap: "1rem",
+              }}
+            >
               {/* Bank Name */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label className="block text-sm font-medium" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: "#333" }}
+                >
                   Bank Name <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
-                  name="bankName"
-                  value={formData.bankName}
+                  name="bankname"
+                  value={formData.bankname}
                   onChange={handleChange}
+                  required
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
                 />
+                {errors.bankname && (
+                  <div style={styles.errorText}>{errors.bankname}</div>
+                )}
               </div>
 
               {/* Bank Branch */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label className="block text-sm font-medium" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: "#333" }}
+                >
                   Bank Branch <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
-                  name="bankBranch"
-                  value={formData.bankBranch}
+                  name="bankbranch"
+                  value={formData.bankbranch}
                   onChange={handleChange}
+                  required
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
                 />
+                {errors.bankbranch && (
+                  <div style={styles.errorText}>{errors.bankbranch}</div>
+                )}
               </div>
 
               {/* Account No. */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label className="block text-sm font-medium" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: "#333" }}
+                >
                   Account No. <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
-                  name="accountNo"
-                  value={formData.accountNo}
+                  name="accountno"
+                  value={formData.accountno}
                   onChange={handleChange}
+                  required
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
                 />
+                {errors.accountno && (
+                  <div style={styles.errorText}>{errors.accountno}</div>
+                )}
               </div>
 
               {/* IFSC Code */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label className="block text-sm font-medium" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: "#333" }}
+                >
                   IFSC Code <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
-                  name="ifscCode"
-                  value={formData.ifscCode}
+                  name="ifsccode"
+                  value={formData.ifsccode}
                   onChange={handleChange}
+                  required
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
                 />
+                {errors.ifsccode && (
+                  <div style={styles.errorText}>{errors.ifsccode}</div>
+                )}
               </div>
 
               {/* Status Field */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label className="block text-sm font-medium" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: "#333" }}
+                >
                   Status <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <select
@@ -408,23 +419,28 @@ const AddBank = () => {
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
                 >
-                  <option value="" disabled>Select Here</option>
+                  <option value="" disabled>
+                    Select Here
+                  </option>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
+                {errors.status && (
+                  <div style={styles.errorText}>{errors.status}</div>
+                )}
               </div>
             </div>
             {/* Add / Update Button */}
             <div className="mt-6" style={{ display: "flex", gap: 12 }}>
               <button
-                onClick={handleAddOrUpdateBank}
+                type="submit"
                 className="px-6 py-2 text-sm text-white"
                 style={{
                   backgroundColor: "#337ab7",
                   border: "none",
                   borderRadius: 3,
                   cursor: "pointer",
-                  fontWeight: 600
+                  fontWeight: 600,
                 }}
               >
                 {editingBank ? "Update Bank" : "Save"}
@@ -446,16 +462,34 @@ const AddBank = () => {
               )}
             </div>
           </div>
-        </div>
+        </form>
 
         {/* List Section */}
         <div className="bg-white" style={{ border: "1px solid #ddd" }}>
           {/* Table header with filters and search */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 20px", borderBottom: "1px solid #eee", backgroundColor: "#f9f9f9" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderBottom: "1px solid #eee",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <label
+                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
+              >
                 <span style={{ color: "#333", fontSize: 13 }}>Show</span>
-                <select value={rowsPerPage} onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }} style={styles.smallSelect}>
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  style={styles.smallSelect}
+                >
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
@@ -463,7 +497,19 @@ const AddBank = () => {
                 <span style={{ color: "#333", fontSize: 13 }}>entries</span>
               </label>
 
-              <button style={{ ...styles.smallActionBtn, padding: "8px 12px", backgroundColor: "#f7f7f7", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", fontSize: "13px" }}>Inactive List</button>
+              <button
+                style={{
+                  ...styles.smallActionBtn,
+                  padding: "8px 12px",
+                  backgroundColor: "#f7f7f7",
+                  border: "1px solid #ddd",
+                  borderRadius: "3px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                }}
+              >
+                Inactive List
+              </button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ color: "#333", fontSize: 13 }}>Search:</span>
@@ -471,12 +517,28 @@ const AddBank = () => {
                 type="text"
                 placeholder="Search..."
                 value={searchText}
-                onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={styles.searchInput}
               />
               <button
-                onClick={() => { setSearchText(""); setStatusFilter("All"); setRowsPerPage(10); setSortBy({ key: "id", dir: "asc" }); }}
-                style={{ ...styles.smallActionBtn, padding: "8px 12px", backgroundColor: "#fff", border: "1px solid #ddd", borderRadius: "3px", cursor: "pointer", fontSize: "13px" }}
+                onClick={() => {
+                  setSearchText("");
+                  setStatusFilter("All");
+                  setRowsPerPage(10);
+                  setSortBy({ key: "bankname", dir: "asc" });
+                }}
+                style={{
+                  ...styles.smallActionBtn,
+                  padding: "8px 12px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "3px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                }}
               >
                 Reset
               </button>
@@ -485,75 +547,234 @@ const AddBank = () => {
 
           {/* Table */}
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-            <table className="w-full" style={{ borderCollapse: "collapse", width: "100%", backgroundColor: "#fff" }}>
-              <thead style={{ position: "sticky", top: 0, backgroundColor: "#f5f5f5", zIndex: 1 }}>
+            <table
+              className="w-full"
+              style={{
+                borderCollapse: "collapse",
+                width: "100%",
+                backgroundColor: "#fff",
+              }}
+            >
+              <thead
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  backgroundColor: "#f5f5f5",
+                  zIndex: 1,
+                }}
+              >
                 <tr style={{ borderBottom: "2px solid #ddd" }}>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(50)}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
-                      S.No.
-                      <button onClick={() => toggleSort("id")} style={styles.sortBtn}>
-                        {sortBy.key === "id" ? (sortBy.dir === "asc" ? "▲" : "▼") : "↕"}
-                      </button>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(50)}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      S.No
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(150)}>Bank Name</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(150)}>Bank Branch</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(150)}>Account Number</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(120)}>IFSC Code</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(100)}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(150)}
+                  >
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      Bank Name
+                      <button
+                        onClick={() => toggleSort("bankname")}
+                        style={styles.sortBtn}
+                      >
+                        {sortBy.key === "bankname"
+                          ? sortBy.dir === "asc"
+                            ? "▲"
+                            : "▼"
+                          : "↕"}
+                      </button>
+                    </div>{" "}
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(150)}
+                  >
+                    Bank Branch
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(150)}
+                  >
+                    Account Number
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(120)}
+                  >
+                    IFSC Code
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(100)}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 4,
+                      }}
+                    >
                       Status
-                      <button onClick={() => toggleSort("status")} style={styles.sortBtn}>
-                        {sortBy.key === "status" ? (sortBy.dir === "asc" ? "▲" : "▼") : "↕"}
+                      <button
+                        onClick={() => toggleSort("status")}
+                        style={styles.sortBtn}
+                      >
+                        {sortBy.key === "status"
+                          ? sortBy.dir === "asc"
+                            ? "▲"
+                            : "▼"
+                          : "↕"}
                       </button>
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(100)}>Updated</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(120)}>Updated By</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(100)}>Action</th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(100)}
+                  >
+                    Updated
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(120)}
+                  >
+                    Updated By
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(100)}
+                  >
+                    Action
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
-                {currentPageData.length === 0 ? (
+                {isLoading ? (
                   <tr>
-                    <td colSpan={9} style={{ padding: 24, textAlign: "center", color: "#777", backgroundColor: "#fff" }}>
+                    <td
+                      colSpan={9}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                      }}
+                    >
+                      Loading banks...
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      style={{ padding: 24, textAlign: "center", color: "red" }}
+                    >
+                      Error: {error}
+                    </td>
+                  </tr>
+                ) : currentPageData.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                        backgroundColor: "#fff",
+                      }}
+                    >
                       No bank entries found.
                     </td>
                   </tr>
                 ) : (
                   currentPageData.map((item, index) => (
                     <tr
-                      key={item.id}
+                      key={item._id}
                       style={{
                         borderBottom: "1px solid #ddd",
-                        backgroundColor: (index % 2 === 0) ? "#ffffff" : "#f9f9f9",
+                        backgroundColor:
+                          index % 2 === 0 ? "#ffffff" : "#f9f9f9",
                       }}
                     >
-                      <td className="px-4 py-3 text-sm text-center" style={{ color: "#333", width: 50 }}>
-                        {item.id}
+                      <td
+                        className="px-4 py-3 text-sm text-center"
+                        style={{ color: "#333", width: 50 }}
+                      >
+                        {(currentPage - 1) * rowsPerPage + index + 1}
                       </td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333" }}>{item.bankName}</td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333" }}>{item.bankBranch}</td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333" }}>{item.accountNo}</td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333" }}>{item.ifscCode}</td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {item?.bankname || ""}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {item?.bankbranch || ""}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {item?.accountno || ""}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {item.ifsccode || ""}
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <span
                           className="inline-block px-3 py-1 text-xs text-white"
                           style={{
-                            backgroundColor: item.status === "Active" ? "#337ab7" : "#d9534f",
+                            backgroundColor:
+                              item.status.toLowerCase() === "active"
+                                ? "#337ab7"
+                                : "#d9534f",
                             borderRadius: 3,
                           }}
                         >
-                          {item.status}
+                          {item?.status || ""}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-center" style={{ color: "#333" }}>{item.updated}</td>
-                      <td className="px-4 py-3 text-sm text-center" style={{ color: "#333" }}>{item.updatedBy}</td>
+                      <td
+                        className="px-4 py-3 text-sm text-center"
+                        style={{ color: "#333" }}
+                      >
+                        {new Date(item?.updated).toLocaleDateString()}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm text-center"
+                        style={{ color: "#333" }}
+                      >
+                        {item?.updated_by || "N/A"}
+                      </td>
                       <td className="px-4 py-3" style={{ textAlign: "center" }}>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 8,
+                          }}
+                        >
                           <button
-                            onClick={() => handleEdit(item.id)}
+                            onClick={() => handleEdit(item._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#337ab7",
@@ -565,7 +786,7 @@ const AddBank = () => {
                           </button>
 
                           <button
-                            onClick={() => openDeleteModal(item.id)}
+                            onClick={() => handleDelete(item._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#d9534f",
@@ -585,37 +806,43 @@ const AddBank = () => {
           </div>
 
           {/* Footer: Pagination and summary */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 12, backgroundColor: "#fff" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 12,
+              backgroundColor: "#fff",
+            }}
+          >
             <div style={{ color: "#666", fontSize: 13 }}>
               Showing{" "}
               <strong style={{ color: "#333" }}>
-                {(filteredAndSortedItems.length === 0) ? 0 : (currentPage - 1) * rowsPerPage + 1}
+                {filteredAndSortedItems.length === 0
+                  ? 0
+                  : (currentPage - 1) * rowsPerPage + 1}
               </strong>{" "}
               to{" "}
               <strong style={{ color: "#333" }}>
-                {Math.min(currentPage * rowsPerPage, filteredAndSortedItems.length)}
+                {Math.min(
+                  currentPage * rowsPerPage,
+                  filteredAndSortedItems.length
+                )}
               </strong>{" "}
               of{" "}
-              <strong style={{ color: "#333" }}>{filteredAndSortedItems.length}</strong> entries
+              <strong style={{ color: "#333" }}>
+                {filteredAndSortedItems.length}
+              </strong>{" "}
+              entries
             </div>
 
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          open={isDeleteModalOpen}
-          title="Confirm Delete"
-          onClose={closeDeleteModal}
-          onConfirm={handleConfirmDelete}
-          confirmText="Delete"
-          cancelText="Cancel"
-        >
-          <div>
-            Are you sure you want to delete this bank entry? This action cannot be undone.
-          </div>
-        </Modal>
       </div>
     </div>
   );
@@ -715,55 +942,10 @@ const styles = {
     padding: "0 6px",
     color: "#999",
   },
-
-  // modal
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  modalBox: {
-    width: 520,
-    background: "#fff",
-    borderRadius: 6,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: "12px 16px",
-    borderBottom: "1px solid #eee",
-  },
-  modalBody: {
-    padding: 16,
-    color: "#333",
-  },
-  modalFooter: {
-    padding: 12,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-    borderTop: "1px solid #eee",
-  },
-  modalBtn: {
-    padding: "8px 12px",
-    borderRadius: 4,
-    cursor: "pointer",
-    border: "none",
-  },
-  cancelBtn: {
-    backgroundColor: "#f1f1f1",
-    color: "#333",
-  },
-  confirmBtn: {
-    backgroundColor: "#d9534f",
-    color: "white",
+  errorText: {
+    color: "#f44336",
+    fontSize: "12px",
+    marginTop: "4px",
   },
 };
 

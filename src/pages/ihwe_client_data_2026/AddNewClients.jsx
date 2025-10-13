@@ -4,12 +4,12 @@ import { useLocation } from "react-router-dom";
 import { showSuccess } from "../../utils/toastMessage";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers } from "../../features/users/userSlice";
-import { fetchCategories } from "../../features/category/categorySlice";
-import { fetchNatures } from "../../features/nature/natureSlice";
-import { fetchCountries } from "../../features/country/countrySlice";
+import { fetchCategories } from "../../features/add_by_admin/category/categorySlice";
+import { fetchNatures } from "../../features/add_by_admin/nature/natureSlice";
+import { fetchCountries } from "../../features/add_by_admin/country/countrySlice";
 import { fetchStates } from "../../features/state/stateSlice";
 import { fetchCities } from "../../features/city/citySlice";
-import { fetchDataSources } from "../../features/dataSource/dataSourceSlice";
+import { fetchDataSources } from "../../features/add_by_admin/dataSource/dataSourceSlice";
 import { fetchEvents } from "../../features/crmEvent/crmEventSlice";
 import { addCompany } from "../../features/company/companySlice";
 

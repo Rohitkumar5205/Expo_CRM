@@ -60,8 +60,8 @@ export const deleteDataSource = createAsyncThunk(
   "dataSources/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/data-source/${id}`);
-      return id; // return deleted ID
+      const response = await axios.delete(`${BASE_URL}/data-source/${id}`);
+      return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -141,8 +141,10 @@ const dataSourceSlice = createSlice({
       })
       .addCase(deleteDataSource.fulfilled, (state, action) => {
         state.loading = false;
+        const deletedId =
+          action.payload?._id || action.payload?.deletedId || action.payload;
         state.dataSources = state.dataSources.filter(
-          (item) => item._id !== action.payload
+          (c) => c._id !== deletedId
         );
       })
       .addCase(deleteDataSource.rejected, (state, action) => {

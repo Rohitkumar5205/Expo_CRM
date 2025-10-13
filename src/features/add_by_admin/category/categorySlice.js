@@ -72,8 +72,10 @@ export const deleteCategory = createAsyncThunk(
   "categories/deleteCategory",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/crm-exhibitor-categories/${id}`);
-      return id; // return deleted id for state update
+      const response = await axios.delete(
+        `${BASE_URL}/crm-exhibitor-categories/${id}`
+      );
+      return response.data; // backend might return an object
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -150,10 +152,11 @@ const categorySlice = createSlice({
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = state.categories.filter(
-          (c) => c._id !== action.payload
-        );
+        const deletedId =
+          action.payload?._id || action.payload?.deletedId || action.payload;
+        state.categories = state.categories.filter((c) => c._id !== deletedId);
       })
+
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

@@ -1,41 +1,33 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { showError, showSuccess } from "../../utils/toastMessage";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchCrmMessages,
+  addCrmMessage,
+  updateCrmMessage,
+  deleteCrmMessage,
+} from "../../features/add_by_admin/crm_wat_mess/CrmWatMessage";
 
-/* ---------------------------
- * Helper components & utils
- * --------------------------- */
+const initialMessages = [
+  {
+    id: 1,
+    title: "Visitor Pass",
+    message:
+      "8th Internation Health & Wellness Exhibition *Date*: 11 to 13th July 2025 *Location*: Hall No. 12, Pragati Maidan, New Delhi, Bharat Welcome to the 8th Internation Health & Wellness Exhibition We are pleased to have you with us. Your pass grants you access to exhibition areas. Please present this pass at the entrance for entry and enjoy your time exploring the exhibition. If you have any questions or need assistance, feel free to approach any of our staff members. Thank you for visiting and we hope you have an enriching experience! Sincerely, Namogange Wellness Team",
+    attachment: "View",
+    status: "Active",
+  },
+  {
+    id: 2,
+    title: "Venue Location",
+    message: "N/A",
+    attachment: "N/A",
+    status: "Active",
+  },
+];
 
-/** A small reusable Modal component */
-const Modal = ({ open, title, children, onClose, onConfirm, confirmText = "Confirm", cancelText = "Cancel" }) => {
-  if (!open) return null;
-  return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalBox}>
-        <div style={styles.modalHeader}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-        </div>
-        <div style={styles.modalBody}>{children}</div>
-        <div style={styles.modalFooter}>
-          <button style={{ ...styles.modalBtn, ...styles.cancelBtn }} onClick={onClose}>
-            {cancelText}
-          </button>
-          <button style={{ ...styles.modalBtn, ...styles.confirmBtn }} onClick={onConfirm}>
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ---------------------------
- * Main Message Component
- * --------------------------- */
-
-const LOCAL_STORAGE_KEY = "app_messages_v1";
-
-const AddWhatsappMessage = () => {
+const AddCrmWhatsappMessage = () => {
   const [editingMessage, setEditingMessage] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -43,44 +35,9 @@ const AddWhatsappMessage = () => {
     status: "Active",
     attachment: null,
   });
-  const [messages, setMessages] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.warn("Failed to parse messages from localStorage", e);
-    }
-    return [
-      {
-        id: 1,
-        title: "Visitor Pass",
-        message:
-          "8th Internation Health & Wellness Exhibition *Date*: 11 to 13th July 2025 *Location*: Hall No. 12, Pragati Maidan, New Delhi, Bharat Welcome to the 8th Internation Health & Wellness Exhibition We are pleased to have you with us. Your pass grants you access to exhibition areas. Please present this pass at the entrance for entry and enjoy your time exploring the exhibition. If you have any questions or need assistance, feel free to approach any of our staff members. Thank you for visiting and we hope you have an enriching experience! Sincerely, Namogange Wellness Team",
-        attachment: "View",
-        status: "Active",
-      },
-      { id: 2, title: "Venue Location", message: "N/A", attachment: "N/A", status: "Active" },
-      { id: 3, title: "Office Location", message: "N/A", attachment: "N/A", status: "Active" },
-      { id: 4, title: "Send Details", message: "N/A", attachment: "N/A", status: "Active" },
-    ];
-  });
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState(null);
+  // State initialization without localStorage
+  const [messages, setMessages] = useState(initialMessages);
   const [notification, setNotification] = useState(null);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages));
-    } catch (e) {
-      console.warn("Failed to save messages to localStorage", e);
-    }
-  }, [messages]);
-
-  const showNotification = (text, ms = 2000) => {
-    setNotification(text);
-    window.setTimeout(() => setNotification(null), ms);
-  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -107,38 +64,55 @@ const AddWhatsappMessage = () => {
     setEditingMessage(null);
   };
 
-  const handleAddMessage = () => {
-    if (!formData.title || !formData.message) {
-      showNotification("Please fill in the title and message fields!");
+  const handleAddMessage = (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    // Validation
+    if (!formData.title || !formData.title.trim()) {
+      showError("Please fill in the title field!");
+      return;
+    }
+    if (!formData.message || !formData.message.trim()) {
+      showError("Please fill in the message field!");
       return;
     }
 
+    const fileAttachmentName = formData.attachment
+      ? formData.attachment.name
+      : "N/A";
+
     if (editingMessage) {
+      // Update logic
       setMessages((prev) =>
         prev.map((item) =>
           item.id === editingMessage.id
             ? {
                 ...item,
-                title: formData.title,
-                message: formData.message,
+                title: formData.title.trim(),
+                message: formData.message.trim(),
                 status: formData.status,
-                attachment: formData.attachment ? formData.attachment.name : item.attachment,
+                attachment:
+                  formData.attachment !== null
+                    ? fileAttachmentName
+                    : item.attachment,
               }
             : item
         )
       );
-      showNotification("Message updated successfully!");
+      showSuccess("Message updated successfully!");
     } else {
-      const newId = messages.length > 0 ? Math.max(...messages.map((c) => c.id)) + 1 : 1;
+      // Add logic
+      const newId =
+        messages.length > 0 ? Math.max(...messages.map((c) => c.id)) + 1 : 1;
       const newItem = {
         id: newId,
-        title: formData.title,
-        message: formData.message,
+        title: formData.title.trim(),
+        message: formData.message.trim(),
         status: formData.status,
-        attachment: formData.attachment ? formData.attachment.name : "N/A",
+        attachment: fileAttachmentName,
       };
       setMessages((prev) => [...prev, newItem]);
-      showNotification("Message added successfully!");
+      showSuccess("Message added successfully!");
     }
     resetForm();
   };
@@ -157,27 +131,15 @@ const AddWhatsappMessage = () => {
     }
   };
 
-  const openDeleteModal = (itemId) => {
-    const item = messages.find((c) => c.id === itemId);
-    setMessageToDelete(item);
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setMessageToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!messageToDelete) {
-      closeDeleteModal();
-      return;
+  const handleDelete = (itemId) => {
+    {
+      setMessages((prev) => prev.filter((c) => c.id !== itemId));
+      showSuccess("Message deleted successfully!");
+      if (editingMessage && editingMessage.id === itemId) {
+        resetForm();
+      }
     }
-    setMessages((prev) => prev.filter((c) => c.id !== messageToDelete.id));
-    showNotification("Message deleted successfully!");
-    closeDeleteModal();
   };
-
   const applyFormatting = (tag) => {
     const textarea = document.querySelector('textarea[name="message"]');
     if (!textarea) return;
@@ -187,29 +149,24 @@ const AddWhatsappMessage = () => {
     const selectedText = formData.message.substring(start, end);
 
     let newText = "";
-    if (tag === "B") {
-      newText = `*${selectedText}*`;
+    if (tag === "B" || tag === "H") {
+      newText = `*${selectedText}*`; // WhatsApp Bold/Header uses '*'
     } else if (tag === "I") {
-      newText = `_${selectedText}_`;
-    } else if (tag === "H") {
-      newText = `*${selectedText}*`;
+      newText = `_${selectedText}_`; // WhatsApp Italic uses '_'
     }
 
-    const newMessage = formData.message.substring(0, start) + newText + formData.message.substring(end);
+    const newMessage =
+      formData.message.substring(0, start) +
+      newText +
+      formData.message.substring(end);
     setFormData((prev) => ({ ...prev, message: newMessage }));
 
     setTimeout(() => {
       textarea.focus();
-      textarea.setSelectionRange(start + 1, start + 1 + newText.length);
+      // Set cursor back inside the new tag if something was selected, otherwise at the end of the tag
+      const cursorPosition = start + (newText.length > 0 ? 1 : 1);
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
     }, 0);
-  };
-
-  const openPreviewModal = () => {
-    setIsPreviewModalOpen(true);
-  };
-
-  const closePreviewModal = () => {
-    setIsPreviewModalOpen(false);
   };
 
   const getPreviewContent = (text) => {
@@ -220,14 +177,23 @@ const AddWhatsappMessage = () => {
     return { __html: previewHtml };
   };
 
+  // Replaced Modal logic with a simple inline preview state
+  const [showInlinePreview, setShowInlinePreview] = useState(false);
+
   const handleChooseFileClick = () => {
     document.getElementById("attachment-input").click();
   };
 
   return (
-    <div className="w-full" style={{ backgroundColor: "#ecf0f5", minHeight: "100vh", padding: "0" }}>
+    <div
+      className="w-full"
+      style={{ backgroundColor: "#ecf0f5", minHeight: "100vh", padding: "0" }}
+    >
       {/* Header Section */}
-      <div className="w-full bg-white" style={{ borderBottom: "1px solid #e0e0e0" }}>
+      <div
+        className="w-full bg-white"
+        style={{ borderBottom: "1px solid #e0e0e0" }}
+      >
         <div className="flex items-center justify-between px-6 py-3">
           <h1 className="text-lg font-normal" style={{ color: "#666" }}>
             WHATSAPP MESSAGES
@@ -244,20 +210,40 @@ const AddWhatsappMessage = () => {
           </div>
         )}
 
-        {/* Add/Edit Section */}
-        <div className="bg-white mb-5" style={{ border: "1px solid #ddd" }}>
-          <div className="px-5 py-3" style={{ backgroundColor: "#f9f9f9", borderBottom: "1px solid #ddd" }}>
-            <h2 className="text-base font-semibold" style={{ color: "#555", margin: 0 }}>
+        {/* Add/Edit Section - Now a proper form */}
+        <form
+          className="bg-white mb-5"
+          style={{ border: "1px solid #ddd" }}
+          onSubmit={handleAddMessage} // Handle form submission
+        >
+          <div
+            className="px-5 py-3"
+            style={{
+              backgroundColor: "#f9f9f9",
+              borderBottom: "1px solid #ddd",
+            }}
+          >
+            <h2
+              className="text-base font-semibold"
+              style={{ color: "#555", margin: 0 }}
+            >
               {editingMessage ? "EDIT MESSAGE" : "ADD MESSAGE"}
             </h2>
           </div>
 
           <div className="p-6">
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <div
+                style={{ display: "flex", gap: "24px", alignItems: "center" }}
+              >
                 {/* Title Field */}
                 <div style={{ flex: 1 }}>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#333" }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: "#333" }}
+                  >
                     Title <span style={{ color: "#f44336" }}>*</span>
                   </label>
                   <input
@@ -268,11 +254,15 @@ const AddWhatsappMessage = () => {
                     className="w-full px-3 py-2 text-sm"
                     style={{ ...styles.input }}
                     placeholder="Enter message title"
+                    required // Added HTML required attribute
                   />
                 </div>
                 {/* Attachment Field with custom styling */}
                 <div style={{ flex: 1 }}>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#333" }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: "#333" }}
+                  >
                     Attachment
                   </label>
                   <div style={styles.customFileInput}>
@@ -284,19 +274,38 @@ const AddWhatsappMessage = () => {
                       style={styles.hiddenFileInput}
                     />
                     <div style={styles.fileInputText}>
-                      {formData.attachment ? formData.attachment.name : "No file chosen"}
+                      {formData.attachment
+                        ? formData.attachment.name
+                        : editingMessage?.attachment &&
+                          editingMessage.attachment !== "N/A"
+                        ? `Current: ${editingMessage.attachment}`
+                        : "No file chosen"}
                     </div>
-                    <button style={styles.fileInputButton} onClick={handleChooseFileClick}>
+                    <button
+                      type="button" // Important: type="button" to prevent form submission
+                      style={styles.fileInputButton}
+                      onClick={handleChooseFileClick}
+                    >
                       Choose File
                     </button>
                   </div>
                 </div>
                 {/* Status Field */}
                 <div style={{ flex: 1 }}>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#333" }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: "#333" }}
+                  >
                     Status <span style={{ color: "#f44336" }}>*</span>
                   </label>
-                  <div style={{ display: "flex", gap: 16, alignItems: "center", height: "40px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 16,
+                      alignItems: "center",
+                      height: "40px",
+                    }}
+                  >
                     <label style={styles.radioLabel}>
                       <input
                         type="radio"
@@ -305,6 +314,7 @@ const AddWhatsappMessage = () => {
                         checked={formData.status === "Active"}
                         onChange={handleChange}
                         style={{ marginRight: 8 }}
+                        required
                       />
                       <span style={{ color: "#333" }}>Active</span>
                     </label>
@@ -316,6 +326,7 @@ const AddWhatsappMessage = () => {
                         checked={formData.status === "Inactive"}
                         onChange={handleChange}
                         style={{ marginRight: 8 }}
+                        required
                       />
                       <span style={{ color: "#333" }}>Inactive</span>
                     </label>
@@ -325,27 +336,49 @@ const AddWhatsappMessage = () => {
 
               {/* Message Field */}
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <label className="block text-sm font-medium mb-2" style={{ color: "#333" }}>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "#333" }}
+                >
                   Write a Message <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <div style={styles.richTextEditor}>
                   {/* Dummy rich text editor toolbar */}
                   <div style={styles.toolbar}>
-                    <button style={styles.toolbarBtn} onClick={() => applyFormatting("B")}>
+                    <button
+                      type="button"
+                      style={styles.toolbarBtn}
+                      onClick={() => applyFormatting("B")}
+                    >
                       <strong>B</strong>
                     </button>
-                    <button style={styles.toolbarBtn} onClick={() => applyFormatting("I")}>
+                    <button
+                      type="button"
+                      style={styles.toolbarBtn}
+                      onClick={() => applyFormatting("I")}
+                    >
                       <em>I</em>
                     </button>
-                    <button style={styles.toolbarBtn} onClick={() => applyFormatting("H")}>
-                      <strong>H</strong>
+                    {/* Simplified/Placeholder buttons */}
+                    <button type="button" style={styles.toolbarBtn}>
+                      ✒️
                     </button>
-                    <button style={styles.toolbarBtn}>✒️</button>
-                    <button style={styles.toolbarBtn}>📄</button>
-                    <button style={styles.toolbarBtn}>📌</button>
-                    <button style={styles.toolbarBtn}>⭐</button>
-                    <button style={{ ...styles.toolbarBtn, ...styles.previewBtn }} onClick={openPreviewModal}>
-                      <span style={{ marginRight: "4px" }}>🔍</span> Preview
+                    <button type="button" style={styles.toolbarBtn}>
+                      📄
+                    </button>
+                    <button type="button" style={styles.toolbarBtn}>
+                      📌
+                    </button>
+                    <button type="button" style={styles.toolbarBtn}>
+                      ⭐
+                    </button>
+                    <button
+                      type="button"
+                      style={{ ...styles.toolbarBtn, ...styles.previewBtn }}
+                      onClick={() => setShowInlinePreview((prev) => !prev)}
+                    >
+                      <span style={{ marginRight: "4px" }}>🔍</span>{" "}
+                      {showInlinePreview ? "Hide Preview" : "Show Preview"}
                     </button>
                   </div>
                   <textarea
@@ -353,15 +386,29 @@ const AddWhatsappMessage = () => {
                     value={formData.message}
                     onChange={handleChange}
                     style={styles.textArea}
-                    placeholder="Write your message here..."
+                    placeholder="Write your message here... (Use *text* for bold/header, _text_ for italics)"
+                    required // Added HTML required attribute
                   ></textarea>
                 </div>
               </div>
 
+              {/* Inline Preview Section (Replaced Preview Modal) */}
+              {showInlinePreview && (
+                <div style={styles.previewBox}>
+                  <h4>WhatsApp Preview:</h4>
+                  <div
+                    style={styles.previewContent}
+                    dangerouslySetInnerHTML={getPreviewContent(
+                      formData.message
+                    )}
+                  />
+                </div>
+              )}
+
               {/* Add / Update Button */}
               <div style={{ marginTop: "10px" }}>
                 <button
-                  onClick={handleAddMessage}
+                  type="submit" // Will trigger handleAddMessage
                   className="px-6 py-2 text-sm text-white"
                   style={{
                     backgroundColor: "#3598dc",
@@ -375,6 +422,7 @@ const AddWhatsappMessage = () => {
                 {/* Cancel (visible when editing) */}
                 {editingMessage && (
                   <button
+                    type="button" // Important: type="button" to prevent form submission
                     onClick={resetForm}
                     className="px-4 py-2 text-sm"
                     style={{
@@ -392,36 +440,73 @@ const AddWhatsappMessage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </form>
 
         {/* List Section */}
         <div className="bg-white" style={{ border: "1px solid #ddd" }}>
-          <div className="px-5 py-3" style={{ backgroundColor: "#f9f9f9", borderBottom: "1px solid #ddd" }}>
-            <h2 className="text-base font-semibold" style={{ color: "#555", margin: 0 }}>
+          <div
+            className="px-5 py-3"
+            style={{
+              backgroundColor: "#f9f9f9",
+              borderBottom: "1px solid #ddd",
+            }}
+          >
+            <h2
+              className="text-base font-semibold"
+              style={{ color: "#555", margin: 0 }}
+            >
               LIST OF MESSAGE
             </h2>
           </div>
 
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-            <table className="w-full" style={{ borderCollapse: "collapse", width: "100%" }}>
-              <thead style={{ position: "sticky", top: 0, backgroundColor: "#f9f9f9", zIndex: 1 }}>
+            <table
+              className="w-full"
+              style={{ borderCollapse: "collapse", width: "100%" }}
+            >
+              <thead
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  backgroundColor: "#f9f9f9",
+                  zIndex: 1,
+                }}
+              >
                 <tr style={{ borderBottom: "2px solid #ddd" }}>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(60)}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(60)}
+                  >
                     No.
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(150)}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(150)}
+                  >
                     Title
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle()}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle()}
+                  >
                     Message
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-left" style={thStyle(120)}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle(120)}
+                  >
                     Attachment
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(100)}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(100)}
+                  >
                     Status
                   </th>
-                  <th className="px-4 py-3 text-sm font-semibold text-center" style={thStyle(120)}>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-center"
+                    style={thStyle(120)}
+                  >
                     Action
                   </th>
                 </tr>
@@ -429,7 +514,14 @@ const AddWhatsappMessage = () => {
               <tbody>
                 {messages.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: 24, textAlign: "center", color: "#777" }}>
+                    <td
+                      colSpan={6}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                      }}
+                    >
                       No messages found.
                     </td>
                   </tr>
@@ -439,35 +531,71 @@ const AddWhatsappMessage = () => {
                       key={item.id}
                       style={{
                         borderBottom: "1px solid #ddd",
-                        backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9f9f9",
+                        backgroundColor:
+                          index % 2 === 0 ? "#ffffff" : "#f9f9f9",
                       }}
                     >
-                      <td className="px-4 py-3 text-sm text-center" style={{ color: "#333", width: 60 }}>
+                      <td
+                        className="px-4 py-3 text-sm text-center"
+                        style={{ color: "#333", width: 60 }}
+                      >
                         {item.id}
                       </td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333", width: 150 }}>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333", width: 150 }}
+                      >
                         {item.title}
                       </td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333" }}>
-                        {item.message}
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {/* Trim message for table display */}
+                        {item.message.length > 50
+                          ? item.message.substring(0, 50) + "..."
+                          : item.message}
                       </td>
-                      <td className="px-4 py-3 text-sm" style={{ color: "#333", width: 120 }}>
-                        {item.attachment !== "N/A" ? <a href="#">{item.attachment}</a> : "N/A"}
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333", width: 120 }}
+                      >
+                        {item.attachment !== "N/A" ? (
+                          <a href="#" onClick={(e) => e.preventDefault()}>
+                            {item.attachment}
+                          </a>
+                        ) : (
+                          "N/A"
+                        )}
                       </td>
-                      <td className="px-4 py-3 text-center" style={{ width: 100 }}>
+                      <td
+                        className="px-4 py-3 text-center"
+                        style={{ width: 100 }}
+                      >
                         <span
                           className="inline-block px-3 py-1 text-xs text-white"
                           style={{
-                            backgroundColor: item.status === "Active" ? "#337ab7" : "#d9534f",
+                            backgroundColor:
+                              item.status === "Active" ? "#337ab7" : "#d9534f",
                             borderRadius: 3,
                           }}
                         >
                           {item.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3" style={{ textAlign: "center", width: 120 }}>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+                      <td
+                        className="px-4 py-3"
+                        style={{ textAlign: "center", width: 120 }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 8,
+                          }}
+                        >
                           <button
+                            type="button"
                             onClick={() => handleEdit(item.id)}
                             style={{
                               ...styles.iconBtn,
@@ -479,7 +607,8 @@ const AddWhatsappMessage = () => {
                             <Pencil size={14} />
                           </button>
                           <button
-                            onClick={() => openDeleteModal(item.id)}
+                            type="button"
+                            onClick={() => handleDelete(item.id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#d9534f",
@@ -498,38 +627,10 @@ const AddWhatsappMessage = () => {
             </table>
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          open={isDeleteModalOpen}
-          title="Confirm Delete"
-          onClose={closeDeleteModal}
-          onConfirm={handleConfirmDelete}
-          confirmText="Delete"
-          cancelText="Cancel"
-        >
-          <div>Are you sure you want to delete this message? This action cannot be undone.</div>
-        </Modal>
-
-        {/* Preview Modal */}
-        <Modal
-          open={isPreviewModalOpen}
-          title="Message Preview"
-          onClose={closePreviewModal}
-          onConfirm={closePreviewModal}
-          confirmText="Close"
-          cancelText=" "
-        >
-          <div dangerouslySetInnerHTML={getPreviewContent(formData.message)} />
-        </Modal>
       </div>
     </div>
   );
 };
-
-/* ---------------------------
- * Inline styles (kept organized)
- * --------------------------- */
 
 const styles = {
   input: {
@@ -548,7 +649,7 @@ const styles = {
     height: "40px",
   },
   hiddenFileInput: {
-    display: "none", // Changed from position:absolute to display:none
+    display: "none",
   },
   fileInputText: {
     flexGrow: 1,
@@ -583,12 +684,12 @@ const styles = {
     cursor: "pointer",
   },
   notificationBox: {
-    backgroundColor: "#e9f7ef",
-    border: "1px solid #c7efd9",
+    backgroundColor: "#ffe0b2", // Changed color for better contrast/warning
+    border: "1px solid #ffcc80",
     padding: "8px 12px",
     borderRadius: 4,
     marginBottom: 12,
-    color: "#2f7a4b",
+    color: "#e65100",
     display: "inline-block",
   },
   richTextEditor: {
@@ -615,6 +716,7 @@ const styles = {
     marginLeft: "auto",
     display: "flex",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   textArea: {
     width: "100%",
@@ -623,55 +725,21 @@ const styles = {
     padding: "10px",
     outline: "none",
     resize: "vertical",
+    fontSize: 14,
   },
-  // modal
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  modalBox: {
-    width: 520,
-    background: "#fff",
-    borderRadius: 6,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: "12px 16px",
-    borderBottom: "1px solid #eee",
-  },
-  modalBody: {
+  previewBox: {
+    marginTop: 16,
     padding: 16,
-    color: "#333",
-  },
-  modalFooter: {
-    padding: 12,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-    borderTop: "1px solid #eee",
-  },
-  modalBtn: {
-    padding: "8px 12px",
+    border: "1px solid #3598dc",
     borderRadius: 4,
-    cursor: "pointer",
-    border: "none",
+    backgroundColor: "#eaf5ff",
   },
-  cancelBtn: {
-    backgroundColor: "#f1f1f1",
-    color: "#333",
-  },
-  confirmBtn: {
-    backgroundColor: "#d9534f",
-    color: "white",
+  previewContent: {
+    padding: 8,
+    backgroundColor: "white",
+    border: "1px solid #eee",
+    borderRadius: 4,
+    whiteSpace: "pre-wrap", // Preserve formatting
   },
 };
 
@@ -684,4 +752,4 @@ const thStyle = (width) => ({
   padding: "12px 8px",
 });
 
-export default AddWhatsappMessage;
+export default AddCrmWhatsappMessage;

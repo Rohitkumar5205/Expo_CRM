@@ -1,57 +1,13 @@
-// import React from "react";
-
-// const AddDataSource = () => {
-//   return (
-//     <div>
-//       <h3>AddDataSource</h3>
-//     </div>
-//   );
-// };
-
-// export default AddDataSource;
 import React, { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-
-/* ---------------------------
-  Helper components & utils
-  --------------------------- */
-
-/** A small reusable Modal component */
-const Modal = ({
-  open,
-  title,
-  children,
-  onClose,
-  onConfirm,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
-}) => {
-  if (!open) return null;
-  return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalBox}>
-        <div style={styles.modalHeader}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-        </div>
-        <div style={styles.modalBody}>{children}</div>
-        <div style={styles.modalFooter}>
-          <button
-            style={{ ...styles.modalBtn, ...styles.cancelBtn }}
-            onClick={onClose}
-          >
-            {cancelText}
-          </button>
-          <button
-            style={{ ...styles.modalBtn, ...styles.confirmBtn }}
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useSelector, useDispatch } from "react-redux";
+import {
+  fetchDataSources,
+  createDataSource,
+  updateDataSource,
+  deleteDataSource,
+} from "../../features/add_by_admin/dataSource/dataSourceSlice";
+import { showError, showSuccess } from "../../utils/toastMessage";
 
 /** Simple Pagination component */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -124,78 +80,34 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-/* ---------------------------
-  Main Data Source Component
-  --------------------------- */
-
-const LOCAL_STORAGE_KEY = "app_data_sources_v1";
-
 const AddDataSource = () => {
+  const dispatch = useDispatch();
   const [editingSource, setEditingSource] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     status: "Active",
   });
-  const [sources, setSources] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.warn("Failed to parse sources from localStorage", e);
-    }
-    return [
-      { id: 1, name: "Organic Expo 2026", status: "Active" },
-      { id: 2, name: "India Health Expo", status: "Active" },
-      { id: 3, name: "UPITS", status: "Active" },
-      { id: 4, name: "Tradeindia", status: "Active" },
-      { id: 5, name: "Start-up Mahakumbh", status: "Active" },
-      { id: 6, name: "International Arogya Expo-LKO", status: "Active" },
-      { id: 7, name: "BIOFACH", status: "Active" },
-      { id: 8, name: "Ayushshala - Medi Expo 2023", status: "Active" },
-      { id: 9, name: "HGH India Expo, Mumbai", status: "Active" },
-      { id: 10, name: "Cosmohome Tech Expo", status: "Active" },
-      { id: 11, name: "Krishi Jagran B2B", status: "Active" },
-      { id: 12, name: "AAHAR", status: "Active" },
-      { id: 13, name: "Whatsapp Mkt.", status: "Active" },
-      { id: 14, name: "Instagram", status: "Active" },
-      { id: 15, name: "Dr. Piyush Juneja", status: "Active" },
-      { id: 16, name: "Local Visit", status: "Active" },
-      { id: 17, name: "LinkedIn", status: "Active" },
-      { id: 18, name: "Magazine Add", status: "Active" },
-      { id: 19, name: "Existing Client", status: "Active" },
-      { id: 20, name: "FB Lead", status: "Active" },
-      { id: 21, name: "Indiamart", status: "Active" },
-      { id: 22, name: "Expo 2018", status: "Active" },
-      { id: 23, name: "Referral", status: "Active" },
-      { id: 24, name: "Customer Care", status: "Active" },
-      { id: 25, name: "Sulekha", status: "Active" },
-      { id: 26, name: "Justdial", status: "Active" },
-      { id: 27, name: "FB Organic", status: "Active" },
-      { id: 28, name: "Website", status: "Active" },
-    ];
-  });
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState({ key: "id", dir: "asc" });
+  const [sortBy, setSortBy] = useState({ key: "source_id", dir: "asc" });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [sourceToDelete, setSourceToDelete] = useState(null);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(sources));
-    } catch (e) {
-      console.warn("Failed to save sources to localStorage", e);
-    }
-  }, [sources]);
+  // Data Sources redux
+  const {
+    dataSources,
+    loading: isLoading,
+    error,
+  } = useSelector((state) => state.dataSources);
 
-  const showMessage = (text, ms = 2000) => {
-    setMessage(text);
-    window.setTimeout(() => setMessage(null), ms);
-  };
+  console.log("add data source data", dataSources);
+
+  useEffect(() => {
+    dispatch(fetchDataSources());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -210,94 +122,105 @@ const AddDataSource = () => {
     setEditingSource(null);
   };
 
-  const handleAddSource = () => {
+  const handleAddDataSource = async () => {
     if (!formData.name || !formData.name.trim()) {
-      showMessage("Please enter source name!");
+      showError("Please enter a source name!");
       return;
     }
 
     const trimmedName = formData.name.trim();
-    const duplicate = sources.find(
-      (c) =>
-        c.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
-        (!editingSource || c.id !== editingSource.id)
+    const duplicate = (Array.isArray(dataSources) ? dataSources : []).find(
+      (s) =>
+        (s?.source_name || "").trim().toLowerCase() ===
+          trimmedName.toLowerCase() &&
+        (!editingSource || s._id !== editingSource._id)
     );
     if (duplicate) {
-      showMessage("A source with that name already exists!");
+      showError("A data source with that name already exists!");
       return;
     }
 
-    if (editingSource) {
-      setSources((prev) =>
-        prev.map((cat) =>
-          cat.id === editingSource.id
-            ? { ...cat, name: trimmedName, status: formData.status }
-            : cat
-        )
-      );
-      showMessage("Source updated successfully!");
+    const newSourceId =
+      dataSources && dataSources.length > 0
+        ? Math.max(...dataSources.map((s) => s.source_id || 0)) + 1
+        : 1;
+
+    const dataSourceData = {
+      source_id: newSourceId,
+      source_name: trimmedName,
+      source_status: formData.status.toLowerCase(),
+      added: new Date().toISOString(),
+    };
+
+    try {
+      if (editingSource) {
+        await dispatch(
+          updateDataSource({ id: editingSource._id, updates: dataSourceData })
+        ).unwrap();
+        showSuccess("Data Source updated successfully!");
+      } else {
+        await dispatch(createDataSource(dataSourceData)).unwrap();
+        showSuccess("Data Source added successfully!");
+      }
       resetForm();
-    } else {
-      const newId =
-        sources.length > 0 ? Math.max(...sources.map((c) => c.id)) + 1 : 1;
-      const newSource = {
-        id: newId,
-        name: trimmedName,
-        status: formData.status,
-      };
-      setSources((prev) => [...prev, newSource]);
-      showMessage("Source added successfully!");
-      resetForm();
+      dispatch(fetchDataSources());
+    } catch (err) {
+      const action = editingSource ? "update" : "create";
+      showError(`Failed to ${action} Data Source. Please try again.`);
+      console.error(`Failed to ${action} Data Source:`, err);
     }
   };
 
   const handleEdit = (sourceId) => {
-    const sourceToEdit = sources.find((cat) => cat.id === sourceId);
+    const sourceToEdit = dataSources.find((src) => src?._id === sourceId);
     if (sourceToEdit) {
       setFormData({
-        name: sourceToEdit.name,
-        status: sourceToEdit.status,
+        name: sourceToEdit.source_name,
+        status: sourceToEdit.source_status
+          ? sourceToEdit.source_status.charAt(0).toUpperCase() +
+            sourceToEdit.source_status.slice(1)
+          : "Active",
       });
       setEditingSource(sourceToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const openDeleteModal = (sourceId) => {
-    const source = sources.find((c) => c.id === sourceId);
-    setSourceToDelete(source);
-    setIsDeleteModalOpen(true);
-  };
+  const handleDelete = async (sourceId) => {
+    const sourceToDelete = dataSources.find((s) => s?._id === sourceId);
+    if (!sourceToDelete) return;
 
-  const closeDeleteModal = () => {
-    setSourceToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!sourceToDelete) {
-      closeDeleteModal();
-      return;
+    {
+      try {
+        await dispatch(deleteDataSource(sourceId)).unwrap();
+        showSuccess("Data Source deleted successfully!");
+        dispatch(fetchDataSources());
+      } catch (err) {
+        showError("Failed to delete Data Source. Please try again.", 3000);
+        console.error("Failed to delete Data Source:", err);
+      }
     }
-    setSources((prev) => prev.filter((c) => c.id !== sourceToDelete.id));
-    showMessage("Source deleted successfully!");
-    closeDeleteModal();
   };
 
-  const filteredAndSortedSources = useMemo(() => {
-    let list = [...sources];
+  const filteredAndSortedDataSources = useMemo(() => {
+    let list = Array.isArray(dataSources) ? dataSources.filter(Boolean) : [];
     if (searchText && searchText.trim()) {
       const s = searchText.trim().toLowerCase();
-      list = list.filter((c) => c.name.toLowerCase().includes(s));
+      list = list.filter((s) =>
+        (s?.source_name || "").toLowerCase().includes(s)
+      );
     }
     if (statusFilter === "Active" || statusFilter === "Inactive") {
-      list = list.filter((c) => c.status === statusFilter);
+      list = list.filter(
+        (s) =>
+          (s?.source_status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
     }
     const { key, dir } = sortBy;
     list.sort((a, b) => {
       let av = a[key];
       let bv = b[key];
-      if (key === "id") {
+      if (key === "source_id") {
         av = Number(av);
         bv = Number(bv);
       } else {
@@ -309,11 +232,11 @@ const AddDataSource = () => {
       return 0;
     });
     return list;
-  }, [sources, searchText, statusFilter, sortBy]);
+  }, [dataSources, searchText, statusFilter, sortBy]);
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredAndSortedSources.length / rowsPerPage)
+    Math.ceil(filteredAndSortedDataSources.length / rowsPerPage)
   );
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -321,8 +244,8 @@ const AddDataSource = () => {
 
   const currentPageData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredAndSortedSources.slice(start, start + rowsPerPage);
-  }, [filteredAndSortedSources, currentPage, rowsPerPage]);
+    return filteredAndSortedDataSources.slice(start, start + rowsPerPage);
+  }, [filteredAndSortedDataSources, currentPage, rowsPerPage]);
 
   const toggleSort = (key) => {
     setSortBy((prev) => {
@@ -332,50 +255,6 @@ const AddDataSource = () => {
         return { key, dir: "asc" };
       }
     });
-  };
-
-  const handleExportJson = () => {
-    const json = JSON.stringify(sources, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `sources-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImportJson = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const parsed = JSON.parse(evt.target.result);
-        if (!Array.isArray(parsed)) throw new Error("Invalid file format");
-        const valid = parsed.every((p) => p && (p.name || p.id));
-        if (!valid) throw new Error("Invalid source structure");
-        const maxId =
-          sources.length > 0 ? Math.max(...sources.map((c) => c.id)) : 0;
-        const normalized = parsed.map((p, idx) => ({
-          id: p.id || maxId + idx + 1,
-          name: (p.name || "").toString(),
-          status: p.status === "Inactive" ? "Inactive" : "Active",
-        }));
-        const existingLower = new Set(
-          sources.map((x) => x.name.trim().toLowerCase())
-        );
-        const toAdd = normalized.filter(
-          (n) => !existingLower.has(n.name.trim().toLowerCase())
-        );
-        setSources((prev) => [...prev, ...toAdd]);
-        showMessage("Import successful!");
-      } catch (err) {
-        alert("Failed to import: " + err.message);
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   };
 
   return (
@@ -390,7 +269,7 @@ const AddDataSource = () => {
       >
         <div className="flex items-center justify-between px-6 py-3">
           <h1 className="text-lg font-normal" style={{ color: "#666" }}>
-            SOURCE OPTION
+            DATA SOURCE
           </h1>
         </div>
       </div>
@@ -404,7 +283,7 @@ const AddDataSource = () => {
           </div>
         )}
 
-        {/* Add/Edit Source Section */}
+        {/* Add/Edit Data Source Section */}
         <div className="bg-white mb-5" style={{ border: "1px solid #ddd" }}>
           <div
             className="px-5 py-3"
@@ -432,7 +311,7 @@ const AddDataSource = () => {
                   className="block text-sm font-medium mb-2"
                   style={{ color: "#333" }}
                 >
-                  Source Name <span style={{ color: "#f44336" }}>*</span>
+                  Name <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -440,11 +319,13 @@ const AddDataSource = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-sm"
-                  style={styles.input}
+                  style={{
+                    ...styles.input,
+                  }}
                   placeholder="Enter source name"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      handleAddSource();
+                      handleAddDataSource();
                     }
                   }}
                 />
@@ -487,7 +368,7 @@ const AddDataSource = () => {
               {/* Add / Update Button */}
               <div style={{ display: "flex", alignItems: "flex-end" }}>
                 <button
-                  onClick={handleAddSource}
+                  onClick={handleAddDataSource}
                   className="px-6 py-2 text-sm text-white"
                   style={{
                     backgroundColor: "#5bc0de",
@@ -495,7 +376,7 @@ const AddDataSource = () => {
                     borderRadius: 3,
                     cursor: "pointer",
                   }}
-                  title={editingSource ? "Update Source" : "Add Source"}
+                  tle={editingSource ? "Update Source" : "Add Source"}
                 >
                   {editingSource ? "Update Source" : "Add Source"}
                 </button>
@@ -520,42 +401,12 @@ const AddDataSource = () => {
                 </div>
               )}
             </div>
-
-            {/* Extras: Export / Import */}
-            <div
-              style={{
-                marginTop: 14,
-                display: "flex",
-                gap: 12,
-                alignItems: "center",
-              }}
-            >
-              <button onClick={handleExportJson} style={styles.smallActionBtn}>
-                Export JSON
-              </button>
-
-              <label
-                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-              >
-                <input
-                  type="file"
-                  accept="application/json"
-                  onChange={handleImportJson}
-                  style={{ display: "none" }}
-                />
-                <span style={styles.smallActionBtn}>Import JSON</span>
-              </label>
-
-              <span style={{ marginLeft: "auto", color: "#888", fontSize: 13 }}>
-                Total sources:{" "}
-                <strong style={{ color: "#333" }}>{sources.length}</strong>
-              </span>
-            </div>
           </div>
         </div>
 
         {/* List Section */}
         <div className="bg-white" style={{ border: "1px solid #ddd" }}>
+          {/* Filter / Search / Sort Row */}
           <div
             className="px-5 py-3"
             style={{
@@ -639,6 +490,7 @@ const AddDataSource = () => {
             </div>
           </div>
 
+          {/* Table header */}
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
             <table
               className="w-full"
@@ -667,10 +519,10 @@ const AddDataSource = () => {
                     >
                       No.
                       <button
-                        onClick={() => toggleSort("id")}
+                        onClick={() => toggleSort("source_id")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "id"
+                        {sortBy.key === "source_id"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -687,10 +539,10 @@ const AddDataSource = () => {
                     >
                       Source Name
                       <button
-                        onClick={() => toggleSort("name")}
+                        onClick={() => toggleSort("source_name")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "name"
+                        {sortBy.key === "source_name"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -712,10 +564,10 @@ const AddDataSource = () => {
                     >
                       Status
                       <button
-                        onClick={() => toggleSort("status")}
+                        onClick={() => toggleSort("source_status")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "status"
+                        {sortBy.key === "source_status"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -733,6 +585,21 @@ const AddDataSource = () => {
               </thead>
 
               <tbody>
+                {isLoading && (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      style={{
+                        padding: 24,
+                        textAlign: "center",
+                        color: "#777",
+                      }}
+                    >
+                      Loading data sources...
+                    </td>
+                  </tr>
+                )}
+
                 {currentPageData.length === 0 ? (
                   <tr>
                     <td
@@ -743,13 +610,13 @@ const AddDataSource = () => {
                         color: "#777",
                       }}
                     >
-                      No sources found.
+                      No data sources found.
                     </td>
                   </tr>
                 ) : (
                   currentPageData.map((source, index) => (
                     <tr
-                      key={source.id}
+                      key={source._id}
                       style={{
                         borderBottom: "1px solid #ddd",
                         backgroundColor:
@@ -760,29 +627,32 @@ const AddDataSource = () => {
                         className="px-4 py-3 text-sm text-center"
                         style={{ color: "#333", width: 80 }}
                       >
-                        {source.id}
+                        {(currentPage - 1) * rowsPerPage + index + 1}
                       </td>
 
                       <td
                         className="px-4 py-3 text-sm"
                         style={{ color: "#333" }}
                       >
-                        {source.name}
+                        {source?.source_name || ""}
                       </td>
 
                       <td className="px-4 py-3 text-center">
-                        <span
-                          className="inline-block px-3 py-1 text-xs text-white"
-                          style={{
-                            backgroundColor:
-                              source.status === "Active"
-                                ? "#337ab7"
-                                : "#d9534f",
-                            borderRadius: 3,
-                          }}
-                        >
-                          {source.status}
-                        </span>
+                        {source?.source_status ? (
+                          <span
+                            className="inline-block px-3 py-1 text-xs text-white"
+                            style={{
+                              backgroundColor:
+                                source.source_status.toLowerCase() === "active"
+                                  ? "#337ab7"
+                                  : "#d9534f",
+                              borderRadius: 3,
+                            }}
+                          >
+                            {source.source_status.charAt(0).toUpperCase() +
+                              source.source_status.slice(1)}
+                          </span>
+                        ) : null}
                       </td>
 
                       <td className="px-4 py-3" style={{ textAlign: "center" }}>
@@ -794,7 +664,7 @@ const AddDataSource = () => {
                           }}
                         >
                           <button
-                            onClick={() => handleEdit(source.id)}
+                            onClick={() => handleEdit(source._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#337ab7",
@@ -806,7 +676,7 @@ const AddDataSource = () => {
                           </button>
 
                           <button
-                            onClick={() => openDeleteModal(source.id)}
+                            onClick={() => handleDelete(source._id)}
                             style={{
                               ...styles.iconBtn,
                               borderColor: "#d9534f",
@@ -837,7 +707,7 @@ const AddDataSource = () => {
             <div style={{ color: "#666", fontSize: 13 }}>
               Showing{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedSources.length === 0
+                {filteredAndSortedDataSources.length === 0
                   ? 0
                   : (currentPage - 1) * rowsPerPage + 1}
               </strong>{" "}
@@ -845,12 +715,12 @@ const AddDataSource = () => {
               <strong style={{ color: "#333" }}>
                 {Math.min(
                   currentPage * rowsPerPage,
-                  filteredAndSortedSources.length
+                  filteredAndSortedDataSources.length
                 )}
               </strong>{" "}
               of{" "}
               <strong style={{ color: "#333" }}>
-                {filteredAndSortedSources.length}
+                {filteredAndSortedDataSources.length}
               </strong>{" "}
               entries
             </div>
@@ -862,30 +732,10 @@ const AddDataSource = () => {
             />
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <Modal
-          open={isDeleteModalOpen}
-          title="Confirm Delete"
-          onClose={closeDeleteModal}
-          onConfirm={handleConfirmDelete}
-          confirmText="Delete"
-          cancelText="Cancel"
-        >
-          <div>
-            Are you sure you want to delete the source{" "}
-            <strong>{sourceToDelete ? sourceToDelete.name : ""}</strong>? This
-            action cannot be undone.
-          </div>
-        </Modal>
       </div>
     </div>
   );
 };
-
-/* ---------------------------
-  Inline styles (kept organized)
-  --------------------------- */
 
 const styles = {
   input: {
@@ -976,56 +826,6 @@ const styles = {
   pageGap: {
     padding: "0 6px",
     color: "#999",
-  },
-
-  // modal
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  modalBox: {
-    width: 520,
-    background: "#fff",
-    borderRadius: 6,
-    boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: "12px 16px",
-    borderBottom: "1px solid #eee",
-  },
-  modalBody: {
-    padding: 16,
-    color: "#333",
-  },
-  modalFooter: {
-    padding: 12,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-    borderTop: "1px solid #eee",
-  },
-  modalBtn: {
-    padding: "8px 12px",
-    borderRadius: 4,
-    cursor: "pointer",
-    border: "none",
-  },
-  cancelBtn: {
-    backgroundColor: "#f1f1f1",
-    color: "#333",
-  },
-  confirmBtn: {
-    backgroundColor: "#d9534f",
-    color: "white",
   },
 };
 

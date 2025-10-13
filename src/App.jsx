@@ -56,7 +56,7 @@ import AddUser from "./pages/users/AddUser";
 import AddCategory from "./pages/add_by_admin/AddCategory";
 import AddRemarkLengthFixed from "./pages/add_by_admin/AddRemarkLengthFixed";
 import AddTarget from "./pages/add_by_admin/AddTarget";
-import AddWhatsappMessage from "./pages/add_by_admin/AddWhatsappMessage";
+import AddWhatsappMessage from "./pages/add_by_admin/AddCrmWhatsappMessage";
 import AddNatureOfBusiness from "./pages/add_by_admin/AddNatureOfBusiness";
 import AddDataSource from "./pages/add_by_admin/AddDataSource";
 import AddStatus from "./pages/add_by_admin/AddStatus";
