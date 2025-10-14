@@ -610,19 +610,7 @@ const AddCategory = () => {
                     </td>
                   </tr>
                 )}
-                {/* {error && !isLoading && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      style={{ padding: 24, textAlign: "center", color: "red" }}
-                    >
-                      Error:{" "}
-                      {typeof error === "string"
-                        ? error
-                        : JSON.stringify(error)}
-                    </td>
-                  </tr>
-                )} */}
+               
 
                 {currentPageData.length === 0 ? (
                   <tr>

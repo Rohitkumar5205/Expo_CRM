@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { showError, showSuccess } from "../../utils/toastMessage";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,48 +7,71 @@ import {
   addCrmMessage,
   updateCrmMessage,
   deleteCrmMessage,
+  clearMessages,
 } from "../../features/add_by_admin/crm_wat_mess/CrmWatMessage";
 
-const initialMessages = [
-  {
-    id: 1,
-    title: "Visitor Pass",
-    message:
-      "8th Internation Health & Wellness Exhibition *Date*: 11 to 13th July 2025 *Location*: Hall No. 12, Pragati Maidan, New Delhi, Bharat Welcome to the 8th Internation Health & Wellness Exhibition We are pleased to have you with us. Your pass grants you access to exhibition areas. Please present this pass at the entrance for entry and enjoy your time exploring the exhibition. If you have any questions or need assistance, feel free to approach any of our staff members. Thank you for visiting and we hope you have an enriching experience! Sincerely, Namogange Wellness Team",
-    attachment: "View",
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Venue Location",
-    message: "N/A",
-    attachment: "N/A",
-    status: "Active",
-  },
-];
+// Helper function to capitalize the first letter (e.g., 'active' -> 'Active')
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const AddCrmWhatsappMessage = () => {
+  const dispatch = useDispatch();
+
+  // --- 1. Redux State Integration ---
+  const {
+    crm_messages = [],
+    loading: isLoading,
+    error,
+    success,
+    status,
+  } = useSelector((state) => state.crm_messages);
+
   const [editingMessage, setEditingMessage] = useState(null);
   const [formData, setFormData] = useState({
-    title: "",
-    message: "",
-    status: "Active",
-    attachment: null,
+    msg_name: "",
+    msg_descr: "",
+    // ✅ Keep this as "Active" to match the input's 'value'
+    msg_status: "Active",
+    file_attach: null,
   });
-  // State initialization without localStorage
-  const [messages, setMessages] = useState(initialMessages);
-  const [notification, setNotification] = useState(null);
+
+  const [showInlinePreview, setShowInlinePreview] = useState(false);
+
+  // --- 2. Initial Data Fetching ---
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchCrmMessages());
+    }
+  }, [dispatch, status]);
+
+  // --- 3. Toast and Status Handling ---
+  useEffect(() => {
+    if (
+      status === "succeeded" &&
+      success &&
+      success !== "Messages fetched successfully"
+    ) {
+      showSuccess(success);
+      dispatch(clearMessages());
+    }
+
+    if (status === "failed" && error) {
+      showError(error);
+      dispatch(clearMessages());
+    }
+  }, [error, success, status, dispatch]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "attachment" && files) {
+
+    if (name === "file_attach" && files) {
       setFormData((prevData) => ({
         ...prevData,
-        attachment: files[0],
+        file_attach: files[0],
       }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
+        // Radio button value is "Active" or "Inactive", which is stored here
         [name]: value,
       }));
     }
@@ -56,114 +79,108 @@ const AddCrmWhatsappMessage = () => {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      message: "",
-      status: "Active",
-      attachment: null,
+      msg_name: "",
+      msg_descr: "",
+      msg_status: "Active", // Reset to capitalized default
+      file_attach: null,
     });
     setEditingMessage(null);
+    setShowInlinePreview(false);
   };
 
-  const handleAddMessage = (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const handleAddMessage = async (e) => {
+    e.preventDefault();
+    if (isLoading) return;
 
-    // Validation
-    if (!formData.title || !formData.title.trim()) {
-      showError("Please fill in the title field!");
-      return;
-    }
-    if (!formData.message || !formData.message.trim()) {
-      showError("Please fill in the message field!");
+    if (!formData.msg_name.trim() || !formData.msg_descr.trim()) {
+      showError("Please fill in both the Title and Message fields!");
       return;
     }
 
-    const fileAttachmentName = formData.attachment
-      ? formData.attachment.name
-      : "N/A";
+    const apiFormData = new FormData();
+    apiFormData.append("msg_name", formData.msg_name.trim());
+    apiFormData.append("msg_descr", formData.msg_descr.trim());
 
-    if (editingMessage) {
-      // Update logic
-      setMessages((prev) =>
-        prev.map((item) =>
-          item.id === editingMessage.id
-            ? {
-                ...item,
-                title: formData.title.trim(),
-                message: formData.message.trim(),
-                status: formData.status,
-                attachment:
-                  formData.attachment !== null
-                    ? fileAttachmentName
-                    : item.attachment,
-              }
-            : item
-        )
-      );
-      showSuccess("Message updated successfully!");
-    } else {
-      // Add logic
-      const newId =
-        messages.length > 0 ? Math.max(...messages.map((c) => c.id)) + 1 : 1;
-      const newItem = {
-        id: newId,
-        title: formData.title.trim(),
-        message: formData.message.trim(),
-        status: formData.status,
-        attachment: fileAttachmentName,
-      };
-      setMessages((prev) => [...prev, newItem]);
-      showSuccess("Message added successfully!");
+    // ✅ FIX 2: Convert the status to LOWERCASE before sending to API/DB.
+    // The DB expects 'active' or 'inactive'.
+    apiFormData.append("msg_status", formData.msg_status.toLowerCase());
+
+    if (formData.file_attach) {
+      apiFormData.append("file_attach", formData.file_attach);
     }
-    resetForm();
+
+    try {
+      if (editingMessage) {
+        await dispatch(
+          updateCrmMessage({ id: editingMessage._id, updatedData: apiFormData })
+        ).unwrap();
+      } else {
+        await dispatch(addCrmMessage(apiFormData)).unwrap();
+      }
+      resetForm();
+    } catch (err) {
+      console.error("Submission failed:", err);
+    }
   };
 
   const handleEdit = (itemId) => {
-    const itemToEdit = messages.find((item) => item.id === itemId);
+    const itemToEdit = crm_messages.find((item) => item._id === itemId);
     if (itemToEdit) {
+      // ✅ FIX 1: Capitalize the status from DB (e.g., 'active' -> 'Active')
+      // to correctly match the radio button value checks.
+      const displayStatus = capitalize(itemToEdit.msg_status || "Inactive");
+
       setFormData({
-        title: itemToEdit.title,
-        message: itemToEdit.message,
-        status: itemToEdit.status,
-        attachment: null,
+        msg_name: itemToEdit.msg_name,
+        msg_descr: itemToEdit.msg_descr,
+        msg_status: displayStatus,
+        file_attach: null, // Clear file input on edit for re-upload
       });
       setEditingMessage(itemToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleDelete = (itemId) => {
-    {
-      setMessages((prev) => prev.filter((c) => c.id !== itemId));
-      showSuccess("Message deleted successfully!");
-      if (editingMessage && editingMessage.id === itemId) {
+  const handleDelete = async (itemId) => {
+    if (isLoading) return;
+    if (!window.confirm("Are you sure you want to delete this message?"))
+      return;
+
+    try {
+      await dispatch(deleteCrmMessage(itemId)).unwrap();
+
+      if (editingMessage && editingMessage._id === itemId) {
         resetForm();
       }
+    } catch (err) {
+      console.error("Deletion failed:", err);
     }
   };
+
+  // --- Formatting and Preview Functions (No changes needed) ---
   const applyFormatting = (tag) => {
-    const textarea = document.querySelector('textarea[name="message"]');
+    const textarea = document.querySelector('textarea[name="msg_descr"]');
     if (!textarea) return;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const selectedText = formData.message.substring(start, end);
+    const selectedText = formData.msg_descr.substring(start, end);
 
     let newText = "";
     if (tag === "B" || tag === "H") {
-      newText = `*${selectedText}*`; // WhatsApp Bold/Header uses '*'
+      newText = `*${selectedText}*`;
     } else if (tag === "I") {
-      newText = `_${selectedText}_`; // WhatsApp Italic uses '_'
+      newText = `_${selectedText}_`;
     }
 
     const newMessage =
-      formData.message.substring(0, start) +
+      formData.msg_descr.substring(0, start) +
       newText +
-      formData.message.substring(end);
-    setFormData((prev) => ({ ...prev, message: newMessage }));
+      formData.msg_descr.substring(end);
+    setFormData((prev) => ({ ...prev, msg_descr: newMessage }));
 
     setTimeout(() => {
       textarea.focus();
-      // Set cursor back inside the new tag if something was selected, otherwise at the end of the tag
       const cursorPosition = start + (newText.length > 0 ? 1 : 1);
       textarea.setSelectionRange(cursorPosition, cursorPosition);
     }, 0);
@@ -177,12 +194,11 @@ const AddCrmWhatsappMessage = () => {
     return { __html: previewHtml };
   };
 
-  // Replaced Modal logic with a simple inline preview state
-  const [showInlinePreview, setShowInlinePreview] = useState(false);
-
   const handleChooseFileClick = () => {
-    document.getElementById("attachment-input").click();
+    document.getElementById("file_attach-input").click();
   };
+
+  // --- JSX Rendering (No status logic changes needed here, as it was already checking item.msg_status.toLowerCase()) ---
 
   return (
     <div
@@ -203,18 +219,11 @@ const AddCrmWhatsappMessage = () => {
 
       {/* Main Content */}
       <div style={{ padding: "20px" }}>
-        {/* Notification message */}
-        {notification && (
-          <div style={styles.notificationBox}>
-            <span>{notification}</span>
-          </div>
-        )}
-
-        {/* Add/Edit Section - Now a proper form */}
+        {/* Add/Edit Section */}
         <form
           className="bg-white mb-5"
           style={{ border: "1px solid #ddd" }}
-          onSubmit={handleAddMessage} // Handle form submission
+          onSubmit={handleAddMessage}
         >
           <div
             className="px-5 py-3"
@@ -238,7 +247,7 @@ const AddCrmWhatsappMessage = () => {
               <div
                 style={{ display: "flex", gap: "24px", alignItems: "center" }}
               >
-                {/* Title Field */}
+                {/* Title Field (msg_name) */}
                 <div style={{ flex: 1 }}>
                   <label
                     className="block text-sm font-medium mb-2"
@@ -248,16 +257,17 @@ const AddCrmWhatsappMessage = () => {
                   </label>
                   <input
                     type="text"
-                    name="title"
-                    value={formData.title}
+                    name="msg_name"
+                    value={formData.msg_name}
                     onChange={handleChange}
                     className="w-full px-3 py-2 text-sm"
                     style={{ ...styles.input }}
                     placeholder="Enter message title"
-                    required // Added HTML required attribute
+                    required
+                    disabled={isLoading}
                   />
                 </div>
-                {/* Attachment Field with custom styling */}
+                {/* Attachment Field (file_attach) */}
                 <div style={{ flex: 1 }}>
                   <label
                     className="block text-sm font-medium mb-2"
@@ -267,30 +277,34 @@ const AddCrmWhatsappMessage = () => {
                   </label>
                   <div style={styles.customFileInput}>
                     <input
-                      id="attachment-input"
+                      id="file_attach-input"
                       type="file"
-                      name="attachment"
+                      name="file_attach"
                       onChange={handleChange}
                       style={styles.hiddenFileInput}
+                      disabled={isLoading}
                     />
                     <div style={styles.fileInputText}>
-                      {formData.attachment
-                        ? formData.attachment.name
-                        : editingMessage?.attachment &&
-                          editingMessage.attachment !== "N/A"
-                        ? `Current: ${editingMessage.attachment}`
+                      {formData.file_attach
+                        ? formData.file_attach.name
+                        : editingMessage?.file_attach &&
+                          editingMessage.file_attach !== "N/A"
+                        ? `Current: ${editingMessage.file_attach
+                            .split("/")
+                            .pop()}` // Show only filename
                         : "No file chosen"}
                     </div>
                     <button
-                      type="button" // Important: type="button" to prevent form submission
+                      type="button"
                       style={styles.fileInputButton}
                       onClick={handleChooseFileClick}
+                      disabled={isLoading}
                     >
                       Choose File
                     </button>
                   </div>
                 </div>
-                {/* Status Field */}
+                {/* Status Field (msg_status) - Uses capitalized values "Active"/"Inactive" */}
                 <div style={{ flex: 1 }}>
                   <label
                     className="block text-sm font-medium mb-2"
@@ -309,32 +323,33 @@ const AddCrmWhatsappMessage = () => {
                     <label style={styles.radioLabel}>
                       <input
                         type="radio"
-                        name="status"
+                        name="msg_status"
                         value="Active"
-                        checked={formData.status === "Active"}
+                        checked={formData.msg_status === "Active"}
                         onChange={handleChange}
                         style={{ marginRight: 8 }}
                         required
+                        disabled={isLoading}
                       />
                       <span style={{ color: "#333" }}>Active</span>
                     </label>
                     <label style={styles.radioLabel}>
                       <input
                         type="radio"
-                        name="status"
+                        name="msg_status"
                         value="Inactive"
-                        checked={formData.status === "Inactive"}
+                        checked={formData.msg_status === "Inactive"}
                         onChange={handleChange}
                         style={{ marginRight: 8 }}
                         required
+                        disabled={isLoading}
                       />
                       <span style={{ color: "#333" }}>Inactive</span>
                     </label>
                   </div>
                 </div>
               </div>
-
-              {/* Message Field */}
+              {/* Message Field (msg_descr) */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <label
                   className="block text-sm font-medium mb-2"
@@ -343,12 +358,12 @@ const AddCrmWhatsappMessage = () => {
                   Write a Message <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <div style={styles.richTextEditor}>
-                  {/* Dummy rich text editor toolbar */}
                   <div style={styles.toolbar}>
                     <button
                       type="button"
                       style={styles.toolbarBtn}
                       onClick={() => applyFormatting("B")}
+                      disabled={isLoading}
                     >
                       <strong>B</strong>
                     </button>
@@ -356,50 +371,40 @@ const AddCrmWhatsappMessage = () => {
                       type="button"
                       style={styles.toolbarBtn}
                       onClick={() => applyFormatting("I")}
+                      disabled={isLoading}
                     >
                       <em>I</em>
-                    </button>
-                    {/* Simplified/Placeholder buttons */}
-                    <button type="button" style={styles.toolbarBtn}>
-                      ✒️
-                    </button>
-                    <button type="button" style={styles.toolbarBtn}>
-                      📄
-                    </button>
-                    <button type="button" style={styles.toolbarBtn}>
-                      📌
-                    </button>
-                    <button type="button" style={styles.toolbarBtn}>
-                      ⭐
                     </button>
                     <button
                       type="button"
                       style={{ ...styles.toolbarBtn, ...styles.previewBtn }}
                       onClick={() => setShowInlinePreview((prev) => !prev)}
+                      disabled={isLoading}
                     >
                       <span style={{ marginRight: "4px" }}>🔍</span>{" "}
                       {showInlinePreview ? "Hide Preview" : "Show Preview"}
                     </button>
                   </div>
                   <textarea
-                    name="message"
-                    value={formData.message}
+                    name="msg_descr"
+                    value={formData.msg_descr}
                     onChange={handleChange}
                     style={styles.textArea}
                     placeholder="Write your message here... (Use *text* for bold/header, _text_ for italics)"
-                    required // Added HTML required attribute
+                    required
+                    disabled={isLoading}
                   ></textarea>
                 </div>
               </div>
 
-              {/* Inline Preview Section (Replaced Preview Modal) */}
+              {/* Inline Preview Section */}
               {showInlinePreview && (
                 <div style={styles.previewBox}>
                   <h4>WhatsApp Preview:</h4>
                   <div
                     style={styles.previewContent}
                     dangerouslySetInnerHTML={getPreviewContent(
-                      formData.message
+                      formData.msg_descr
                     )}
                   />
                 </div>
@@ -408,21 +413,29 @@ const AddCrmWhatsappMessage = () => {
               {/* Add / Update Button */}
               <div style={{ marginTop: "10px" }}>
                 <button
-                  type="submit" // Will trigger handleAddMessage
+                  type="submit"
                   className="px-6 py-2 text-sm text-white"
                   style={{
                     backgroundColor: "#3598dc",
                     border: "none",
                     borderRadius: 3,
-                    cursor: "pointer",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: isLoading ? 0.6 : 1,
                   }}
+                  disabled={isLoading}
                 >
-                  {editingMessage ? "Update Message" : "Add Message"}
+                  {isLoading
+                    ? editingMessage
+                      ? "Updating..."
+                      : "Adding..."
+                    : editingMessage
+                    ? "Update Message"
+                    : "Add Message"}
                 </button>
                 {/* Cancel (visible when editing) */}
                 {editingMessage && (
                   <button
-                    type="button" // Important: type="button" to prevent form submission
+                    type="button"
                     onClick={resetForm}
                     className="px-4 py-2 text-sm"
                     style={{
@@ -431,8 +444,10 @@ const AddCrmWhatsappMessage = () => {
                       color: "#333",
                       borderRadius: 3,
                       border: "none",
-                      cursor: "pointer",
+                      cursor: isLoading ? "not-allowed" : "pointer",
+                      opacity: isLoading ? 0.6 : 1,
                     }}
+                    disabled={isLoading}
                   >
                     Cancel
                   </button>
@@ -512,116 +527,153 @@ const AddCrmWhatsappMessage = () => {
                 </tr>
               </thead>
               <tbody>
-                {messages.length === 0 ? (
+                {isLoading && status === "loading" ? (
                   <tr>
                     <td
                       colSpan={6}
                       style={{
                         padding: 24,
                         textAlign: "center",
-                        color: "#777",
+                        color: "#3598dc",
                       }}
                     >
-                      No messages found.
+                      <div
+                        style={{
+                          display: "inline-block",
+                          marginRight: 10,
+                          border: "3px solid #f3f3f3",
+                          borderTop: "3px solid #3598dc",
+                          borderRadius: "50%",
+                          width: "16px",
+                          height: "16px",
+                          animation: "spin 1s linear infinite",
+                        }}
+                      ></div>
+                      Loading Messages...
                     </td>
                   </tr>
                 ) : (
-                  messages.map((item, index) => (
-                    <tr
-                      key={item.id}
-                      style={{
-                        borderBottom: "1px solid #ddd",
-                        backgroundColor:
-                          index % 2 === 0 ? "#ffffff" : "#f9f9f9",
-                      }}
-                    >
-                      <td
-                        className="px-4 py-3 text-sm text-center"
-                        style={{ color: "#333", width: 60 }}
-                      >
-                        {item.id}
-                      </td>
-                      <td
-                        className="px-4 py-3 text-sm"
-                        style={{ color: "#333", width: 150 }}
-                      >
-                        {item.title}
-                      </td>
-                      <td
-                        className="px-4 py-3 text-sm"
-                        style={{ color: "#333" }}
-                      >
-                        {/* Trim message for table display */}
-                        {item.message.length > 50
-                          ? item.message.substring(0, 50) + "..."
-                          : item.message}
-                      </td>
-                      <td
-                        className="px-4 py-3 text-sm"
-                        style={{ color: "#333", width: 120 }}
-                      >
-                        {item.attachment !== "N/A" ? (
-                          <a href="#" onClick={(e) => e.preventDefault()}>
-                            {item.attachment}
-                          </a>
-                        ) : (
-                          "N/A"
-                        )}
-                      </td>
-                      <td
-                        className="px-4 py-3 text-center"
-                        style={{ width: 100 }}
-                      >
-                        <span
-                          className="inline-block px-3 py-1 text-xs text-white"
+                  <>
+                    {crm_messages.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
                           style={{
+                            padding: 24,
+                            textAlign: "center",
+                            color: "#777",
+                          }}
+                        >
+                          No messages found.
+                        </td>
+                      </tr>
+                    ) : (
+                      crm_messages.map((item, index) => (
+                        <tr
+                          key={item._id || index}
+                          style={{
+                            borderBottom: "1px solid #ddd",
                             backgroundColor:
-                              item.status === "Active" ? "#337ab7" : "#d9534f",
-                            borderRadius: 3,
+                              index % 2 === 0 ? "#ffffff" : "#f9f9f9",
                           }}
                         >
-                          {item.status}
-                        </span>
-                      </td>
-                      <td
-                        className="px-4 py-3"
-                        style={{ textAlign: "center", width: 120 }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: 8,
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(item.id)}
-                            style={{
-                              ...styles.iconBtn,
-                              borderColor: "#337ab7",
-                              color: "#337ab7",
-                            }}
-                            title="Edit"
+                          <td
+                            className="px-4 py-3 text-sm text-center"
+                            style={{ color: "#333", width: 60 }}
                           >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(item.id)}
-                            style={{
-                              ...styles.iconBtn,
-                              borderColor: "#d9534f",
-                              color: "#d9534f",
-                            }}
-                            title="Delete"
+                            {index + 1}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm"
+                            style={{ color: "#333", width: 150 }}
                           >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                            {item.msg_name}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm"
+                            style={{ color: "#333" }}
+                          >
+                            {(item.msg_descr || "").length > 50
+                              ? (item.msg_descr || "").substring(0, 50) + "..."
+                              : item.msg_descr || "N/A"}{" "}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm"
+                            style={{ color: "#333", width: 120 }}
+                          >
+                            {item.file_attach && item.file_attach !== "N/A" ? (
+                              <a href="#" onClick={(e) => e.preventDefault()}>
+                                {/* Show only filename */}
+                                {item.file_attach.split("/").pop()}
+                              </a>
+                            ) : (
+                              "N/A"
+                            )}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-center"
+                            style={{ width: 100 }}
+                          >
+                            <span
+                              className="inline-block px-3 py-1 text-xs text-white"
+                              style={{
+                                backgroundColor:
+                                  // The display logic was already correct here:
+                                  item.msg_status.toLowerCase() === "active"
+                                    ? "#337ab7"
+                                    : "#d9534f",
+                                borderRadius: 3,
+                              }}
+                            >
+                              {/* Capitalize status for display in table */}
+                              {capitalize(item.msg_status)}
+                            </span>
+                          </td>
+                          <td
+                            className="px-4 py-3"
+                            style={{ textAlign: "center", width: 120 }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: 8,
+                              }}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => handleEdit(item._id)}
+                                style={{
+                                  ...styles.iconBtn,
+                                  borderColor: "#337ab7",
+                                  color: "#337ab7",
+                                  opacity: isLoading ? 0.6 : 1,
+                                }}
+                                title="Edit"
+                                disabled={isLoading}
+                              >
+                                <Pencil size={14} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(item._id)}
+                                style={{
+                                  ...styles.iconBtn,
+                                  borderColor: "#d9534f",
+                                  color: "#d9534f",
+                                  opacity: isLoading ? 0.6 : 1,
+                                }}
+                                title="Delete"
+                                disabled={isLoading}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </>
                 )}
               </tbody>
             </table>
@@ -632,6 +684,7 @@ const AddCrmWhatsappMessage = () => {
   );
 };
 
+// ... (styles and thStyle remain the same)
 const styles = {
   input: {
     border: "1px solid #d2d6de",
@@ -684,7 +737,7 @@ const styles = {
     cursor: "pointer",
   },
   notificationBox: {
-    backgroundColor: "#ffe0b2", // Changed color for better contrast/warning
+    backgroundColor: "#ffe0b2",
     border: "1px solid #ffcc80",
     padding: "8px 12px",
     borderRadius: 4,
@@ -739,11 +792,10 @@ const styles = {
     backgroundColor: "white",
     border: "1px solid #eee",
     borderRadius: 4,
-    whiteSpace: "pre-wrap", // Preserve formatting
+    whiteSpace: "pre-wrap",
   },
 };
 
-/* Helper to produce th style with fixed width optional */
 const thStyle = (width) => ({
   color: "#333",
   borderRight: "1px solid #ddd",

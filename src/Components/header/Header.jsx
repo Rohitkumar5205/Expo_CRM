@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import toast from 'react-hot-toast'; // ✅ Import for Toast Notifications
 
 import { MdGroups } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
