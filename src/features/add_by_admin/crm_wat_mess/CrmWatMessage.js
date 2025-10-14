@@ -3,9 +3,10 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/crm-messages";
 
-// 🔹 Async thunks (No changes needed)
+/* ==========================================
+   🟢 1️⃣ Get all messages
+========================================== */
 export const fetchCrmMessages = createAsyncThunk(
-  // ... (fetchCrmMessages logic)
   "crm_messages/fetchAll",
   async (_, thunkAPI) => {
     try {
@@ -19,13 +20,18 @@ export const fetchCrmMessages = createAsyncThunk(
   }
 );
 
+/* ==========================================
+   🟢 2️⃣ Add new message (FormData compatible)
+========================================== */
 export const addCrmMessage = createAsyncThunk(
   "crm_messages/add",
   async (msgData, thunkAPI) => {
     try {
-      const response = await axios.post(API_URL, msgData);
-      // ✅ FIX 1: Explicitly check for nested 'data' property common in API wrappers
-      return response.data.data || response.data; 
+      // msgData should be FormData
+      const response = await axios.post(API_URL, msgData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to add message"
@@ -34,13 +40,17 @@ export const addCrmMessage = createAsyncThunk(
   }
 );
 
+/* ==========================================
+   🟢 3️⃣ Update message (FormData compatible)
+========================================== */
 export const updateCrmMessage = createAsyncThunk(
   "crm_messages/update",
   async ({ id, updatedData }, thunkAPI) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, updatedData);
-      // ✅ FIX 2: Explicitly check for nested 'data' property common in API wrappers
-      return response.data.data || response.data; 
+      const response = await axios.put(`${API_URL}/${id}`, updatedData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data.data || response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to update message"
@@ -49,13 +59,15 @@ export const updateCrmMessage = createAsyncThunk(
   }
 );
 
+/* ==========================================
+   🟢 4️⃣ Delete message
+========================================== */
 export const deleteCrmMessage = createAsyncThunk(
-  // ... (deleteCrmMessage logic)
   "crm_messages/delete",
   async (id, thunkAPI) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
-      return id; // Return the ID of the deleted item
+      return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to delete message"
@@ -64,7 +76,6 @@ export const deleteCrmMessage = createAsyncThunk(
   }
 );
 
-// 🔹 Slice
 const crmMessageSlice = createSlice({
   name: "crm_messages",
   initialState: {
@@ -84,84 +95,65 @@ const crmMessageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ... (fetchCrmMessages cases)
+      // 🟡 Fetch
       .addCase(fetchCrmMessages.pending, (state) => {
         state.loading = true;
         state.status = "loading";
-        state.error = null;
-        state.success = null;
       })
       .addCase(fetchCrmMessages.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
         state.crm_messages = action.payload;
-        state.success = "Messages fetched successfully";
       })
       .addCase(fetchCrmMessages.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
-        state.error = action.payload || "Failed to fetch messages";
+        state.error = action.payload;
       })
 
-      // ... (addCrmMessage cases)
+      // 🟢 Add
       .addCase(addCrmMessage.pending, (state) => {
         state.loading = true;
         state.status = "loading";
-        state.error = null;
-        state.success = null;
       })
       .addCase(addCrmMessage.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
-        state.crm_messages.push(action.payload);
+        state.crm_messages.unshift(action.payload);
         state.success = "Message added successfully";
       })
       .addCase(addCrmMessage.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
-        state.error = action.payload || "Failed to add message";
+        state.error = action.payload;
       })
 
-      // =============================
-      // 🟢 FIX FOR UPDATE MESSAGE
-      // =============================
+      // 🟣 Update
       .addCase(updateCrmMessage.pending, (state) => {
         state.loading = true;
         state.status = "loading";
-        state.error = null;
-        state.success = null;
       })
       .addCase(updateCrmMessage.fulfilled, (state, action) => {
         state.loading = false;
         state.status = "succeeded";
 
-        // Ensure action.payload is the fully updated message object
-        const updatedItem = action.payload;
-
-        // Find the index of the old item
+        const updatedMsg = action.payload;
         const index = state.crm_messages.findIndex(
-          (msg) => msg._id === updatedItem._id
+          (msg) => msg._id === updatedMsg._id
         );
-
-        // Replace the old item with the fully updated item
-        if (index !== -1) {
-          // Simply replace the old object with the new one
-          state.crm_messages[index] = updatedItem;
-        }
+        if (index !== -1) state.crm_messages[index] = updatedMsg;
         state.success = "Message updated successfully";
       })
       .addCase(updateCrmMessage.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
-        state.error = action.payload || "Failed to update message";
+        state.error = action.payload;
       })
 
-      // ... (deleteCrmMessage cases)
+      // 🔴 Delete
       .addCase(deleteCrmMessage.pending, (state) => {
         state.loading = true;
         state.status = "loading";
-        state.error = null;
-        state.success = null;
       })
       .addCase(deleteCrmMessage.fulfilled, (state, action) => {
         state.loading = false;
@@ -174,7 +166,7 @@ const crmMessageSlice = createSlice({
       .addCase(deleteCrmMessage.rejected, (state, action) => {
         state.loading = false;
         state.status = "failed";
-        state.error = action.payload || "Failed to delete message";
+        state.error = action.payload;
       });
   },
 });

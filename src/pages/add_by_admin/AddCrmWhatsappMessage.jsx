@@ -9,8 +9,6 @@ import {
   deleteCrmMessage,
   clearMessages,
 } from "../../features/add_by_admin/crm_wat_mess/CrmWatMessage";
-
-// Helper function to capitalize the first letter (e.g., 'active' -> 'Active')
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const AddCrmWhatsappMessage = () => {
@@ -29,7 +27,6 @@ const AddCrmWhatsappMessage = () => {
   const [formData, setFormData] = useState({
     msg_name: "",
     msg_descr: "",
-    // ✅ Keep this as "Active" to match the input's 'value'
     msg_status: "Active",
     file_attach: null,
   });
@@ -100,15 +97,10 @@ const AddCrmWhatsappMessage = () => {
     const apiFormData = new FormData();
     apiFormData.append("msg_name", formData.msg_name.trim());
     apiFormData.append("msg_descr", formData.msg_descr.trim());
-
-    // ✅ FIX 2: Convert the status to LOWERCASE before sending to API/DB.
-    // The DB expects 'active' or 'inactive'.
     apiFormData.append("msg_status", formData.msg_status.toLowerCase());
-
     if (formData.file_attach) {
       apiFormData.append("file_attach", formData.file_attach);
     }
-
     try {
       if (editingMessage) {
         await dispatch(
@@ -126,15 +118,13 @@ const AddCrmWhatsappMessage = () => {
   const handleEdit = (itemId) => {
     const itemToEdit = crm_messages.find((item) => item._id === itemId);
     if (itemToEdit) {
-      // ✅ FIX 1: Capitalize the status from DB (e.g., 'active' -> 'Active')
-      // to correctly match the radio button value checks.
       const displayStatus = capitalize(itemToEdit.msg_status || "Inactive");
 
       setFormData({
         msg_name: itemToEdit.msg_name,
         msg_descr: itemToEdit.msg_descr,
         msg_status: displayStatus,
-        file_attach: null, // Clear file input on edit for re-upload
+        file_attach: null,
       });
       setEditingMessage(itemToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -143,9 +133,6 @@ const AddCrmWhatsappMessage = () => {
 
   const handleDelete = async (itemId) => {
     if (isLoading) return;
-    if (!window.confirm("Are you sure you want to delete this message?"))
-      return;
-
     try {
       await dispatch(deleteCrmMessage(itemId)).unwrap();
 
@@ -157,7 +144,6 @@ const AddCrmWhatsappMessage = () => {
     }
   };
 
-  // --- Formatting and Preview Functions (No changes needed) ---
   const applyFormatting = (tag) => {
     const textarea = document.querySelector('textarea[name="msg_descr"]');
     if (!textarea) return;
