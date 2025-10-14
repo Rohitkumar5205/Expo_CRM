@@ -168,9 +168,9 @@ const ColdClientList = () => {
             </div>
           </div>
 
-          <div className="w-full bg-white mx-4 my-6">
+          <div className="w-[97%] bg-white mx-4 my-6">
             <div className="flex justify-between pr-4 pt-1">
-              <h1 className="text-md font-semibold text-[#4f5a67] pl-4 pt-1">
+              <h1 className="text-md font-semibold text-gray-950 pl-4 pt-1">
                 COLD CLIENT LIST
               </h1>
               <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
@@ -204,7 +204,7 @@ const ColdClientList = () => {
             </div>
           </div>
           {/* The Textarea component is now placed outside of the table's container */}
-          <div className="bg-white shadow-md m-4 p-4 rounded-md w-full">
+          <div className="bg-white shadow-md m-4   w-[97%]">
             <Textarea />
           </div>
         </>

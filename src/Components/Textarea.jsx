@@ -2,7 +2,7 @@ import React from 'react'
 
 const Textarea = () => {
   return (
-    <div className="bg-white mt-4 mb-6 p-4 ">
+    <div className="bg-white mt-4 mb-6 p-4  ">
       {/* Label */}
       <label
         htmlFor="textstatus"
@@ -27,7 +27,7 @@ const Textarea = () => {
         <p className="text-red-500 text-xs">Maximum character limit 160</p>
         <button
           type="submit"
-          className="px-4 py-1.5 text-sm font-medium bg-[#337AB7] hover:bg-blue-700 text-white rounded-md shadow-sm cursor-pointer"
+          className="px-4 py-1.5 text-sm font-medium bg-[#337AB7] hover:bg-blue-700 text-white  shadow-sm cursor-pointer"
         >
           POST
         </button>
