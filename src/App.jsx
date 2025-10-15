@@ -3,25 +3,13 @@ import { Routes, Route } from "react-router-dom";
 // import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Layout
 import Layout from "./layouts/Layout";
-
-// Authentication
 import Login from "./authUI/Login";
 import OtpPage from "./authUI/OtpPage";
-
-// Dashboard & Main
 import MainComponent from "./Components/MainComponent";
-import ClientOverview from "./Components/ClientOverview";
-
-// Web Visitor Data
-import NewVisitor from "./webvisitordata/newvisitor";
-// Invoice Components
-import Performabutton from "./Components/invoice/TaxInvoiceDetails";
+// import ClientOverview from "./Components/ClientOverview";
 import EditEstimate from "./Components/EditEstimate";
 import AddCreditNote from "./Components/AddCreditNote";
-
 // rohit kumar
 import AddNewClients from "./pages/ihwe_client_data_2026/AddNewClients";
 import NewLeadList from "./pages/ihwe_client_data_2026/NewLeadList";
@@ -70,14 +58,14 @@ const App = () => {
 
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/otp" element={<OtpPage />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/login/otp" element={<OtpPage />} />
 
         {/* Protected Layout (Sidebar + Header + Footer) */}
         <Route element={<Layout />}>
           {/* Dashboard Routes */}
-          <Route path="/" element={<MainComponent />} />
-          <Route path="/client-overview" element={<ClientOverview />} />
+          <Route path="/dashboard" element={<MainComponent />} />
+          {/* <Route path="/client-overview" element={<ClientOverview />} /> */}
 
           {/* Section One */}
           <Route
@@ -143,7 +131,6 @@ const App = () => {
             path="/webVisitorData/addNewVisitors"
             element={<AddNewVisitors />}
           />
-          <Route path="/newVisitor" element={<NewVisitor />} />
           <Route
             path="/webVisitorData/generalVisitorsList"
             element={<GeneralVisitorsList />}
