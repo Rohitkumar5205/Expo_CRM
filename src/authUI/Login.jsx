@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mainImage from "../assets/images/login-bg.jpg";
 import midImage from "../assets/images/logo.png";
@@ -6,26 +6,43 @@ import midImage from "../assets/images/logo.png";
 const Login = () => {
   const navigate = useNavigate();
 
+  // 🧠 Form state
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+
+  // Handle input change
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    // ✅ Here you can also add validation logic if needed
-    navigate("/otp"); // redirects to OTP page
+
+    // ✅ Print the data in console
+    console.log("Submitted Data:", formData);
+
+    // Optional: Navigate to next page
+    navigate("/otp");
   };
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen bg-center bg-cover relative"
+      className="flex flex-col items-center justify-center min-h-screen bg-center bg-cover relative pt-14"
       style={{ backgroundImage: `url(${mainImage})` }}
     >
       {/* Logo */}
       <img
         src={midImage}
         alt="Logo"
-        className="w-60 mb-3 object-contain mt-[-50px]"
+        className="w-70 mb-6 object-contain mt-[-50px]"
       />
 
       {/* User Login Text */}
-      <h3 className="text-2xl font-sans text-black mb-4 tracking-wide">
+      <h3 className="text-2xl font-thin text-black mb-3 tracking-wide">
         USER LOGIN
       </h3>
 
@@ -44,7 +61,11 @@ const Login = () => {
           <input
             type="text"
             id="username"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full border border-black px-3 py-0.5 outline-none bg-white"
+           
+            required
           />
         </div>
 
@@ -58,13 +79,17 @@ const Login = () => {
           <input
             type="password"
             id="password"
-            className="w-full border border-gray-300 px-3 py-2 outline-none"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full border border-black px-3 py-0.5 outline-none bg-white"
+            
+            required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-[#337ab7] text-white py-2 font-semibold cursor-pointer"
+          className="w-full bg-[#337ab7] text-white py-1 cursor-pointer text-sm hover:bg-[#2a5f91] transition"
         >
           LOGIN
         </button>

@@ -124,7 +124,7 @@ const rows = [
               </h1>
             </div>
           </div>
-          <div className="w-[97%] bg-white mx-4 my-4 pb-1">
+          <div className="w-[97%] bg-white m-4 pb-1">
             <div className="flex justify-between pr-4 pt-1">
               <h1 className="text-base text-gray-950 pl-4 pt-1 font-semibold">
                 RAW DATA LIST
@@ -157,8 +157,7 @@ const rows = [
                 colomns={columns}
                 onRowClick={handleClientClick}
                  tableClassName="text-xs"
-  rowClassName="py-1" // smaller row height
-  cellClassName="px-2 py-1" // smaller padding inside each cell
+  
               />
             </div>
             <div className="mx-6 ">

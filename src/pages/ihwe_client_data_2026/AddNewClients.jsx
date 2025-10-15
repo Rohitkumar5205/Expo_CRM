@@ -219,7 +219,7 @@ const AddNewClients = () => {
       {/* Form */}
       <form
         onSubmit={handleSave}
-        className="max-w-full bg-white shadow-lg m-4 rounded-lg mx-4"
+        className="max-w-full bg-white shadow-lg  rounded-lg m-4"
       >
         <div className="p-4">
           <h2 className="text-base font-medium text-gray-700 mb-3">

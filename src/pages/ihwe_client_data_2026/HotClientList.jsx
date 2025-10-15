@@ -82,7 +82,7 @@ const HotClientList = () => {
               </h1>
             </div>
           </div>
-          <div className="w-[97%] bg-white p-1 mx-4 my-5">
+          <div className="w-[97%] bg-white p-1 m-4">
             <div className="flex justify-between md:justify-between ">
               <h1 className="text-base font-semibold text-gray-950 pl-4 pt-1">
               HOT CLIENT LIST
@@ -135,7 +135,7 @@ const HotClientList = () => {
               />
             </div>
           </div>
-          <div className="bg-white shadow-md m-4  rounded-md">
+          <div className="bg-white shadow-md m-4 w-[97%]">
             <Textarea />
           </div>
         </>

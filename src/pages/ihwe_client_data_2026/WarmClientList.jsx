@@ -131,7 +131,7 @@ const WarmClientList = () => {
               </h1>
             </div>
           </div>
-          <div className="w-[97%] bg-white px-3 py-1 ml-5 my-6">
+          <div className="w-[97%] bg-white px-3 py-1 m-4">
             <div className="flex justify-between md:justify-between mb-2">
               <h1 className="text-base font-semibold text-gray-950 pl-4 ">
               WARM CLIENT LIST{" "}
@@ -186,7 +186,7 @@ const WarmClientList = () => {
               />
             </div>
           </div>
-          <div className="bg-white ml-5 mx-4 my-3  rounded-md ">
+          <div className="bg-white w-[97%] m-4  ">
             <Textarea />
           </div>
         </>
