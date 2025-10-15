@@ -61,6 +61,7 @@ import AddNatureOfBusiness from "./pages/add_by_admin/AddNatureOfBusiness";
 import AddDataSource from "./pages/add_by_admin/AddDataSource";
 import AddStatus from "./pages/add_by_admin/AddStatus";
 import AddBank from "./pages/add_by_admin/AddBank";
+import UploadExhibitor from "./pages/ihwe_client_data_2026/uploadExhibitor";
 const App = () => {
   return (
     <>
@@ -110,6 +111,10 @@ const App = () => {
           <Route
             path="/ihweClientData2026/rawDataList"
             element={<RawDataList />}
+          />
+          <Route
+            path="/ihweClientData2026/uploadExhibitor"
+            element={<UploadExhibitor />}
           />
           <Route path="/history" element={<History />} />
           <Route path="/createInvoice" element={<CreateInvoice />} />

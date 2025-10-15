@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/crm-messages";
+// const API_URL = "http://localhost:5000/api/crm-messages";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ==========================================
    🟢 1️⃣ Get all messages
@@ -10,7 +11,7 @@ export const fetchCrmMessages = createAsyncThunk(
   "crm_messages/fetchAll",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(`${BASE_URL}/crm-messages`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -28,7 +29,7 @@ export const addCrmMessage = createAsyncThunk(
   async (msgData, thunkAPI) => {
     try {
       // msgData should be FormData
-      const response = await axios.post(API_URL, msgData, {
+      const response = await axios.post(`${BASE_URL}/crm-messages`, msgData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -47,9 +48,13 @@ export const updateCrmMessage = createAsyncThunk(
   "crm_messages/update",
   async ({ id, updatedData }, thunkAPI) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, updatedData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.put(
+        `${BASE_URL}/crm-messages/${id}`,
+        updatedData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       return response.data.data || response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -66,7 +71,7 @@ export const deleteCrmMessage = createAsyncThunk(
   "crm_messages/delete",
   async (id, thunkAPI) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`${BASE_URL}/crm-messages/${id}`);
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(

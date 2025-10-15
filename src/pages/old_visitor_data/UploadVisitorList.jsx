@@ -14,7 +14,7 @@ const UploadVisitorList = () => {
         <h1 className="text-xl text-gray-600">VISITOR SECTION</h1>
         <button
           className="bg-[#3598dc] hover:bg-[#3690ea] text-white px-4 py-2 text-sm cursor-pointer"
-          onClick={() => navigate('/contractor-list')}
+          onClick={() => navigate("/contractor-list")}
         >
           Visitor List
         </button>
@@ -23,13 +23,9 @@ const UploadVisitorList = () => {
       {/* Main */}
       <div className="p-6">
         <div className="bg-white p-6">
-          <h2 className="text-lg text-gray-700 mb-6">
-            Upload Visitor Excel
-          </h2>
+          <h2 className="text-lg text-gray-700 mb-6">Upload Visitor Excel</h2>
 
-          <label className="block text-sm text-gray-800">
-            Upload Excel
-          </label>
+          <label className="block text-sm text-gray-800">Upload Excel</label>
 
           <div className="flex items-center gap-3">
             {/* File Input */}
@@ -62,7 +58,12 @@ const UploadVisitorList = () => {
                   viewBox="0 0 24 24"
                 >
                   <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-                  <path d="M14 2v6h6" fill="none" stroke="white" strokeWidth="2"/>
+                  <path
+                    d="M14 2v6h6"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                  />
                 </svg>
                 <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold">
                   X
