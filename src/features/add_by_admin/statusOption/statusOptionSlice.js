@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/status-option";
+// const API_URL = "http://localhost:5000/api/status-option";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // 🔹 CREATE Status Option
 export const createStatusOption = createAsyncThunk(
   "statusOptions/create",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await axios.post(API_URL, data);
+      const res = await axios.post(`${BASE_URL}/status-option`, data);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -21,7 +22,7 @@ export const fetchStatusOptions = createAsyncThunk(
   "statusOptions/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(`${BASE_URL}/status-option`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -34,7 +35,7 @@ export const updateStatusOption = createAsyncThunk(
   "statusOptions/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API_URL}/${id}`, data);
+      const res = await axios.put(`${BASE_URL}/status-option/${id}`, data);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -47,7 +48,7 @@ export const deleteStatusOption = createAsyncThunk(
   "statusOptions/delete",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`${API_URL}/${id}`);
+      const res = await axios.delete(`${BASE_URL}/status-option/${id}`);
       return id; // return ID only to simplify filtering
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

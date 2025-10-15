@@ -12,11 +12,11 @@ import { fetchCities } from "../../features/city/citySlice";
 import { fetchDataSources } from "../../features/add_by_admin/dataSource/dataSourceSlice";
 import { fetchEvents } from "../../features/crmEvent/crmEventSlice";
 import { addCompany } from "../../features/company/companySlice";
-
+import { useNavigate } from "react-router-dom";
 const AddNewClients = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  // users redux
+  const navigate = useNavigate(); // users redux
   const { users, loading, error } = useSelector((state) => state.users);
   // categories redux
   const { categories } = useSelector((state) => state.categories);
@@ -174,26 +174,44 @@ const AddNewClients = () => {
       ],
     });
   };
-
+  const handleMasterList = () => {
+    navigate("/ihweClientData2026/masterData");
+  };
+  const handleConformList = () => {
+    navigate("/ihweClientData2026/confirmClientList");
+  };
+  const handleUploadExhibitor = () => {
+    navigate("/ihweClientData2026/uploadExhibitor");
+  };
   return (
     <div className="w-full min-h-screen bg-gray-100">
       {/* Heading */}
       <div className="w-full h-fit bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-2 py-1">
-          <h1 className="text-xl text-gray-700 mb-2 lg:mb-0">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
+          <h1 className="text-xl text-gray-500 mb-2 lg:mb-0">
             COMPANY DETAILS
           </h1>
-          <div className="flex flex-wrap gap-2">
-            {["Upload Exhibitor", "Master List", "Exhibitor List"].map(
-              (btn) => (
-                <button
-                  key={btn}
-                  className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
-                >
-                  {btn}
-                </button>
-              )
-            )}
+          <div className="flex flex-wrap gap-2 cursor-pointer">
+            <button
+              onClick={handleUploadExhibitor}
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+            >
+              Upload Exhibitor
+            </button>
+
+            <button
+              onClick={handleMasterList}
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+            >
+              Master List
+            </button>
+
+            <button
+              onClick={handleConformList}
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+            >
+              Exhibitor List
+            </button>
           </div>
         </div>
       </div>
@@ -219,7 +237,7 @@ const AddNewClients = () => {
                 type="text"
                 value={formData.companyName}
                 onChange={(e) => handleChange("companyName", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter company name"
                 required
               />
@@ -232,7 +250,7 @@ const AddNewClients = () => {
               <select
                 value={formData.category}
                 onChange={(e) => handleChange("category", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Category</option>
@@ -251,7 +269,7 @@ const AddNewClients = () => {
               <select
                 value={formData.businessNature}
                 onChange={(e) => handleChange("businessNature", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Nature</option>
@@ -269,7 +287,7 @@ const AddNewClients = () => {
                 type="text"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter address"
                 required
               />
@@ -286,7 +304,7 @@ const AddNewClients = () => {
                   handleChange("state", "") ||
                   handleChange("city", "")
                 }
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Country Here</option>
@@ -310,7 +328,7 @@ const AddNewClients = () => {
                   handleChange("city", "")
                 }
                 disabled={!formData.country}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded disabled:bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 disabled:bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select State Here</option>
@@ -329,7 +347,7 @@ const AddNewClients = () => {
                 value={formData.city}
                 onChange={(e) => handleChange("city", e.target.value)}
                 disabled={!formData.state}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded disabled:bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 disabled:bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select City Here</option>
@@ -360,7 +378,7 @@ const AddNewClients = () => {
                   }
                 }}
                 maxLength={6} // HTML also prevents more than 6 chars
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter pin code"
                 required
               />
@@ -374,7 +392,7 @@ const AddNewClients = () => {
                 type="text"
                 value={formData.website}
                 onChange={(e) => handleChange("website", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter website URL"
                 required
               />
@@ -388,7 +406,7 @@ const AddNewClients = () => {
                 type="text"
                 value={formData.landline}
                 onChange={(e) => handleChange("landline", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter landline number"
               />
             </div>
@@ -404,7 +422,7 @@ const AddNewClients = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter email address"
                 required
               />
@@ -416,7 +434,7 @@ const AddNewClients = () => {
               <select
                 value={formData.dataSource}
                 onChange={(e) => handleChange("dataSource", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Source</option>
@@ -435,7 +453,7 @@ const AddNewClients = () => {
               <select
                 value={formData.eventName}
                 onChange={(e) => handleChange("eventName", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Event</option>
@@ -455,7 +473,7 @@ const AddNewClients = () => {
                 type="datetime-local"
                 value={formData.reminder}
                 onChange={(e) => handleChange("reminder", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               />
             </div>
@@ -468,7 +486,7 @@ const AddNewClients = () => {
               <select
                 value={formData.forwardTo}
                 onChange={(e) => handleChange("forwardTo", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Here</option>
@@ -488,7 +506,7 @@ const AddNewClients = () => {
           <hr className="mb-4" />
 
           {formData.contacts.map((contact, index) => (
-            <div key={index} className=" p-3 bg-gray-50 rounded">
+            <div key={index} className=" p-3 bg-gray-50">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {/* Title */}
                 <div>
@@ -502,7 +520,7 @@ const AddNewClients = () => {
                       handleContactChange(index, "title", e.target.value)
                     }
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   >
                     <option value="">Select Here</option>
                     <option>Mr.</option>
@@ -526,7 +544,7 @@ const AddNewClients = () => {
                     }
                     placeholder="Enter First Name"
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
 
@@ -544,7 +562,7 @@ const AddNewClients = () => {
                     }
                     placeholder="Enter Surname"
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
 
@@ -562,7 +580,7 @@ const AddNewClients = () => {
                     }
                     placeholder="Enter Designation"
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
 
@@ -580,7 +598,7 @@ const AddNewClients = () => {
                     }
                     placeholder="Enter Email"
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
 
@@ -600,7 +618,7 @@ const AddNewClients = () => {
                     }}
                     placeholder="Enter Mobile"
                     required
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
 
@@ -615,7 +633,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={addContact}
-                        className="bg-green-500 hover:bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                        className="bg-green-500 hover:bg-green-600 text-white w-6 h-6-full flex items-center justify-center text-xs"
                       >
                         +
                       </button>
@@ -623,7 +641,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={() => removeContact(index)}
-                        className="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                        className="bg-red-500 hover:bg-red-600 text-white w-6 h-6-full flex items-center justify-center text-xs"
                       >
                         -
                       </button>
@@ -638,7 +656,7 @@ const AddNewClients = () => {
                       handleContactChange(index, "alternate", val);
                     }}
                     placeholder="Enter Alternate Number"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   />
                 </div>
               </div>
@@ -655,14 +673,14 @@ const AddNewClients = () => {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white rounded flex items-center gap-1"
+                className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white  flex items-center gap-1"
               >
                 Save <IoIosArrowDroprightCircle />
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded"
+                className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white "
               >
                 Reset
               </button>

@@ -1,47 +1,68 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/banks"; // 🔹 Update if backend URL differs
+// const API_URL = "http://localhost:5000/api/banks"; // 🔹 Update if backend URL differs
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // 🟢 1️⃣ Fetch all banks
-export const fetchBanks = createAsyncThunk("banks/fetchBanks", async (_, thunkAPI) => {
-  try {
-    const response = await axios.get(API_URL);
-    return response.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch banks");
+export const fetchBanks = createAsyncThunk(
+  "banks/fetchBanks",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/banks`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch banks"
+      );
+    }
   }
-});
+);
 
 // 🟢 2️⃣ Add a new bank
-export const addBank = createAsyncThunk("banks/addBank", async (bankData, thunkAPI) => {
-  try {
-    const response = await axios.post(API_URL, bankData);
-    return response.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to add bank");
+export const addBank = createAsyncThunk(
+  "banks/addBank",
+  async (bankData, thunkAPI) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/banks`, bankData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to add bank"
+      );
+    }
   }
-});
+);
 
 // 🟢 3️⃣ Update existing bank
-export const updateBank = createAsyncThunk("banks/updateBank", async ({ id, updatedData }, thunkAPI) => {
-  try {
-    const response = await axios.put(`${API_URL}/${id}`, updatedData);
-    return response.data.data; // Controller returns data inside `data`
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to update bank");
+export const updateBank = createAsyncThunk(
+  "banks/updateBank",
+  async ({ id, updatedData }, thunkAPI) => {
+    try {
+      const response = await axios.put(`${BASE_URL}/banks/${id}`, updatedData);
+      return response.data.data; // Controller returns data inside `data`
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to update bank"
+      );
+    }
   }
-});
+);
 
 // 🟢 4️⃣ Delete bank
-export const deleteBank = createAsyncThunk("banks/deleteBank", async (id, thunkAPI) => {
-  try {
-    await axios.delete(`${API_URL}/${id}`);
-    return id; // return deleted ID
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to delete bank");
+export const deleteBank = createAsyncThunk(
+  "banks/deleteBank",
+  async (id, thunkAPI) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      return id; // return deleted ID
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to delete bank"
+      );
+    }
   }
-});
+);
 
 // ============================
 // 📦 Slice
@@ -91,7 +112,9 @@ const bankSlice = createSlice({
 
       // 🔹 Update
       .addCase(updateBank.fulfilled, (state, action) => {
-        const index = state.banks.findIndex((bank) => bank._id === action.payload._id);
+        const index = state.banks.findIndex(
+          (bank) => bank._id === action.payload._id
+        );
         if (index !== -1) {
           state.banks[index] = action.payload;
         }
