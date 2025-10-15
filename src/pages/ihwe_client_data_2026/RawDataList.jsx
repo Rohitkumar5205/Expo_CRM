@@ -3,108 +3,103 @@ import Globallytable from "../../Components/Globallytable";
 import ClientOverview from "../../Components/ClientOverview";
 import UploaderTextarea from "../../Components/UploaderTextarea";
 
+
 const RawDataList = () => {
   const [selectedClient, setSelectedClient] = useState(null);
 
-  const columns = [
-    { label: "Company Name", accessor: "company.name" },
-    { label: "Company Email", accessor: "company.email" },
-    { label: "Contact Person", accessor: "contact.person" },
-    { label: "Phone", accessor: "contact.phone" },
-    { label: "Category", accessor: "category.main" },
-    { label: "Sub Category", accessor: "category.sub" },
-    { label: "Business Type", accessor: "Bussiness.type" },
-    { label: "City", accessor: "location.city" },
-    { label: "State", accessor: "location.state" },
-    { label: "Pincode", accessor: "location.pincode" },
-    { label: "Source Type", accessor: "source.type" },
-    { label: "Added By", accessor: "source.addedBy" },
-    { label: "Last Update Date", accessor: "update.date" },
-    { label: "Updated By", accessor: "update.by" },
-  ];
+ // Columns definition with padding
+const columns = [
+  { label: "Company Name", accessor: "company.name",  },
+  { label: "Category", accessor: "category.main",  },
+  { label: "Mobile", accessor: "mobile.number",  },
+  { label: "City", accessor: "location.city",  },
+  { label: "Source", accessor: "source.type",  },
+  { label: "Added on", accessor: "added.date",  },
+];
 
-  const rows = [
-    {
-      checkbox: true,
-      company: { name: "Tentamus India Pvt. Ltd", email: "labs@tentamus.com" },
-      contact: { person: "Ravi Kumar", phone: "+91 9848042002" },
-      category: { main: "Organic Products", sub: "Fertiliser" },
-      Bussiness: { type: "Manufacturer" },
-      location: { city: "Hyderabad", pincode: "500001", state: "Telangana" },
-      source: { type: "Local Visit", addedBy: "Admin" },
-      update: { date: "17 Sep 2025", by: "Sumit" },
-    },
-    {
-      checkbox: true,
-      company: { name: "AgriLabs Pvt. Ltd", email: "info@agrilabs.com" },
-      contact: { person: "Neha Sharma", phone: "+91 9876543210" },
-      category: { main: "Dairy", sub: "Milk Testing" },
-      Bussiness: { type: "Manufacturer" },
-      location: { city: "Delhi", pincode: "110001", state: "Delhi" },
-      source: { type: "Referral", addedBy: "Ramesh" },
-      update: { date: "12 Sep 2025", by: "Anita" },
-    },
-    {
-      checkbox: true,
-      company: { name: "FreshFarms Ltd", email: "contact@freshfarms.com" },
-      contact: { person: "Amit Verma", phone: "+91 9123456789" },
-      category: { main: "Vegetables", sub: "Export Quality" },
-      Bussiness: { type: "Manufacturer" },
-      location: { city: "Mumbai", pincode: "400001", state: "Maharashtra" },
-      source: { type: "Exhibition", addedBy: "Seema" },
-      update: { date: "05 Sep 2025", by: "Ravi" },
-    },
-    {
-      checkbox: true,
-      company: { name: "BioCrop Sciences", email: "support@biocrop.com" },
-      contact: { person: "Priya Mehta", phone: "+91 9812345678" },
-      category: { main: "Seeds", sub: "Hybrid Seeds" },
-      Bussiness: { type: "Manufacturer" },
-      location: { city: "Ahmedabad", pincode: "380001", state: "Gujarat" },
-      source: { type: "Conference", addedBy: "Karan" },
-      update: { date: "10 Aug 2025", by: "Deepak" },
-    },
-    {
-      checkbox: true,
-      company: { name: "GreenHarvest Pvt Ltd", email: "info@greenharvest.com" },
-      contact: { person: "Suresh Patel", phone: "+91 9876500000" },
-      category: { main: "Fruits", sub: "Organic Mangoes" },
-      Bussiness: { type: "Exporter" },
-      location: { city: "Pune", pincode: "411001", state: "Maharashtra" },
-      source: { type: "Trade Fair", addedBy: "Ritika" },
-      update: { date: "20 Jul 2025", by: "Alok" },
-    },
-    {
-      checkbox: true,
-      company: { name: "NutriAgro Foods", email: "contact@nutriagro.com" },
-      contact: { person: "Vikas Singh", phone: "+91 9999998888" },
-      category: { main: "Processed Foods", sub: "Snacks" },
-      Bussiness: { type: "Supplier" },
-      location: { city: "Lucknow", pincode: "226001", state: "Uttar Pradesh" },
-      source: { type: "Website", addedBy: "Manish" },
-      update: { date: "02 Jul 2025", by: "Priya" },
-    },
-    {
-      checkbox: true,
-      company: { name: "AgroChem Labs", email: "sales@agrochem.com" },
-      contact: { person: "Kavita Rao", phone: "+91 9123456000" },
-      category: { main: "Chemicals", sub: "Pesticides" },
-      Bussiness: { type: "Distributor" },
-      location: { city: "Chennai", pincode: "600001", state: "Tamil Nadu" },
-      source: { type: "Dealer Network", addedBy: "Rohit" },
-      update: { date: "18 Jun 2025", by: "Sonal" },
-    },
-    {
-      checkbox: true,
-      company: { name: "Healthy Harvesters", email: "info@healthyharvest.com" },
-      contact: { person: "Arjun Kapoor", phone: "+91 9012345678" },
-      category: { main: "Grains", sub: "Organic Wheat" },
-      Bussiness: { type: "Wholesaler" },
-      location: { city: "Jaipur", pincode: "302001", state: "Rajasthan" },
-      source: { type: "Cold Call", addedBy: "Meena" },
-      update: { date: "05 May 2025", by: "Raj" },
-    },
-  ];
+// 10 rows data
+const rows = [
+  {
+    company: { name: "Tentamus India Pvt. Ltd" },
+    category: { main: "Organic Products" },
+    mobile: { number: "+91 9848042002" },
+    location: { city: "Hyderabad" },
+    source: { type: "Local Visit" },
+    added: { date: "2025-01-10" },
+  },
+  {
+    company: { name: "AgriLabs Pvt. Ltd" },
+    category: { main: "Dairy" },
+    mobile: { number: "+91 9876543210" },
+    location: { city: "New Delhi" },
+    source: { type: "Referral" },
+    added: { date: "2025-02-05" },
+  },
+  {
+    company: { name: "FreshFarms Ltd" },
+    category: { main: "Vegetables" },
+    mobile: { number: "+91 9123456789" },
+    location: { city: "Mumbai" },
+    source: { type: "Exhibition" },
+    added: { date: "2025-03-15" },
+  },
+  {
+    company: { name: "BioCrop Sciences" },
+    category: { main: "Seeds" },
+    mobile: { number: "+91 9812345678" },
+    location: { city: "Ahmedabad" },
+    source: { type: "Conference" },
+    added: { date: "2025-04-20" },
+  },
+  {
+    company: { name: "GreenHarvest Pvt Ltd" },
+    category: { main: "Fruits" },
+    mobile: { number: "+91 9876500000" },
+    location: { city: "Pune" },
+    source: { type: "Trade Fair" },
+    added: { date: "2025-05-30" },
+  },
+  {
+    company: { name: "NutriAgro Foods" },
+    category: { main: "Processed Foods" },
+    mobile: { number: "+91 9999998888" },
+    location: { city: "Lucknow" },
+    source: { type: "Website" },
+    added: { date: "2025-06-12" },
+  },
+  {
+    company: { name: "AgroChem Labs" },
+    category: { main: "Chemicals" },
+    mobile: { number: "+91 9123456000" },
+    location: { city: "Chennai" },
+    source: { type: "Dealer Network" },
+    added: { date: "2025-07-01" },
+  },
+  {
+    company: { name: "Healthy Harvesters" },
+    category: { main: "Grains" },
+    mobile: { number: "+91 9012345678" },
+    location: { city: "Jaipur" },
+    source: { type: "Cold Call" },
+    added: { date: "2025-07-15" },
+  },
+  {
+    company: { name: "AgroTech Solutions" },
+    category: { main: "Agriculture Equipment" },
+    mobile: { number: "+91 9988776655" },
+    location: { city: "Bangalore" },
+    source: { type: "Website" },
+    added: { date: "2025-08-10" },
+  },
+  {
+    company: { name: "GreenLeaf Exports" },
+    category: { main: "Fruits & Vegetables" },
+    mobile: { number: "+91 9871234560" },
+    location: { city: "Kolkata" },
+    source: { type: "Trade Fair" },
+    added: { date: "2025-09-05" },
+  },
+];
 
   const handleClientClick = (clientData) => {
     setSelectedClient(clientData);
@@ -129,9 +124,9 @@ const RawDataList = () => {
               </h1>
             </div>
           </div>
-          <div className="w-full bg-white mx-4 my-4 pb-1">
+          <div className="w-[97%] bg-white mx-4 my-4 pb-1">
             <div className="flex justify-between pr-4 pt-1">
-              <h1 className="text-lg text-[#4f5a67] pl-4 pt-1 font-semibold">
+              <h1 className="text-base text-gray-950 pl-4 pt-1 font-semibold">
                 RAW DATA LIST
               </h1>
               <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
@@ -161,6 +156,9 @@ const RawDataList = () => {
                 rows={rows}
                 colomns={columns}
                 onRowClick={handleClientClick}
+                 tableClassName="text-xs"
+  rowClassName="py-1" // smaller row height
+  cellClassName="px-2 py-1" // smaller padding inside each cell
               />
             </div>
             <div className="mx-6 ">

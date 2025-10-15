@@ -10,7 +10,7 @@ const UploadVisitorList = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+      <div className="bg-white border-b border-gray-200 px-6 py-2 flex justify-between items-center">
         <h1 className="text-xl text-gray-600">VISITOR SECTION</h1>
         <button
           className="bg-[#3598dc] hover:bg-[#3690ea] text-white px-4 py-2 text-sm cursor-pointer"

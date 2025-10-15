@@ -204,16 +204,16 @@ const OldVisitorList = () => {
         <VisitorDetail visitor={selectedVisitor} onBack={handleBackClick} />
       ) : (
         <>
-          <div className="w-full bg-white shadow-md border-b">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-              <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
+          <div className="w-full bg-white shadow-md ">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
+              <h1 className="text-xl  text-gray-600 mb-2 lg:mb-0">
                 VISITOR DATA 2023
               </h1>
             </div>
           </div>
 
-          <div className="w-full bg-white p-3">
-            <h1 className="text-lg text-[#4f5a67] pl-4 pt-1">
+          <div className="w-[97%] bg-white p-2 mx-4 my-6">
+            <h1 className="text-base font-semibold  text-gray-950 pl-4 ">
               OLD VISITOR LIST
             </h1>
             <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
@@ -229,7 +229,7 @@ const OldVisitorList = () => {
               <Globallytable rows={rows} colomns={columns} />
             </div>
           </div>
-          <div className="bg-white shadow-md m-3 p-4 rounded-md">
+          <div className="bg-white shadow-md m-4 w-[97%] ">
             <Textarea />
           </div>
         </>

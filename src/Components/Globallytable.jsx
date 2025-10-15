@@ -5,7 +5,7 @@ import { TbCaretUpDownFilled } from "react-icons/tb";
 const getValue = (obj, path) =>
   path.split(".").reduce((acc, part) => acc && acc[part], obj) || "";
 
-const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
+const Globallytable = ({ rows = [], colomns = [], onRowClick,extrabutton=true  }) => {
   const [filters, setFilters] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -180,7 +180,9 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <button
+          {extrabutton && (
+            <>
+            <button
             onClick={handlePrint}
             className="text-[#2f353b] h-7 w-24 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
           >
@@ -192,6 +194,8 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
           >
             Excel
           </button>
+           </>
+          )}
           <div className="flex items-center w-full md:w-50">
             <label className="pt-1 text-[#2f353b] text-sm" htmlFor="Search">
               Search:

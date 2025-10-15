@@ -1,110 +1,178 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Globallytable from '../../Components/Globallytable';
 import Textarea from '../../Components/Textarea';
 import ClientOverview from '../../Components/ClientOverview';
+import { useReactToPrint } from 'react-to-print';
+import * as XLSX from 'xlsx';
 
 const MasterClientsList = () => {
     const [selectedClient, setSelectedClient] = useState(null);
+    const printref = useRef()
 
-    const columns = [
+    // print function 
+    
+const handleprint = useReactToPrint({
+   
+    contentRef:printref,
+    documentTitle:"Table Print",
+    removeAfterPrint:true,
+});
+
+// Excel function with styling
+const exportTableToExcel = () => {
+    const table = printref.current.querySelector('table'); // Assumes Globallytable renders <table>
+    if (!table) return;
+
+    // Convert table to worksheet
+    const workbook = XLSX.utils.table_to_book(table, { sheet: 'MasterClients' });
+
+    // Access the first worksheet
+    const worksheet = workbook.Sheets['MasterClients'];
+
+    // Make headers bold
+    const range = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell_address = { c: C, r: 0 }; // First row = headers
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!worksheet[cell_ref]) continue;
+        if (!worksheet[cell_ref].s) worksheet[cell_ref].s = {};
+        worksheet[cell_ref].s.font = { bold: true };
+    }
+
+    // Auto-width for columns
+    const colWidths = [];
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        let maxWidth = 10; // Minimum width
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
+            const cell = worksheet[cell_ref];
+            if (cell && cell.v) {
+                const length = cell.v.toString().length;
+                if (length > maxWidth) maxWidth = length;
+            }
+        }
+        colWidths.push({ wch: maxWidth + 2 }); // +2 for padding
+    }
+    worksheet['!cols'] = colWidths;
+
+    XLSX.writeFile(workbook, 'MasterClientsList.xlsx');
+};
+
+
+
+     const columns = [
         { label: "Company Name", accessor: "company.name" },
-        { label: "Company Email", accessor: "company.email" },
-        { label: "Contact Person", accessor: "contact.person" },
-        { label: "Phone", accessor: "contact.phone" },
+        { label: "Contact Details", accessor: "company.detail" },
         { label: "Category", accessor: "category.main" },
-        { label: "Sub Category", accessor: "category.sub" },
-        { label: "Business Type", accessor: "Bussiness.type" },
-        { label: "City", accessor: "location.city" },
+        { label: "Nature", accessor: "nature.name" },
         { label: "State", accessor: "location.state" },
-        { label: "Pincode", accessor: "location.pincode" },
-        { label: "Source Type", accessor: "source.type" },
-        { label: "Added By", accessor: "source.addedBy" },
-        { label: "Last Update Date", accessor: "update.date" },
-        { label: "Updated By", accessor: "update.by" },
+        { label: "City", accessor: "location.city" },
+        { label: "Source", accessor: "source.type" },
+        {label:"Status",accessor:"Status.name"},
+        {label:"Subject", accessor:"subject.name"},
+        { label: "Updated Details", accessor: "update.by" },
+        { label: "Added Details", accessor: "added.By" },
     ];
 
-    const rows = [
-        {
-            checkbox: true,
-            company: { name: "Tentamus India Pvt. Ltd", email: "labs@tentamus.com" },
-            contact: { person: "Ravi Kumar", phone: "+91 9848042002" },
-            category: { main: "Organic Products", sub: "Fertiliser" },
-            Bussiness: { type: "Manufacturer" },
-            location: { city: "Hyderabad", pincode: "500001", state: "Telangana" },
-            source: { type: "Local Visit", addedBy: "Admin" },
-            update: { date: "17 Sep 2025", by: "Sumit" },
-        },
-        {
-            checkbox: true,
-            company: { name: "AgriLabs Pvt. Ltd", email: "info@agrilabs.com" },
-            contact: { person: "Neha Sharma", phone: "+91 9876543210" },
-            category: { main: "Dairy", sub: "Milk Testing" },
-            Bussiness: { type: "Manufacturer" },
-            location: { city: "Delhi", pincode: "110001", state: "Delhi" },
-            source: { type: "Referral", addedBy: "Ramesh" },
-            update: { date: "12 Sep 2025", by: "Anita" },
-        },
-        {
-            checkbox: true,
-            company: { name: "FreshFarms Ltd", email: "contact@freshfarms.com" },
-            contact: { person: "Amit Verma", phone: "+91 9123456789" },
-            category: { main: "Vegetables", sub: "Export Quality" },
-            Bussiness: { type: "Manufacturer" },
-            location: { city: "Mumbai", pincode: "400001", state: "Maharashtra" },
-            source: { type: "Exhibition", addedBy: "Seema" },
-            update: { date: "05 Sep 2025", by: "Ravi" },
-        },
-        {
-            checkbox: true,
-            company: { name: "BioCrop Sciences", email: "support@biocrop.com" },
-            contact: { person: "Priya Mehta", phone: "+91 9812345678" },
-            category: { main: "Seeds", sub: "Hybrid Seeds" },
-            Bussiness: { type: "Manufacturer" },
-            location: { city: "Ahmedabad", pincode: "380001", state: "Gujarat" },
-            source: { type: "Conference", addedBy: "Karan" },
-            update: { date: "10 Aug 2025", by: "Deepak" },
-        },
-        {
-            checkbox: true,
-            company: { name: "GreenHarvest Pvt Ltd", email: "info@greenharvest.com" },
-            contact: { person: "Suresh Patel", phone: "+91 9876500000" },
-            category: { main: "Fruits", sub: "Organic Mangoes" },
-            Bussiness: { type: "Exporter" },
-            location: { city: "Pune", pincode: "411001", state: "Maharashtra" },
-            source: { type: "Trade Fair", addedBy: "Ritika" },
-            update: { date: "20 Jul 2025", by: "Alok" },
-        },
-        {
-            checkbox: true,
-            company: { name: "NutriAgro Foods", email: "contact@nutriagro.com" },
-            contact: { person: "Vikas Singh", phone: "+91 9999998888" },
-            category: { main: "Processed Foods", sub: "Snacks" },
-            Bussiness: { type: "Supplier" },
-            location: { city: "Lucknow", pincode: "226001", state: "Uttar Pradesh" },
-            source: { type: "Website", addedBy: "Manish" },
-            update: { date: "02 Jul 2025", by: "Priya" },
-        },
-        {
-            checkbox: true,
-            company: { name: "AgroChem Labs", email: "sales@agrochem.com" },
-            contact: { person: "Kavita Rao", phone: "+91 9123456000" },
-            category: { main: "Chemicals", sub: "Pesticides" },
-            Bussiness: { type: "Distributor" },
-            location: { city: "Chennai", pincode: "600001", state: "Tamil Nadu" },
-            source: { type: "Dealer Network", addedBy: "Rohit" },
-            update: { date: "18 Jun 2025", by: "Sonal" },
-        },
-        {
-            checkbox: true,
-            company: { name: "Healthy Harvesters", email: "info@healthyharvest.com" },
-            contact: { person: "Arjun Kapoor", phone: "+91 9012345678" },
-            category: { main: "Grains", sub: "Organic Wheat" },
-            Bussiness: { type: "Wholesaler" },
-            location: { city: "Jaipur", pincode: "302001", state: "Rajasthan" },
-            source: { type: "Cold Call", addedBy: "Meena" },
-            update: { date: "05 May 2025", by: "Raj" },
-        },
-    ];
+   const rows = [
+  {
+    checkbox: true,
+    company: { name: "Tentamus India Pvt. Ltd", detail: "labs@tentamus.com | +91 9848042002" },
+    category: { main: "Organic Products" },
+    nature: { name: "Manufacturer" },
+    location: { state: "Telangana", city: "Hyderabad" },
+    source: { type: "Local Visit" },
+    Status: { name: "Active" },
+    subject: { name: "Quality Testing Collaboration" },
+    update: { by: "Sumit" },
+    added: { By: "Admin" },
+  },
+  {
+    checkbox: true,
+    company: { name: "AgriLabs Pvt. Ltd", detail: "info@agrilabs.com | +91 9876543210" },
+    category: { main: "Dairy" },
+    nature: { name: "Manufacturer" },
+    location: { state: "Delhi", city: "New Delhi" },
+    source: { type: "Referral" },
+    Status: { name: "Pending" },
+    subject: { name: "Milk Testing Project" },
+    update: { by: "Anita" },
+    added: { By: "Ramesh" },
+  },
+  {
+    checkbox: true,
+    company: { name: "FreshFarms Ltd", detail: "contact@freshfarms.com | +91 9123456789" },
+    category: { main: "Vegetables" },
+    nature: { name: "Manufacturer" },
+    location: { state: "Maharashtra", city: "Mumbai" },
+    source: { type: "Exhibition" },
+    Status: { name: "Follow-up" },
+    subject: { name: "Export Supply Discussion" },
+    update: { by: "Ravi" },
+    added: { By: "Seema" },
+  },
+  {
+    checkbox: true,
+    company: { name: "BioCrop Sciences", detail: "support@biocrop.com | +91 9812345678" },
+    category: { main: "Seeds" },
+    nature: { name: "Manufacturer" },
+    location: { state: "Gujarat", city: "Ahmedabad" },
+    source: { type: "Conference" },
+    Status: { name: "Active" },
+    subject: { name: "Hybrid Seed Development" },
+    update: { by: "Deepak" },
+    added: { By: "Karan" },
+  },
+  {
+    checkbox: true,
+    company: { name: "GreenHarvest Pvt Ltd", detail: "info@greenharvest.com | +91 9876500000" },
+    category: { main: "Fruits" },
+    nature: { name: "Exporter" },
+    location: { state: "Maharashtra", city: "Pune" },
+    source: { type: "Trade Fair" },
+    Status: { name: "Completed" },
+    subject: { name: "Organic Mango Export Deal" },
+    update: { by: "Alok" },
+    added: { By: "Ritika" },
+  },
+  {
+    checkbox: true,
+    company: { name: "NutriAgro Foods", detail: "contact@nutriagro.com | +91 9999998888" },
+    category: { main: "Processed Foods" },
+    nature: { name: "Supplier" },
+    location: { state: "Uttar Pradesh", city: "Lucknow" },
+    source: { type: "Website" },
+    Status: { name: "In Progress" },
+    subject: { name: "Snack Distribution Contract" },
+    update: { by: "Priya" },
+    added: { By: "Manish" },
+  },
+  {
+    checkbox: true,
+    company: { name: "AgroChem Labs", detail: "sales@agrochem.com | +91 9123456000" },
+    category: { main: "Chemicals" },
+    nature: { name: "Distributor" },
+    location: { state: "Tamil Nadu", city: "Chennai" },
+    source: { type: "Dealer Network" },
+    Status: { name: "Active" },
+    subject: { name: "Pesticide Product Expansion" },
+    update: { by: "Sonal" },
+    added: { By: "Rohit" },
+  },
+  {
+    checkbox: true,
+    company: { name: "Healthy Harvesters", detail: "info@healthyharvest.com | +91 9012345678" },
+    category: { main: "Grains" },
+    nature: { name: "Wholesaler" },
+    location: { state: "Rajasthan", city: "Jaipur" },
+    source: { type: "Cold Call" },
+    Status: { name: "Inactive" },
+    subject: { name: "Organic Wheat Supply Proposal" },
+    update: { by: "Raj" },
+    added: { By: "Meena" },
+  },
+];
+
 
     const handleClientClick = (clientData) => {
         setSelectedClient(clientData);
@@ -129,21 +197,34 @@ const MasterClientsList = () => {
                             </h1>
                         </div>
                     </div>
-                    <div className="w-full bg-white mx-4 my-6">
+                    <div className="w-[97%] bg-white mx-4 my-6">
                         
-                        <div className='flex justify-between '>
-                            <h1 className='text-md font-semibold text-[#4f5a67] pl-4 pt-1'>MASTER CLIENTS LIST</h1>
-                          <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                            
+                        <div className='flex justify-between pt-1'>
+                            <h1 className='text-base font-semibold text-gray-950 pl-4 pt-1'>MASTER CLIENTS LIST</h1>
+                          <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1 pr-3">
+                              <button
+            onClick={handleprint}
+            className="text-[#2f353b] h-8 w-14 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
+          >
+            Print
+          </button>
+          <button
+            onClick={exportTableToExcel}
+            className="h-8 w-14 text-[#78a300] text-xs text-center cursor-pointer hover:bg-[#78a300] hover:text-white border border-[#78a300]"
+          >
+            Excel
+          </button>
                           </div>
                         </div>
                         <hr className="opacity-10 mb-2" />
-                        <div className="text-xs">
-                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} />
+                        
+                        <div ref={printref} className="text-xs print:text-sm print:block print:w-full print:overflow-visible">
+                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} extrabutton={false} />
                         </div>
+                        
                     </div>
                     {/* The Textarea component is now placed outside of the table's container */}
-                    <div className="bg-white shadow-md m-4 p-4 rounded-md">
+                    <div className="bg-white shadow-md m-4 w-[97%]">
                         <Textarea />
                     </div>
                 </>
