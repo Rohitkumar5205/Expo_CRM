@@ -1,13 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
+import { TbCaretUpDownFilled } from "react-icons/tb";
 
 // Helper function to access nested object properties
 const getValue = (obj, path) =>
   path.split(".").reduce((acc, part) => acc && acc[part], obj) || "";
 
-const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
+const Globallytable = ({ rows = [], colomns = [], onRowClick,extrabutton=true  }) => {
   const [filters, setFilters] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const tableContainerRef = useRef();
 
   const handleFilterChange = (accessor, value) => {
@@ -48,33 +50,46 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
     return matchesFilters && matchesGlobal;
   });
 
-  const noData = filteredRows.length === 0;
+  // ✅ Sorting logic
+  const sortedRows = useMemo(() => {
+    if (!sortConfig.key) return filteredRows;
 
-  // Print functionality using native window.print()
+    const sorted = [...filteredRows].sort((a, b) => {
+      const aValue = getValue(a, sortConfig.key);
+      const bValue = getValue(b, sortConfig.key);
+
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [filteredRows, sortConfig]);
+
+  const noData = sortedRows.length === 0;
+
+  // Print functionality
   const handlePrint = () => {
     const originalBodyDisplay = document.body.style.display;
     const originalBodyOverflow = document.body.style.overflow;
     const tableContainer = tableContainerRef.current;
-    
-    // Temporarily hide all content except the table
-    document.body.style.display = 'block';
-    document.body.style.overflow = 'hidden';
 
-    // Get all content inside the parent element that's not the table
-    const allElements = document.querySelectorAll('body > *');
+    document.body.style.display = "block";
+    document.body.style.overflow = "hidden";
+
+    const allElements = document.querySelectorAll("body > *");
     const hiddenElements = [];
-    allElements.forEach(el => {
-        if (!el.contains(tableContainer)) {
-            hiddenElements.push(el);
-            el.style.display = 'none';
-        }
+    allElements.forEach((el) => {
+      if (!el.contains(tableContainer)) {
+        hiddenElements.push(el);
+        el.style.display = "none";
+      }
     });
 
     window.print();
 
-    // Restore original content after print
-    hiddenElements.forEach(el => {
-        el.style.display = '';
+    hiddenElements.forEach((el) => {
+      el.style.display = "";
     });
     document.body.style.display = originalBodyDisplay;
     document.body.style.overflow = originalBodyOverflow;
@@ -82,24 +97,25 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
 
   // Export to CSV functionality
   const exportToCsv = () => {
-    const headers = colomns.map(col => `"${col.label}"`).join(',');
-    const csvRows = filteredRows.map(row =>
-      colomns.map(col => {
-        const value = getValue(row, col.accessor);
-        // Sanitize value for CSV
-        const sanitizedValue = String(value).replace(/"/g, '""');
-        return `"${sanitizedValue}"`;
-      }).join(',')
+    const headers = colomns.map((col) => `"${col.label}"`).join(",");
+    const csvRows = sortedRows.map((row) =>
+      colomns
+        .map((col) => {
+          const value = getValue(row, col.accessor);
+          const sanitizedValue = String(value).replace(/"/g, '""');
+          return `"${sanitizedValue}"`;
+        })
+        .join(",")
     );
-    const csvString = [headers, ...csvRows].join('\n');
-    
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const csvString = [headers, ...csvRows].join("\n");
+
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
       link.setAttribute("download", "ClientData.csv");
-      link.style.visibility = 'hidden';
+      link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -148,6 +164,8 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
           }
         `}
       </style>
+
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center p-5 pt-3 print-hidden">
         <div className="flex items-center mb-4 md:mb-0">
           <select className="h-8 w-20 border border-gray-300 text-sm pl-4">
@@ -160,8 +178,11 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
           </select>
           <p className="ml-1 text-sm mt-1">entries</p>
         </div>
+
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <button
+          {extrabutton && (
+            <>
+            <button
             onClick={handlePrint}
             className="text-[#2f353b] h-7 w-24 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
           >
@@ -173,6 +194,8 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
           >
             Excel
           </button>
+           </>
+          )}
           <div className="flex items-center w-full md:w-50">
             <label className="pt-1 text-[#2f353b] text-sm" htmlFor="Search">
               Search:
@@ -187,16 +210,17 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
         </div>
       </div>
 
+      {/* Table */}
       <div
         ref={tableContainerRef}
-        className="overflow-x-auto mx-auto printable-table-container"
+        className="overflow-x-auto mx-auto printable-table-container w-[97%]"
       >
         <div>
-          <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 md:mb-5 w-full min-w-max">
+          <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 w-full min-w-max">
             <thead>
               <tr className="bg-[#555555] text-white">
                 <th className="h-8 w-[60px] pl-3 border border-gray-200 print-hidden">
-                  <div className="h-6 flex items-center justify-center !mb-0">
+                  <div className="h-6 flex items-center justify-center">
                     <input
                       className="table-checkbox"
                       checked={
@@ -211,10 +235,27 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
                 {colomns.map((col) => (
                   <th
                     key={col.accessor}
-                    className="h-8 pl-3 border border-gray-200 text-left"
+                    onClick={() => {
+                      if (sortConfig.key === col.accessor) {
+                        setSortConfig({
+                          key: col.accessor,
+                          direction:
+                            sortConfig.direction === "asc" ? "desc" : "asc",
+                        });
+                      } else {
+                        setSortConfig({ key: col.accessor, direction: "asc" });
+                      }
+                    }}
+                    className=" h-8 pl-3 border border-gray-200 text-center cursor-pointer select-none"
                     style={{ width: col.width }}
                   >
                     {col.label}
+                    
+                    {sortConfig.key === col.accessor && (
+                      <span className="ml-3">
+                        {sortConfig.direction === "asc"? "▲" : "▼"}
+                      </span>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -222,10 +263,10 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
 
             <tbody>
               {!noData ? (
-                filteredRows.map((row, i) => (
+                sortedRows.map((row, i) => (
                   <tr key={i} className="hover:bg-gray-50">
                     <td className="h-8 w-[60px] pl-3 border border-gray-200 text-center print-hidden">
-                      <div className="h-5 flex items-center justify-center !mb-0">
+                      <div className="h-5 flex items-center justify-center">
                         <input
                           className="table-checkbox"
                           checked={selectedRows.includes(i)}
@@ -241,7 +282,6 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
                         className="h-8 pl-3 border border-gray-200 text-left"
                         style={{ width: col.width }}
                       >
-                        {/* Check if column has custom render function */}
                         {col.render ? (
                           col.render(getValue(row, col.accessor), row)
                         ) : col.accessor === "company.name" ? (
@@ -298,9 +338,10 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick }) => {
         </div>
       </div>
 
+      {/* Footer */}
       <div className="w-full flex flex-col md:flex-row justify-between items-center p-5 text-xs pt-6 print-hidden">
         <p className="p-2 mb-4 md:mb-0">
-          Showing 1 to {filteredRows.length} of {rows.length} entries
+          Showing 1 to {sortedRows.length} of {rows.length} entries
         </p>
         <div className="flex">
           <ul className="flex cursor-pointer">
