@@ -56,7 +56,7 @@ const SidebarMenu = () => {
         {/* Dashboard Link */}
         <div className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
           <AiOutlineHome size={18} className="text-gray-400" />
-          <Link to="/">
+          <Link to="/dashboard">
             {" "}
             <span className="text-white text-sm ">Dashboard</span>
           </Link>
@@ -228,16 +228,11 @@ const SidebarMenu = () => {
         >
           <ul className="text-[12px] font-normal text-white uppercase">
             <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
-              <Link to="/newVisitor" className="block pl-10 py-2">
-                Add New Visitors
-              </Link>
-            </li>
-            <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
               <Link
                 to="/webVisitorData/addNewVisitors"
                 className="block pl-10 py-2"
               >
-                Add New Visitors Rohit
+                Add New Visitors
               </Link>
             </li>
             <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
