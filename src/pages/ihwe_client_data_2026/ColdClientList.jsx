@@ -168,7 +168,7 @@ const ColdClientList = () => {
             </div>
           </div>
 
-          <div className="w-[97%] bg-white mx-4 my-6">
+          <div className="w-[97%] bg-white m-4">
             <div className="flex justify-between pr-4 pt-1">
               <h1 className="text-md font-semibold text-gray-950 pl-4 pt-1">
                 COLD CLIENT LIST
