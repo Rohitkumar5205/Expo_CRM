@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import {  Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, deleteUser } from "../../features/auth/userSlice";
 import { showError, showSuccess } from "../../utils/toastMessage";
+import { BiEdit } from "react-icons/bi";
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -34,42 +35,42 @@ const UserList = () => {
   return (
     <div className="w-full min-h-screen bg-[#f5f5f5]">
       <div className="w-full bg-white border-b border-gray-200">
-        <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal text-gray-600">USERS</h1>
+        <div className="flex items-center justify-between px-6 py-2">
+          <h1 className="text-xl font-normal text-gray-600">USERS</h1>
         </div>
       </div>
 
-      <div className="mx-6 mt-6 bg-white border border-gray-200">
-        <div className="px-5 py-3 text-white bg-[#3598dc]">
-          <h2 className="text-xl font-medium">USERS LIST</h2>
+      <div className="mx-5 mt-5 bg-white border border-[#3598dc]">
+        <div className="px-2.5 py-1.5 text-white bg-[#3598dc]">
+          <h2 className="text-lg font-semibold">USERS LIST</h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b-2 border-gray-300">
-                <th className="px-4 py-3 text-sm font-semibold text-center border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   No.
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
                   Full Name
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
                   Designation
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
                   Username
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
                   Mobile
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-center border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   Type
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-center border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   Status
                 </th>
-                <th className="px-4 py-3 text-sm font-semibold text-center">
+                <th className="px-4 py-2 text-sm font-semibold text-center">
                   Action
                 </th>
               </tr>
@@ -83,27 +84,27 @@ const UserList = () => {
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   }`}
                 >
-                  <td className="px-4 py-3 text-sm text-center border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm text-center border-r border-gray-200">
                     {index + 1}
                   </td>
-                  <td className="px-4 py-3 text-sm border-r border-gray-200 text-blue-600 cursor-pointer">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200 text-[#337ab7] hover:text-[#1c4971] cursor-pointer hover:underline">
                     {user.user_fullname}
                   </td>
-                  <td className="px-4 py-3 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200">
                     {user.user_designation}
                   </td>
-                  <td className="px-4 py-3 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200">
                     {user.user_name}
                   </td>
-                  <td className="px-4 py-3 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200">
                     {user.user_mobile}
                   </td>
-                  <td className="px-4 py-3 text-sm text-center border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm text-center border-r border-gray-200">
                     {user.user_role}
                   </td>
-                  <td className="px-4 py-3 text-center border-r border-gray-200">
+                  <td className="px-4 py-1 text-center border-r border-gray-200">
                     <span
-                      className={`inline-block px-3 py-1 text-xs text-white rounded ${
+                      className={`inline-block px-2 py-1 text-xs text-white  ${
                         user.user_status === "Active"
                           ? "bg-teal-400"
                           : "bg-red-500"
@@ -112,23 +113,24 @@ const UserList = () => {
                       {user.user_status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-1 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => handleEdit(user._id)}
-                        className="p-2 border border-[#3598dc] text-[#3598dc] bg-white rounded"
+                        className="px-1.5 py-1 border border-[#3598dc] text-[#3598dc] bg-white "
                         title="Edit"
                       >
-                        <Pencil size={12} />
+                        
+                        <BiEdit size={14} />
                       </button>
                       <button
                         onClick={() =>
                           handleDelete(user._id, user.user_fullname)
                         }
-                        className="p-2 border border-red-500 text-red-500 bg-white rounded"
+                        className="px-1.5 py-1 border border-red-500 text-red-500 bg-white "
                         title="Delete"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
