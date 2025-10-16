@@ -80,11 +80,18 @@ const AddUser = () => {
 
   const roles = ["User", "Admin"];
 
+    // ✅ Updated handleChange with 10-digit mobile number logic
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
+    // Allow only digits and max 10 for mobile number
+    if (name === "mobileNo") {
+      const numericValue = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
   const handleCancelClick = () => {
     navigate("/users/userList");
   };
@@ -141,24 +148,24 @@ const AddUser = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      <div className="w-full bg-white border-b border-gray-300">
-        <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal text-gray-600">
-            {isEdit ? "EDIT USERS" : "USERS"}
+      <div className="w-full bg-white  border-gray-300">
+        <div className="flex items-center justify-between px-4 py-2">
+          <h1 className="text-xl font-normal text-gray-600">
+            {isEdit ? "EDIT USER" : "USERS"}
           </h1>
         </div>
       </div>
 
-      <div className="mx-6 mt-6 bg-white border border-gray-300">
-        <div className="px-5 py-3 text-white bg-blue-600">
-          <h2 className="text-xl font-medium">
+      <div className="mx-5 my-5 bg-white border border-[#3598dc]">
+        <div className="px-3 py-1.5 text-white bg-[#3598dc]">
+          <h2 className="text-xl font-semibold">
             {isEdit ? "EDIT USERS" : "ADD USERS"}
           </h2>
         </div>
 
-        <div className="p-8 bg-gray-50">
+        <div className="p-8 bg-gray-50 ">
           {/* Name */}
-          <div className="flex items-start mb-5">
+          <div className="flex items-start mb-5 ">
             <label className="w-64 text-right pr-8 pt-2 text-sm text-gray-800">
               Name <span className="text-red-600">*</span>
             </label>
@@ -169,7 +176,7 @@ const AddUser = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="First Name"
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
               />
               <input
                 type="text"
@@ -177,7 +184,7 @@ const AddUser = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last Name"
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
               />
             </div>
           </div>
@@ -193,7 +200,8 @@ const AddUser = () => {
                 name="mobileNo"
                 value={formData.mobileNo}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
@@ -209,7 +217,8 @@ const AddUser = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
@@ -225,7 +234,7 @@ const AddUser = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
               />
             </div>
           </div>
@@ -244,7 +253,7 @@ const AddUser = () => {
                 placeholder={
                   isEdit ? "Leave blank to keep current password" : ""
                 }
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
               />
             </div>
           </div>
@@ -264,7 +273,7 @@ const AddUser = () => {
                 placeholder={
                   isEdit ? "Leave blank to keep current password" : ""
                 }
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300"
+                className="w-full px-3 py-2 text-sm  border border-gray-300"
               />
             </div>
           </div>
@@ -279,7 +288,7 @@ const AddUser = () => {
                 name="designation"
                 value={formData.designation}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300 text-gray-700"
+                className="w-full px-3 py-2 text-sm  border border-gray-300 text-gray-700"
               >
                 <option value="">----- Select -----</option>
                 {designations.map((des, idx) => (
@@ -301,7 +310,7 @@ const AddUser = () => {
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300 text-gray-700"
+                className="w-full px-3 py-2 text-sm  border border-gray-300 text-gray-700"
               >
                 <option value="">----- Select -----</option>
                 {departments.map((dept, idx) => (
@@ -323,7 +332,7 @@ const AddUser = () => {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm rounded border border-gray-300 text-gray-700"
+                className="w-full px-3 py-2 text-sm  border border-gray-300 text-gray-700"
               >
                 <option value="">Select User Role</option>
                 {roles.map((role, idx) => (
@@ -372,13 +381,13 @@ const AddUser = () => {
             <div className="flex-1 flex gap-3">
               <button
                 onClick={handleAddUser}
-                className="px-6 py-2 text-sm text-white rounded bg-blue-500"
+                className="px-4 py-2 text-sm text-white  bg-[#3598dc]"
               >
                 {isEdit ? "Update user" : "Add user"}
               </button>
               <button
                 onClick={handleCancelClick}
-                className="px-6 py-2 text-sm rounded bg-gray-300 text-gray-700"
+                className="px-4 py-2 text-sm  bg-gray-300 text-gray-700"
               >
                 Cancel
               </button>
