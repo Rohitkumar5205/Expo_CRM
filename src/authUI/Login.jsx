@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mainImage from "../assets/images/login-bg.jpg";
 import midImage from "../assets/images/logo.png";
+import { showSuccess } from "../utils/toastMessage";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,9 +25,10 @@ const Login = () => {
 
     // ✅ Print the data in console
     console.log("Submitted Data:", formData);
+    showSuccess("Login Successfuly")
 
     // Optional: Navigate to next page
-    navigate("/otp");
+    navigate("/login/otp");
   };
 
   return (
