@@ -4,9 +4,6 @@ import img2 from "../assets/images/logo.png";
 import { FaRegCopyright } from "react-icons/fa6";
 import { showInfo, showSuccess } from "../utils/toastMessage";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import img from "../assets/images/login-bg.jpg";
-import img2 from "../assets/images/logo.png";
 
 const OtpPage = () => {
   const [otp, setOtp] = useState("");
