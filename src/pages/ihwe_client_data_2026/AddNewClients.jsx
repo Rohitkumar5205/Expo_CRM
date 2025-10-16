@@ -3,7 +3,7 @@ import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { useLocation } from "react-router-dom";
 import { showSuccess } from "../../utils/toastMessage";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUsers } from "../../features/users/userSlice";
+import { fetchUsers } from "../../features/auth/userSlice";
 import { fetchCategories } from "../../features/add_by_admin/category/categorySlice";
 import { fetchNatures } from "../../features/add_by_admin/nature/natureSlice";
 import { fetchCountries } from "../../features/add_by_admin/country/countrySlice";

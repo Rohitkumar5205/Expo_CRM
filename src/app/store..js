@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "../features/users/userSlice";
+import userReducer from "../features/auth/userSlice";
 import categoryReducer from "../features/add_by_admin/category/categorySlice";
 import natureReducer from "../features/add_by_admin/nature/natureSlice";
 import countryReducer from "../features/add_by_admin/country/countrySlice";
@@ -11,7 +11,7 @@ import companyReducer from "../features/company/companySlice";
 import statusOptionReducer from "../features/add_by_admin/statusOption/statusOptionSlice";
 import bankReducer from "../features/add_by_admin/banks/bankSlice";
 import crmMessageReducer from "../features/add_by_admin/crm_wat_mess/CrmWatMessage";
-
+import authReducer from "../features/auth/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,7 +26,8 @@ export const store = configureStore({
     companies: companyReducer,
     statusOptions: statusOptionReducer,
     banks: bankReducer,
-    crm_messages: crmMessageReducer, 
+    crm_messages: crmMessageReducer,
+    auth: authReducer,
   },
 });
 
