@@ -2,19 +2,34 @@ import React, { useState } from 'react';
 import img from '../assets/images/login-bg.jpg';
 import img2 from '../assets/images/logo.png';
 import { FaRegCopyright } from "react-icons/fa6";
+import { showInfo, showSuccess } from '../utils/toastMessage';
+import { useNavigate } from 'react-router-dom';
 
 const OtpPage = () => {
   const [otp, setOtp] = useState('');
+  // page navigation on success of otp 
+const navigate=useNavigate()
 
   // 🔹 Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
+     showSuccess("OTP is verified successfully")
+    navigate('/dashboard')
     console.log('Verifying OTP:', otp);
   };
+
+  // input value logic 
+const handleChange = (e) => {
+  const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+  setOtp(value);
+};
+
+
 
   // 🔹 Handle resend
   const handleResend = () => {
     console.log('Resending OTP');
+    showInfo("Your four-digit OTP has been sent to your WhatsApp")
   };
 
   return (
@@ -59,7 +74,7 @@ const OtpPage = () => {
               name="otp"
               placeholder="Enter your OTP number" 
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              onChange={handleChange}
               required
             />
 
@@ -97,8 +112,8 @@ const OtpPage = () => {
       <footer className="py-2 md:py-2">
         <ul className="flex justify-center gap-2 text-sm sm:text-sm list-none">
           <li>
-            <a href="#" className="hover:text-zinc-700 text-blue-600">
-              Namo Gange Trust
+            <a href="https://namogange.org/" className="hover:text-zinc-700 text-blue-600 hover:underline ">
+              Namo Gange Trust 
             </a>
           </li>
           <li className="text-gray-700">|</li>
