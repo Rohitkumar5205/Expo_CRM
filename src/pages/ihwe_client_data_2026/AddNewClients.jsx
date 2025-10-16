@@ -368,7 +368,7 @@ const AddNewClients = () => {
                 name="pincode"
                 value={formData.pincode}
                 onChange={(e) => {
-                  const value = e.target.value;
+               const value = e.target.value;
                   // Allow only digits and maximum length 6
                   if (!isNaN(value) && value.length <= 6) {
                     setFormData((prev) => ({
@@ -376,7 +376,7 @@ const AddNewClients = () => {
                       pincode: value,
                     }));
                   }
-                }}
+                }}   
                 maxLength={6} // HTML also prevents more than 6 chars
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter pin code"

@@ -4,12 +4,12 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
-label {
+/*label {
   font-size: 14px;
   font-weight: 500;
 }
 
-/*input {
+input {
   background-color: white;
   border-color: #ccc;
   border-width: 1px;
