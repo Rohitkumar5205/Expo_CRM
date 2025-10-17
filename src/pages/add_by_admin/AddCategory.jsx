@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
+import { BiEdit } from "react-icons/bi";
 import {
   fetchCategories,
   createCategory,
@@ -9,100 +10,13 @@ import {
 } from "../../features/add_by_admin/category/categorySlice";
 import { showError, showSuccess } from "../../utils/toastMessage";
 
-/** Simple Pagination component */
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pages = [];
-  const start = Math.max(1, currentPage - 2);
-  const end = Math.min(totalPages, currentPage + 2);
-  for (let p = start; p <= end; p++) pages.push(p);
-
-  return (
-    <div style={styles.pagination}>
-      <button
-        onClick={() => onPageChange(1)}
-        disabled={currentPage === 1}
-        style={{
-          ...styles.pageBtn,
-          ...(currentPage === 1 ? styles.disabledBtn : {}),
-        }}
-      >
-        {"<<"}
-      </button>
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        style={{
-          ...styles.pageBtn,
-          ...(currentPage === 1 ? styles.disabledBtn : {}),
-        }}
-      >
-        {"<"}
-      </button>
-
-      {start > 1 && <span style={styles.pageGap}>...</span>}
-
-      {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onPageChange(p)}
-          style={{
-            ...styles.pageBtn,
-            ...(p === currentPage ? styles.activePageBtn : {}),
-          }}
-        >
-          {p}
-        </button>
-      ))}
-
-      {end < totalPages && <span style={styles.pageGap}>...</span>}
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        style={{
-          ...styles.pageBtn,
-          ...(currentPage === totalPages ? styles.disabledBtn : {}),
-        }}
-      >
-        {">"}
-      </button>
-      <button
-        onClick={() => onPageChange(totalPages)}
-        disabled={currentPage === totalPages}
-        style={{
-          ...styles.pageBtn,
-          ...(currentPage === totalPages ? styles.disabledBtn : {}),
-        }}
-      >
-        {">>"}
-      </button>
-    </div>
-  );
-};
-
 const AddCategory = () => {
   const dispatch = useDispatch();
+  const { categories = [], loading: isLoading } = useSelector(
+    (state) => state.categories
+  );
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    status: "Active",
-  });
-
-  const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState({ key: "cat_id", dir: "asc" });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [message, setMessage] = useState(null);
-
-  // categories redux
-  const {
-    categories,
-    loading: isLoading,
-    error,
-  } = useSelector((state) => state.categories);
-
-  console.log("add category data", categories);
+  const [formData, setFormData] = useState({ name: "", status: "Active" });
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -110,10 +24,7 @@ const AddCategory = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const resetForm = () => {
@@ -121,496 +32,219 @@ const AddCategory = () => {
     setEditingCategory(null);
   };
 
-  // ------------------------------------------------------------------
-  // ** UPDATED: handleAddCategory to correctly run API calls **
-  // ------------------------------------------------------------------
   const handleAddCategory = async (e) => {
     e.preventDefault();
-
-    // 1. Validation Check
-    if (!formData.name || !formData.name.trim()) {
-      showError("Please enter category name!");
-      return;
-    }
-    if (!formData.status) {
-      showError("Please select a status!");
-      return;
-    }
-
-    const trimmedName = formData.name.trim();
-
-    // 2. Duplicate Check
-    const duplicate = (Array.isArray(categories) ? categories : []).find(
-      (c) =>
-        (c?.cat_name || "").trim().toLowerCase() ===
-          trimmedName.toLowerCase() &&
-        (!editingCategory || c._id !== editingCategory._id)
-    );
-    if (duplicate) {
-      showError("A category with that name already exists!");
-      return;
-    }
-
-    // 3. Prepare Data
+    if (!formData.name.trim()) return showError("Please enter category name!");
     const categoryData = {
-      cat_name: trimmedName,
+      cat_name: formData.name.trim(),
       cat_status: formData.status,
       cat_added: new Date().toISOString(),
     };
-
     try {
       if (editingCategory) {
-        // A. Update Category
         await dispatch(
           updateCategory({ id: editingCategory._id, updates: categoryData })
-        ).unwrap(); // Use unwrap() to handle success/error
-
+        ).unwrap();
         showSuccess("Category updated successfully!");
       } else {
-        // B. Create Category
-        // Generate a new ID for the creation action (adjust if backend handles this)
-        const newCatId =
+        const newId =
           categories.length > 0
             ? Math.max(...categories.map((c) => c.cat_id || 0)) + 1
             : 1;
-
-        await dispatch(
-          createCategory({ ...categoryData, cat_id: newCatId })
-        ).unwrap(); // Use unwrap() to handle success/error
-
+        await dispatch(createCategory({ ...categoryData, cat_id: newId })).unwrap();
         showSuccess("Category added successfully!");
       }
-
-      // 4. Success Actions
       resetForm();
-      dispatch(fetchCategories()); // Refresh list
-    } catch (err) {
-      // 5. Error Handling
-      const action = editingCategory ? "update" : "add";
-      showError(`Failed to ${action} category. Please try again.`);
-      console.error(`Failed to ${action} category:`, err);
+      dispatch(fetchCategories());
+    } catch {
+      showError("Failed to save category!");
     }
   };
-  // ------------------------------------------------------------------
 
-  const handleEdit = (categoryId) => {
-    const categoryToEdit = categories.find((cat) => cat?._id === categoryId);
-    if (categoryToEdit) {
+  const handleEdit = (id) => {
+    const cat = categories.find((c) => c._id === id);
+    if (cat) {
       setFormData({
-        name: categoryToEdit.cat_name,
-        // Ensure status is capitalized to match "Active"/"Inactive" for radio buttons
-        status: categoryToEdit.cat_status
-          ? categoryToEdit.cat_status.charAt(0).toUpperCase() +
-            categoryToEdit.cat_status.slice(1)
-          : "Active",
+        name: cat.cat_name,
+        status:
+          cat.cat_status.charAt(0).toUpperCase() + cat.cat_status.slice(1),
       });
-      setEditingCategory(categoryToEdit);
+      setEditingCategory(cat);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleDelete = async (categoryId) => {
-    {
-      try {
-        await dispatch(deleteCategory(categoryId)).unwrap();
-        showSuccess("Category deleted successfully!");
-        dispatch(fetchCategories());
-      } catch (err) {
-        showError("Failed to delete category. Please try again.");
-        console.error("Failed to delete category:", err);
-      }
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteCategory(id)).unwrap();
+      showSuccess("Category deleted successfully!");
+      dispatch(fetchCategories());
+    } catch {
+      showError("Failed to delete category!");
     }
-  };
-
-  const filteredAndSortedCategories = useMemo(() => {
-    let list = Array.isArray(categories) ? categories.filter(Boolean) : [];
-    if (searchText && searchText.trim()) {
-      const s = searchText.trim().toLowerCase();
-      list = list.filter((c) => (c?.cat_name || "").toLowerCase().includes(s));
-    }
-    if (statusFilter === "Active" || statusFilter === "Inactive") {
-      list = list.filter(
-        (c) =>
-          (c?.cat_status || "").toLowerCase() === statusFilter.toLowerCase()
-      );
-    }
-    const { key, dir } = sortBy;
-    list.sort((a, b) => {
-      let av = a[key];
-      let bv = b[key];
-      if (key === "cat_id") {
-        av = Number(av);
-        bv = Number(bv);
-      } else {
-        av = (av || "").toString().toLowerCase();
-        bv = (bv || "").toString().toLowerCase();
-      }
-      if (av < bv) return dir === "asc" ? -1 : 1;
-      if (av > bv) return dir === "asc" ? 1 : -1;
-      return 0;
-    });
-    return list;
-  }, [categories, searchText, statusFilter, sortBy]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredAndSortedCategories.length / rowsPerPage)
-  );
-  useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
-  }, [totalPages, currentPage]);
-
-  const currentPageData = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage;
-    return filteredAndSortedCategories.slice(start, start + rowsPerPage);
-  }, [filteredAndSortedCategories, currentPage, rowsPerPage]);
-
-  const toggleSort = (key) => {
-    setSortBy((prev) => {
-      if (prev.key === key) {
-        return { ...prev, dir: prev.dir === "asc" ? "desc" : "asc" };
-      } else {
-        return { key, dir: "asc" };
-      }
-    });
   };
 
   return (
-    <div
-      className="w-full"
-      style={{ backgroundColor: "#ecf0f5", minHeight: "100vh", padding: "0" }}
-    >
-      {/* Header Section */}
-      <div
-        className="w-full bg-white"
-       
-      >
-        <div className="flex items-center justify-between px-5 py-0.5">
-          <h1 className="text-xl font-normal" style={{ color: "#666" }}>
-            CATEGORY
-          </h1>
-        </div>
+    <div className="bg-[#ecf0f5] min-h-screen">
+      {/* Header */}
+      <div className="bg-white px-5 py-1">
+        <h1 className="text-gray-600 font-normal text-xl">CATEGORY</h1>
       </div>
 
-      {/* Main Content */}
-      <div style={{ padding: "20px" }}>
-        {/* Add/Edit Category Section */}
-        <form
-          className="bg-white mb-5 pb-12"
-         
-          onSubmit={handleAddCategory}
-        >
-          <div
-            className="px-5 py-1"
-            style={{
-              backgroundColor: "#f9f9f9",
-              borderBottom: "1px solid #ddd",
-            }}
-          >
-            <h2
-              className="text-base font-semibold"
-              style={{ color: "#555", margin: 0 }}
-            >
+      <div className="p-5 space-y-7">
+        {/* Add / Edit Category */}
+        <form onSubmit={handleAddCategory} className="bg-white shadow-sm pb-12">
+          <div className="bg-white px-4 py-2">
+            <h2 className="text-gray-500 font-semibold text-base">
               {editingCategory ? "EDIT CATEGORY" : "ADD CATEGORY"}
             </h2>
+            <hr className="w-full opacity-10" />
           </div>
 
-          <div className="p-6">
-            <div
-              className="flex items-start gap-8"
-              style={{ alignItems: "flex-end" }}
-            >
-              {/* Name Field */}
-              <div style={{ flex: 1 }}>
-                <label
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#333" }}
-                >
-                  Name <span style={{ color: "#f44336" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm"
-                  style={{
-                    ...styles.input,
-                  }}
-                  placeholder="Enter category name"
-                />
-              </div>
+          <div className="p-5 grid grid-cols-1 md:grid-cols-[1fr_200px_auto_auto] gap-6 items-end">
+            {/* Name */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter category name"
+                className="w-full border border-gray-300 px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              />
+            </div>
 
-              {/* Status Field */}
-              <div style={{ width: 280 }}>
-                <label
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#333" }}
-                >
-                  Status <span style={{ color: "#f44336" }}>*</span>
+            {/* Status */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Status <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center gap-6 mt-2">
+                <label className="flex items-center gap-2 text-gray-700">
+                  <input
+                    type="radio"
+                    name="status"
+                    value="Active"
+                    checked={formData.status === "Active"}
+                    onChange={handleChange}
+                  />
+                  Active
                 </label>
-                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                  <label style={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="status"
-                      value="Active"
-                      checked={formData.status === "Active"}
-                      onChange={handleChange}
-                      className="text-[#333] text-xs font-medium mr-3"
-                    />
-                    <span style={{ color: "#333" }}>Active</span>
-                  </label>
-                  <label style={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="status"
-                      value="Inactive"
-                      checked={formData.status === "Inactive"}
-                      onChange={handleChange}
-                      style={{ marginRight: 8 }}
-                    />
-                    <span className="text-[#333] text-[17px] font-normal">Inactive</span>
-                  </label>
-                </div>
+                <label className="flex items-center gap-2 text-gray-700">
+                  <input
+                    type="radio"
+                    name="status"
+                    value="Inactive"
+                    checked={formData.status === "Inactive"}
+                    onChange={handleChange}
+                  />
+                  Inactive
+                </label>
               </div>
+            </div>
 
-              {/* Add / Update Button */}
-              <div style={{ display: "flex", alignItems: "flex-end" }}>
+            {/* Buttons */}
+            <div>
+              <button
+                type="submit"
+                className="bg-[#3598dc] text-white text-xs px-6 py-2 hover:bg-[#2f82c4]"
+              >
+                {editingCategory ? "Edit Category" : "Add Category"}
+              </button>
+            </div>
+            {editingCategory && (
+              <div>
                 <button
-                  type="submit"
-                  className="px-6 py-2 text-xs text-white"
-                  style={{
-                    backgroundColor: "#3598dc",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                  title={editingCategory ? "Update Category" : "Add Category"}
+                  type="button"
+                  onClick={resetForm}
+                  className="bg-gray-200 text-gray-700 text-xs px-5 py-2 hover:bg-gray-300"
                 >
-                  {editingCategory ? "Update Category" : "Add Category"}
+                  Cancel
                 </button>
               </div>
-
-              {/* Cancel (visible when editing) */}
-              {editingCategory && (
-                <div style={{ display: "flex", alignItems: "flex-end" }}>
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="px-4 py-2 text-xs"
-                    style={{
-                      backgroundColor: "#e0e0e0",
-                      color: "#333",
-                      borderRadius: 3,
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </form>
 
-       
+        {/* List of Categories */}
+        <div className="bg-white">
+          <div className="bg-white px-5 py-1">
+            <h2 className="text-gray-600 font-semibold text-base">
+              LIST OF CATEGORY
+            </h2>
+          </div>
+          <hr className="w-full opacity-10" />
 
-          {/* Table header */}
-          <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-            <table
-              className="w-full"
-              style={{ borderCollapse: "collapse", width: "100%" }}
-            >
-              <thead
-                style={{
-                  position: "sticky",
-                  top: 0,
-                  backgroundColor: "#f9f9f9",
-                  zIndex: 1,
-                }}
-              >
-                <tr style={{ borderBottom: "2px solid #ddd" }}>
-                  <th
-                    className="px-4 py-3 text-xs font-semibold text-center"
-                    style={thStyle(80)}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 8,
-                      }}
-                    >
-                      No.
-                      <button
-                        onClick={() => toggleSort("cat_id")}
-                        style={styles.sortBtn}
-                      >
-                        {sortBy.key === "cat_id"
-                          ? sortBy.dir === "asc"
-                            ? "▲"
-                            : "▼"
-                          : "↕"}
-                      </button>
-                    </div>
+          <div className="overflow-auto max-h-[550px] mx-5 my-2">
+            <table className="w-full border border-gray-300 border-collapse text-sm">
+              <thead className="bg-white">
+                <tr>
+                  <th className="border border-gray-300 px-4 py-3 text-center w-[70px] text-gray-700 font-semibold">
+                    No.
                   </th>
-                  <th
-                    className="px-4 py-3 text-xs font-semibold text-left"
-                    style={thStyle()}
-                  >
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      Category
-                      <button
-                        onClick={() => toggleSort("cat_name")}
-                        style={styles.sortBtn}
-                      >
-                        {sortBy.key === "cat_name"
-                          ? sortBy.dir === "asc"
-                            ? "▲"
-                            : "▼"
-                          : "↕"}
-                      </button>
-                    </div>
+                  <th className="border border-gray-300 px-4 py-3 text-left text-gray-700 font-semibold">
+                    Category
                   </th>
-                  <th
-                    className="px-4 py-3 text-xs font-semibold text-center"
-                    style={thStyle(150)}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 8,
-                      }}
-                    >
-                      Status
-                      <button
-                        onClick={() => toggleSort("cat_status")}
-                        style={styles.sortBtn}
-                      >
-                        {sortBy.key === "cat_status"
-                          ? sortBy.dir === "asc"
-                            ? "▲"
-                            : "▼"
-                          : "↕"}
-                      </button>
-                    </div>
+                  <th className="border border-gray-300 px-4 py-3 text-center text-gray-700 font-semibold w-[130px]">
+                    Status
                   </th>
-                  <th
-                    className="px-4 py-3 text-xs font-semibold text-center"
-                    style={thStyle(120)}
-                  >
+                  <th className="border border-gray-300 px-4 py-3 text-center text-gray-700 font-semibold w-[130px]">
                     Action
                   </th>
                 </tr>
               </thead>
-
               <tbody>
-                {isLoading && (
+                {isLoading ? (
                   <tr>
-                    <td
-                      colSpan={4}
-                      style={{
-                        padding: 24,
-                        textAlign: "center",
-                        color: "#777",
-                      }}
-                    >
-                      Loading categories...
+                    <td colSpan={4} className="py-6 text-center text-gray-500">
+                      Loading...
                     </td>
                   </tr>
-                )}
-               
-
-                {currentPageData.length === 0 ? (
+                ) : categories.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={4}
-                      style={{
-                        padding: 24,
-                        textAlign: "center",
-                        color: "#777",
-                      }}
-                    >
-                      No categories found.
+                    <td colSpan={4} className="py-6 text-center text-gray-500">
+                      No categories found
                     </td>
                   </tr>
                 ) : (
-                  currentPageData.map((category, index) => (
+                  categories.map((cat, index) => (
                     <tr
-                      key={category._id}
-                      style={{
-                        borderBottom: "1px solid #ddd",
-                        backgroundColor:
-                          index % 2 === 0 ? "#ffffff" : "#f9f9f9",
-                      }}
+                      key={cat._id}
+                      className={`${
+                        index % 2 === 0 ? "bg-[#f9f9f9]" : "bg-white"
+                      } border border-gray-300`}
                     >
-                      <td
-                        className="px-4 py-3 text-xs text-center"
-                        style={{ color: "#333", width: 80 }}
-                      >
-                        {(currentPage - 1) * rowsPerPage + index + 1}
+                      <td className="border border-gray-300 px-4 py-2 text-center text-gray-700">
+                        {index + 1}
                       </td>
-
-                      <td
-                        className="px-4 py-3 text-xs"
-                        style={{ color: "#333" }}
-                      >
-                        {category?.cat_name || ""}
+                      <td className="border border-gray-300 px-4 py-2 text-gray-700">
+                        {cat.cat_name}
                       </td>
-
-                      <td className="px-4 py-3 text-center">
-                        {category?.cat_status ? (
-                          <span
-                            className="inline-block px-3 py-1 text-xs text-white"
-                            style={{
-                              backgroundColor:
-                                category.cat_status.toLowerCase() === "active"
-                                  ? "#337ab7"
-                                  : "#d9534f",
-                              
-                            }}
-                          >
-                            {category.cat_status.charAt(0).toUpperCase() +
-                              category.cat_status.slice(1)}
-                          </span>
-                        ) : null}
-                      </td>
-
-                      <td className="px-4 py-3" style={{ textAlign: "center" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: 8,
-                          }}
+                      <td className="border border-gray-300 px-4 py-2 text-center">
+                        <span
+                          className={`px-3 py-1 text-xs text-white ${
+                            cat.cat_status.toLowerCase() === "active"
+                              ? "bg-[#3598dc]"
+                              : "bg-[#d9534f]"
+                          }`}
                         >
+                          {cat.cat_status}
+                        </span>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-center">
+                        <div className="flex justify-center gap-3">
                           <button
-                            onClick={() => handleEdit(category._id)}
-                            style={{
-                              ...styles.iconBtn,
-                              borderColor: "#337ab7",
-                              color: "#337ab7",
-                            }}
-                            title="Edit"
+                            onClick={() => handleEdit(cat._id)}
+                            className="border border-[#3598dc] text-[#3598dc] p-1 hover:bg-[#3598dc]/10"
                           >
-                            <Pencil size={14} />
+                            <BiEdit size={14} />
                           </button>
-
                           <button
-                            // onClick={() => openDeleteModal(category.id)}
-                            onClick={() => handleDelete(category._id)}
-                            style={{
-                              ...styles.iconBtn,
-                              borderColor: "#d9534f",
-                              color: "#d9534f",
-                            }}
-                            title="Delete"
+                            onClick={() => handleDelete(cat._id)}
+                            className="border border-[#d9534f] text-[#d9534f] p-1 hover:bg-[#d9534f]/10"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -623,146 +257,20 @@ const AddCategory = () => {
             </table>
           </div>
 
-          {/* Footer: Pagination and summary */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 12,
-            }}
-          >
-            <div style={{ color: "#666", fontSize: 13 }}>
-              Showing{" "}
-              <strong style={{ color: "#333" }}>
-                {filteredAndSortedCategories.length === 0
-                  ? 0
-                  : (currentPage - 1) * rowsPerPage + 1}
-              </strong>{" "}
-              to{" "}
-              <strong style={{ color: "#333" }}>
-                {Math.min(
-                  currentPage * rowsPerPage,
-                  filteredAndSortedCategories.length
-                )}
-              </strong>{" "}
-              of{" "}
-              <strong style={{ color: "#333" }}>
-                {filteredAndSortedCategories.length}
-              </strong>{" "}
+          {/* Bottom Info Row (Pagination Removed) */}
+          <div className="flex justify-end items-center px-5 py-2 text-sm text-gray-600">
+            <p>
+              Total{" "}
+              <span className="text-gray-800 font-medium">
+                {categories.length}
+              </span>{" "}
               entries
-            </div>
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+            </p>
           </div>
         </div>
       </div>
-   
+    </div>
   );
 };
-
-const styles = {
-  input: {
-    border: "1px solid #d2d6de",
-    borderRadius: 3,
-    padding: "8px 10px",
-    fontSize: 14,
-    width: "100%",
-    boxSizing: "border-box",
-  },
-  radioLabel: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    cursor: "pointer",
-  },
-  smallActionBtn: {
-    backgroundColor: "#f7f7f7",
-    border: "1px solid #ddd",
-    padding: "6px 10px",
-    borderRadius: 3,
-    cursor: "pointer",
-    fontSize: 13,
-  },
-  searchInput: {
-    padding: "8px 10px",
-    borderRadius: 3,
-    border: "1px solid #d2d6de",
-    width: 280,
-  },
-  clearBtn: {
-    padding: "8px 10px",
-    borderRadius: 3,
-    border: "1px solid #ddd",
-    backgroundColor: "#fff",
-    cursor: "pointer",
-    fontSize: 13,
-  },
-  smallSelect: {
-    padding: "6px 8px",
-    borderRadius: 3,
-    border: "1px solid #d2d6de",
-  },
-  iconBtn: {
-    padding: 6,
-    border: "1px solid #ccc",
-    backgroundColor: "white",
-    cursor: "pointer",
-  },
-  sortBtn: {
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    padding: 2,
-    fontSize: 12,
-  },
-  messageBox: {
-    backgroundColor: "#e9f7ef",
-    border: "1px solid #c7efd9",
-    padding: "8px 12px",
-    borderRadius: 4,
-    marginBottom: 12,
-    color: "#2f7a4b",
-    display: "inline-block",
-  },
-  pagination: {
-    display: "flex",
-    gap: 6,
-    alignItems: "center",
-  },
-  pageBtn: {
-    padding: "6px 9px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
-    cursor: "pointer",
-    background: "white",
-  },
-  disabledBtn: {
-    opacity: 0.5,
-    cursor: "not-allowed",
-  },
-  activePageBtn: {
-    backgroundColor: "#3598dc",
-    color: "white",
-    borderColor: "#2f82c4",
-  },
-  pageGap: {
-    padding: "0 6px",
-    color: "#999",
-  },
-};
-
-/* Helper to produce th style with fixed width optional */
-const thStyle = (width) => ({
-  color: "#333",
-  borderRight: "1px solid #ddd",
-  textAlign: "center",
-  width: width ? width : "auto",
-  padding: "12px 8px",
-});
 
 export default AddCategory;
