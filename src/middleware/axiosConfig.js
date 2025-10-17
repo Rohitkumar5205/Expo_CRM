@@ -1,0 +1,29 @@
+import axios from "axios";
+
+const API = axios.create({
+  baseURL: "http://localhost:5000/api",
+  withCredentials: true, // ✅ enable cookies globally
+});
+
+// Optional: Add request interceptor for logging or token fallback
+API.interceptors.request.use(
+  (config) => {
+    console.log("➡️ Request:", config.url);
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Optional: Add response interceptor for auto-logout on 401
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn("Unauthorized! Redirecting to login...");
+      // Optionally trigger logout or redirect
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default API;

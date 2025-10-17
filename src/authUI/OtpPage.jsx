@@ -4,12 +4,15 @@ import { useNavigate } from "react-router-dom";
 import img from "../assets/images/login-bg.jpg";
 import img2 from "../assets/images/logo.png";
 import { FaRegCopyright } from "react-icons/fa6";
-import { showInfo, showSuccess, showError } from "../utils/toastMessage";
-import { verifyOTP } from "../features/auth/authSlice";
+import { showSuccess, showError } from "../utils/toastMessage";
+import { verifyOTP, resendOTP } from "../features/auth/authSlice";
+import { useLocation } from "react-router-dom";
 
 const OtpPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const username = location.state?.username;
   const { loading } = useSelector((state) => state.auth);
   const [otp, setOtp] = useState("");
 
@@ -30,9 +33,27 @@ const OtpPage = () => {
     }
   };
 
-  const handleResend = () => {
-    showInfo("OTP resent to your registered mobile number.");
-    console.log("Resend OTP logic here");
+  // const handleResend = () => {
+  //   showInfo("OTP resent to your registered mobile number.");
+  //   console.log("Resend OTP logic here");
+  // };
+  // Inside your component
+  const handleResend = async () => {
+    const username = localStorage.getItem("user_name"); // get from localStorage
+    if (!username) {
+      showError("Username not found. Please login again.");
+      return navigate("/login"); // redirect to login if missing
+    }
+
+    try {
+      const result = await dispatch(
+        resendOTP({ user_name: username })
+      ).unwrap();
+      showSuccess("OTP resent successfully!");
+      console.log("New OTP:", result.otp); // for testing only
+    } catch (err) {
+      showError(err || "Failed to resend OTP");
+    }
   };
 
   return (

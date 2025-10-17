@@ -30,7 +30,7 @@ const Login = () => {
 
       // OTP will be generated and sent via backend (or console/log)
       showSuccess("Login successful! OTP sent to your registered number.");
-      navigate("/login/otp");
+      navigate("/login/otp", { state: { username: formData.username } });
     } catch (err) {
       showError(err || "Login failed");
     }

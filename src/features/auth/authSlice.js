@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import API from "../../middleware/axiosConfig";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -11,8 +12,10 @@ export const loginUser = createAsyncThunk(
       const response = await axios.post(
         `${API_URL}/login`,
         { user_name, user_password },
-        { withCredentials: true } // cookie handle if needed
+        { withCredentials: true } // cookie handling if needed
       );
+      // Save username for resend OTP
+      localStorage.setItem("user_name", user_name);
       return response.data; // { message, otp, user_name } will come
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -20,13 +23,29 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// 🟢 Verify OTP → No Authorization header needed
+// 🟢 Verify OTP
 export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
   async ({ otp }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/verify-otp`, { otp });
+      const response = await API.post("/verify-otp", { otp });
       return response.data; // { message, token }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// 🟢 Resend OTP → only username needed
+export const resendOTP = createAsyncThunk(
+  "auth/resendOTP",
+  async (_, { rejectWithValue }) => {
+    try {
+      const user_name = localStorage.getItem("user_name");
+      if (!user_name)
+        throw new Error("Username not found. Please login again.");
+      const response = await axios.post(`${API_URL}/resend-otp`, { user_name });
+      return response.data; // { message, otp } for testing only
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -38,6 +57,7 @@ const initialState = {
   error: null,
   isAuthenticated: false,
   otpSent: false,
+  resentOTP: null, // store last resent OTP for testing (optional)
 };
 
 const authSlice = createSlice({
@@ -49,6 +69,9 @@ const authSlice = createSlice({
       state.error = null;
       state.isAuthenticated = false;
       state.otpSent = false;
+      state.resentOTP = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_name");
     },
   },
   extraReducers: (builder) => {
@@ -66,6 +89,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
       // Verify OTP
       .addCase(verifyOTP.pending, (state) => {
         state.loading = true;
@@ -74,12 +98,25 @@ const authSlice = createSlice({
       .addCase(verifyOTP.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        // Save token to localStorage
-        if (action.payload.token) {
-          localStorage.setItem("token", action.payload.token);
-        }
+        // if (action.payload.token) {
+        //   localStorage.setItem("token", action.payload.token);
+        // }
       })
       .addCase(verifyOTP.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Resend OTP
+      .addCase(resendOTP.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resendOTP.fulfilled, (state, action) => {
+        state.loading = false;
+        state.resentOTP = action.payload.otp; // optional for testing
+      })
+      .addCase(resendOTP.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
