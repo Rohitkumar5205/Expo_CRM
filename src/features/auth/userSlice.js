@@ -4,10 +4,6 @@ import axios from "axios";
 // Base API URL (.env file se)
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// -----------------------------
-// 🔹 Async Thunks
-// -----------------------------
-
 // 1️⃣ GET all users
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
