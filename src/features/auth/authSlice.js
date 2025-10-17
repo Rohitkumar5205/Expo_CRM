@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import API from "../../middleware/axiosConfig";
 
-const API_URL = "http://localhost:5000/api";
+// const API_URL = "http://localhost:5000/api";
+// Base API URL (.env file se)
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // 🟢 Login → OTP generate
 export const loginUser = createAsyncThunk(
@@ -10,7 +12,7 @@ export const loginUser = createAsyncThunk(
   async ({ user_name, user_password }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${API_URL}/login`,
+        `${BASE_URL}/login`,
         { user_name, user_password },
         { withCredentials: true } // cookie handling if needed
       );
@@ -44,7 +46,7 @@ export const resendOTP = createAsyncThunk(
       const user_name = localStorage.getItem("user_name");
       if (!user_name)
         throw new Error("Username not found. Please login again.");
-      const response = await axios.post(`${API_URL}/resend-otp`, { user_name });
+      const response = await axios.post(`${BASE_URL}/resend-otp`, { user_name });
       return response.data; // { message, otp } for testing only
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
