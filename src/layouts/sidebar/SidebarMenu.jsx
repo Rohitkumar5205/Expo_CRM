@@ -837,6 +837,11 @@ const SidebarMenu = () => {
                 Add Bank
               </Link>
             </li>
+             <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
+              <Link to="/addByAdmin/event" className="block pl-10 py-2">
+                Event
+              </Link>
+            </li>
           </ul>
         </div>
         <hr className="border-gray-700" />
