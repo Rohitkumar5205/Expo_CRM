@@ -283,10 +283,10 @@ const AddCategory = () => {
       {/* Header Section */}
       <div
         className="w-full bg-white"
-        style={{ borderBottom: "1px solid #e0e0e0" }}
+       
       >
-        <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal" style={{ color: "#666" }}>
+        <div className="flex items-center justify-between px-5 py-0.5">
+          <h1 className="text-xl font-normal" style={{ color: "#666" }}>
             CATEGORY
           </h1>
         </div>
@@ -296,12 +296,12 @@ const AddCategory = () => {
       <div style={{ padding: "20px" }}>
         {/* Add/Edit Category Section */}
         <form
-          className="bg-white mb-5"
-          style={{ border: "1px solid #ddd" }}
+          className="bg-white mb-5 pb-12"
+         
           onSubmit={handleAddCategory}
         >
           <div
-            className="px-5 py-3"
+            className="px-5 py-1"
             style={{
               backgroundColor: "#f9f9f9",
               borderBottom: "1px solid #ddd",
@@ -357,7 +357,7 @@ const AddCategory = () => {
                       value="Active"
                       checked={formData.status === "Active"}
                       onChange={handleChange}
-                      style={{ marginRight: 8 }}
+                      className="text-[#333] text-xs font-medium mr-3"
                     />
                     <span style={{ color: "#333" }}>Active</span>
                   </label>
@@ -370,7 +370,7 @@ const AddCategory = () => {
                       onChange={handleChange}
                       style={{ marginRight: 8 }}
                     />
-                    <span style={{ color: "#333" }}>Inactive</span>
+                    <span className="text-[#333] text-[17px] font-normal">Inactive</span>
                   </label>
                 </div>
               </div>
@@ -379,11 +379,10 @@ const AddCategory = () => {
               <div style={{ display: "flex", alignItems: "flex-end" }}>
                 <button
                   type="submit"
-                  className="px-6 py-2 text-sm text-white"
+                  className="px-6 py-2 text-xs text-white"
                   style={{
-                    backgroundColor: "#5bc0de",
+                    backgroundColor: "#3598dc",
                     border: "none",
-                    borderRadius: 3,
                     cursor: "pointer",
                   }}
                   title={editingCategory ? "Update Category" : "Add Category"}
@@ -398,7 +397,7 @@ const AddCategory = () => {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="px-4 py-2 text-sm"
+                    className="px-4 py-2 text-xs"
                     style={{
                       backgroundColor: "#e0e0e0",
                       color: "#333",
@@ -415,91 +414,7 @@ const AddCategory = () => {
           </div>
         </form>
 
-        {/* List Section (rest of the component remains the same) */}
-        <div className="bg-white" style={{ border: "1px solid #ddd" }}>
-          {/* Filter / Search / Sort Row */}
-          <div
-            className="px-5 py-3"
-            style={{
-              backgroundColor: "#f9f9f9",
-              borderBottom: "1px solid #ddd",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <label
-                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-              >
-                <span style={{ color: "#333", fontSize: 13 }}>Show</span>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => {
-                    setRowsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  style={styles.smallSelect}
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-                <span style={{ color: "#333", fontSize: 13 }}>entries</span>
-              </label>
-
-              <label
-                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-              >
-                <span style={{ color: "#333", fontSize: 13 }}>Status</span>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => {
-                    setStatusFilter(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  style={styles.smallSelect}
-                >
-                  <option value="All">All</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </label>
-            </div>
-
-            {/* Search box */}
-            <div
-              style={{
-                marginLeft: "auto",
-                display: "flex",
-                gap: 8,
-                alignItems: "center",
-              }}
-            >
-              <input
-                type="text"
-                placeholder="Search categories..."
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                  setCurrentPage(1);
-                }}
-                style={styles.searchInput}
-              />
-              <button
-                onClick={() => {
-                  setSearchText("");
-                  setStatusFilter("All");
-                  setRowsPerPage(10);
-                  setSortBy({ key: "id", dir: "asc" });
-                }}
-                style={styles.clearBtn}
-              >
-                Reset
-              </button>
-            </div>
-          </div>
+       
 
           {/* Table header */}
           <div style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -517,7 +432,7 @@ const AddCategory = () => {
               >
                 <tr style={{ borderBottom: "2px solid #ddd" }}>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-center"
+                    className="px-4 py-3 text-xs font-semibold text-center"
                     style={thStyle(80)}
                   >
                     <div
@@ -542,7 +457,7 @@ const AddCategory = () => {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-left"
+                    className="px-4 py-3 text-xs font-semibold text-left"
                     style={thStyle()}
                   >
                     <div
@@ -562,7 +477,7 @@ const AddCategory = () => {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-center"
+                    className="px-4 py-3 text-xs font-semibold text-center"
                     style={thStyle(150)}
                   >
                     <div
@@ -587,7 +502,7 @@ const AddCategory = () => {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-center"
+                    className="px-4 py-3 text-xs font-semibold text-center"
                     style={thStyle(120)}
                   >
                     Action
@@ -636,14 +551,14 @@ const AddCategory = () => {
                       }}
                     >
                       <td
-                        className="px-4 py-3 text-sm text-center"
+                        className="px-4 py-3 text-xs text-center"
                         style={{ color: "#333", width: 80 }}
                       >
                         {(currentPage - 1) * rowsPerPage + index + 1}
                       </td>
 
                       <td
-                        className="px-4 py-3 text-sm"
+                        className="px-4 py-3 text-xs"
                         style={{ color: "#333" }}
                       >
                         {category?.cat_name || ""}
@@ -658,7 +573,7 @@ const AddCategory = () => {
                                 category.cat_status.toLowerCase() === "active"
                                   ? "#337ab7"
                                   : "#d9534f",
-                              borderRadius: 3,
+                              
                             }}
                           >
                             {category.cat_status.charAt(0).toUpperCase() +
@@ -746,7 +661,7 @@ const AddCategory = () => {
           </div>
         </div>
       </div>
-    </div>
+   
   );
 };
 
@@ -794,7 +709,6 @@ const styles = {
   },
   iconBtn: {
     padding: 6,
-    borderRadius: 4,
     border: "1px solid #ccc",
     backgroundColor: "white",
     cursor: "pointer",
