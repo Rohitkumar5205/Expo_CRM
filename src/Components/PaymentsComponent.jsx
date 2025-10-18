@@ -70,7 +70,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
             {/* Row 1 */}
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 PYMT Against For *
               </label>
               <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -81,7 +81,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Document No. *
               </label>
               <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -90,7 +90,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Final Amount
               </label>
               <input
@@ -100,7 +100,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Recieved Amount *
               </label>
               <input
@@ -110,7 +110,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 TDS Amount
               </label>
               <input
@@ -120,7 +120,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Recieved Date *
               </label>
               <input
@@ -132,7 +132,7 @@ const PaymentsComponent = ({ client, onBack }) => {
 
             {/* Row 2 */}
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Debit Note No.
               </label>
               <input
@@ -142,7 +142,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Debit Note Amount
               </label>
               <input
@@ -152,7 +152,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Debit Note Date
               </label>
               <input
@@ -162,7 +162,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Type of Payment *
               </label>
               <select
@@ -178,7 +178,7 @@ const PaymentsComponent = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-600 font-medium mb-1">
                 Payment Mode *
               </label>
               <select
@@ -196,7 +196,7 @@ const PaymentsComponent = ({ client, onBack }) => {
 
             {/* Empty cell for alignment */}
             <div className="flex flex-col">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">&nbsp;</label>
+              <label className="text-[13px] text-gray-600 font-medium mb-1">&nbsp;</label>
               <div className="h-8"></div>
             </div>
           </div>
@@ -205,7 +205,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           {showAdvanceFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Forward To *
                 </label>
                 <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -224,7 +224,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Reminder Date & Time *
                 </label>
                 <input
@@ -239,7 +239,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           {showCardFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Card Type
                 </label>
                 <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -249,7 +249,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Name on Card
                 </label>
                 <input
@@ -258,7 +258,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Transaction Number
                 </label>
                 <input
@@ -267,7 +267,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Card Last Four Digit
                 </label>
                 <input
@@ -276,7 +276,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Bank Name of Card *
                 </label>
                 <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -293,7 +293,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           {showEwalletFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   e-Wallet Name
                 </label>
                 <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -304,7 +304,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Transaction Number
                 </label>
                 <input
@@ -313,7 +313,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Mobile Number
                 </label>
                 <input
@@ -328,7 +328,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           {showNeftFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Bank Name
                 </label>
                 <select className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium">
@@ -340,7 +340,7 @@ const PaymentsComponent = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   UTR No.
                 </label>
                 <input
@@ -355,7 +355,7 @@ const PaymentsComponent = ({ client, onBack }) => {
           {showUpiFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-600 font-medium mb-1">
                   Transaction Details
                 </label>
                 <input
