@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Globallytable from "../../Components/Globallytable";
 import Textarea from "../../Components/Textarea";
-import ClientOverview from "../../Components/ClientOverview";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCompanies } from "../../features/company/companySlice";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const NewLeadList = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [selectedClient, setSelectedClient] = useState(null);
 
-  // company redux
+  // 🏢 Company redux data
   const { companies, loading, error } = useSelector((state) => state.companies);
-  // console.log("companies data", companies);
 
   useEffect(() => {
     dispatch(fetchCompanies());
   }, [dispatch]);
 
+  // 📋 Table Columns
   const columns = [
-    { label: "", accessor: "checkbox" },
-    { label: "Company Name", accessor: "company.name" },
+    {
+      label: "Company Name",
+      accessor: "company.name",
+      render: (value, row) => (
+        <Link
+          to={`/clientOverview1/${row.id}`} // use row.id
+          className="text-blue-500 hover:underline"
+        >
+          {value} {/* value = company name */}
+        </Link>
+      ),
+    },
     { label: "Contact Details", accessor: "contact.details" },
     { label: "Category", accessor: "category.main" },
     { label: "Nature of Business", accessor: "business.type" },
@@ -31,13 +40,16 @@ const NewLeadList = () => {
     { label: "Update Details", accessor: "update.details" },
   ];
 
+  // 🧱 Prepare Rows
   const rows = companies.map((c) => ({
     id: c._id,
     checkbox: true,
-    company: { name: c.companyName },
+    company: {
+      name: c.companyName,
+    },
     contact: {
       details: c.contacts
-        .map(
+        ?.map(
           (contact) =>
             `${contact.firstName} ${contact.surname} | ${contact.mobile}`
         )
@@ -49,115 +61,94 @@ const NewLeadList = () => {
     source: { name: c.dataSource || "-" },
     update: {
       details: `${new Date(c.updatedAt).toLocaleDateString()} | ${
-        c.contacts[0]?.firstName || "-"
+        c.contacts?.[0]?.firstName || "-"
       }`,
     },
   }));
 
-  const handleClientClick = (clientData) => {
-    setSelectedClient(clientData);
-  };
-
-  const handleBackClick = () => {
-    setSelectedClient(null);
-  };
-
-  const handleAddNewLeadClick = () => {
-    navigate("/page1");
-  };
-
-  const handleWarmClientClick = () => {
-    navigate("/page3");
-  };
-
-  // New navigation handlers for the other buttons
-  const handleHotClientClick = () => {
-    navigate("/page4");
-  };
-
-  const handleConfirmClientClick = () => {
-    navigate("/page5");
-  };
-
-  const handleColdClientClick = () => {
-    navigate("/page6");
-  };
-
-  const handleRawDataListClick = () => {
-    navigate("/page8");
-  };
+  // 🆔 For Debugging (optional)
+  // const allIds = rows.map((row) => row.id);
+  // console.log("✅ All Company IDs:", allIds);
 
   return (
     <div className="w-full h-auto bg-[#eef1f5]">
-      {selectedClient ? (
-        <ClientOverview client={selectedClient} onBack={handleBackClick} />
-      ) : (
-        <>
-          <div className="w-full bg-white shadow-md">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1 mb-4">
-              <h1 className="text-xl  text-gray-600 mb-2 lg:mb-0">
-                CLIENT DATA 2023
-              </h1>
-            </div>
+      {/* 🔹 Header */}
+      <div className="w-full bg-white shadow-md">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-2 mb-3">
+          <h1 className="text-xl text-gray-600 font-semibold">
+            CLIENT DATA 2023
+          </h1>
+        </div>
+      </div>
+
+      {/* 🔹 Main Section */}
+      <div className="w-[97%] bg-white ml-5 p-2 rounded-md shadow-sm">
+        <div className="flex justify-between items-center pr-4 pt-2">
+          <h1 className="text-base font-semibold text-gray-900 pl-4">
+            NEW LEAD LIST
+          </h1>
+
+          {/* 🔸 Navigation Buttons */}
+          <div className="flex flex-wrap justify-end gap-2">
+            <Link
+              to="/ihweClientData2026/addNewClients"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Add New Lead
+            </Link>
+            <Link
+              to="/ihweClientData2026/warmClientList"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Warm Client
+            </Link>
+            <Link
+              to="/ihweClientData2026/hotClientList"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Hot Client
+            </Link>
+            <Link
+              to="/ihweClientData2026/confirmClientList"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Confirm Client
+            </Link>
+            <Link
+              to="/ihweClientData2026/coldClientList"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Cold Client
+            </Link>
+            <Link
+              to="/ihweClientData2026/rawDataList"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+            >
+              Raw Data List
+            </Link>
           </div>
-          <div className="w-[97%] bg-white ml-5 ">
-            <div className="flex justify-between pr-4 pt-1">
-              <h1 className="text-base font-semibold text-gray-900 pl-4 pt-1">
-                NEW LEAD LIST
-              </h1>
-              <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                <button
-                  onClick={handleAddNewLeadClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Add New Lead
-                </button>
-                <button
-                  onClick={handleWarmClientClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Warm Client
-                </button>
-                <button
-                  onClick={handleHotClientClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Hot Client
-                </button>
-                <button
-                  onClick={handleConfirmClientClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Confirm Client
-                </button>
-                <button
-                  onClick={handleColdClientClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Cold Client
-                </button>
-                <button
-                  onClick={handleRawDataListClick}
-                  className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-                >
-                  Raw Data List
-                </button>
-              </div>
+        </div>
+
+        <hr className="opacity-10 my-2" />
+
+        {/* 🔹 Data Table */}
+        <div className="text-xs">
+          {loading ? (
+            <div className="text-center text-gray-500 py-4">Loading...</div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-4">
+              Error loading companies: {error}
             </div>
-            <hr className="opacity-10 mb-2" />
-            <div className="text-xs">
-              <Globallytable
-                rows={rows}
-                colomns={columns}
-                onRowClick={handleClientClick}
-              />
-            </div>
-          </div>
-          <div className="bg-white shadow-md m-3 ml-5  ">
-            <Textarea />
-          </div>
-        </>
-      )}
+          ) : (
+            <Globallytable rows={rows} colomns={columns} />
+          )}
+        </div>
+      </div>
+
+      {/* 🔹 Notes Section */}
+      <div className="bg-white shadow-md m-3 ml-5 p-3 rounded-md">
+        <Textarea />
+      </div>
     </div>
   );
 };

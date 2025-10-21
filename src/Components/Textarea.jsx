@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const Textarea = () => {
   return (
@@ -13,7 +13,7 @@ const Textarea = () => {
 
       {/* Textarea */}
       <textarea
-        className="w-full border border-gray-300  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm "
+        className="w-full border border-gray-300  focus:ring-0 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm "
         name="textstatus"
         id="textstatus"
         rows="3"
@@ -33,7 +33,7 @@ const Textarea = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Textarea
+export default Textarea;

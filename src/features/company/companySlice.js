@@ -33,9 +33,10 @@ export const addCompany = createAsyncThunk(
 // 🟩 Update company
 export const updateCompany = createAsyncThunk(
   "company/update",
-  async ({ id, updatedData }, { rejectWithValue }) => {
+  async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API_URL}/${id}`, updatedData);
+      console.log("updated data....", data);
+      const res = await axios.put(`${API_URL}/${id}`, data);
       return res.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -93,6 +94,10 @@ const companySlice = createSlice({
       })
 
       // Update Company
+      .addCase(updateCompany.pending, (state) => {
+        state.loading = true;
+        state.error = null; // Reset error on new attempt
+      })
       .addCase(updateCompany.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.companies.findIndex(
@@ -100,11 +105,25 @@ const companySlice = createSlice({
         );
         if (index !== -1) state.companies[index] = action.payload;
       })
+      .addCase(updateCompany.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       // Delete Company
+      .addCase(deleteCompany.pending, (state) => {
+        state.loading = true;
+        state.error = null; // Reset error on new attempt
+      })
       .addCase(deleteCompany.fulfilled, (state, action) => {
         state.loading = false;
-        state.companies = state.companies.filter((c) => c._id !== action.payload);
+        state.companies = state.companies.filter(
+          (c) => c._id !== action.payload
+        );
+      })
+      .addCase(deleteCompany.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
