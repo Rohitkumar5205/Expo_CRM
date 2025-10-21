@@ -50,6 +50,7 @@ import AddDataSource from "./pages/add_by_admin/AddDataSource";
 import AddStatus from "./pages/add_by_admin/AddStatus";
 import AddBank from "./pages/add_by_admin/AddBank";
 import UploadExhibitor from "./pages/ihwe_client_data_2026/uploadExhibitor";
+import ClientOverview1 from "./Components/ClientOverview1";
 import Event from "./pages/add_by_admin/Event";
 const App = () => {
   return (
@@ -71,6 +72,10 @@ const App = () => {
           {/* Section One */}
           <Route
             path="/ihweClientData2026/addNewClients"
+            element={<AddNewClients />}
+          />
+          <Route
+            path="/ihweClientData2026/addNewClients/:id"
             element={<AddNewClients />}
           />
           <Route
@@ -105,6 +110,7 @@ const App = () => {
             path="/ihweClientData2026/uploadExhibitor"
             element={<UploadExhibitor />}
           />
+          <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
           <Route path="/createInvoice" element={<CreateInvoice />} />
           <Route

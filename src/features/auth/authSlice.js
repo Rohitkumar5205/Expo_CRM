@@ -46,9 +46,36 @@ export const resendOTP = createAsyncThunk(
       const user_name = localStorage.getItem("user_name");
       if (!user_name)
         throw new Error("Username not found. Please login again.");
-      const response = await axios.post(`${BASE_URL}/resend-otp`, { user_name });
+      const response = await axios.post(`${BASE_URL}/resend-otp`, {
+        user_name,
+      });
       return response.data; // { message, otp } for testing only
     } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// 4. Logout Thunk (Clears server-side httpOnly cookie)
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      // Server-side call to clear the 'token' httpOnly cookie
+      const response = await API.post("/logout", {});
+
+      // Success hone par, local state clear karne ke liye 'logout' action ko dispatch karein
+      dispatch(logout());
+
+      return response.data;
+    } catch (error) {
+      // Agar server call fail bhi ho, tab bhi client-side ko logout kar dein (UX)
+      console.error(
+        "Logout API failed, forcing client-side logout:",
+        error.message
+      );
+      dispatch(logout());
+
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -72,7 +99,6 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.otpSent = false;
       state.resentOTP = null;
-      localStorage.removeItem("token");
       localStorage.removeItem("user_name");
     },
   },
@@ -120,6 +146,17 @@ const authSlice = createSlice({
       })
       .addCase(resendOTP.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      // --- Logout User ---
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      // logoutUser.fulfilled case ki zarurat nahi hai, kyunki 'logout' reducer thunk me hi call ho raha hai.
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        // Local state clear ho chuka hai (dispatch(logout()) ke karan), sirf error log kar sakte hain.
         state.error = action.payload;
       });
   },

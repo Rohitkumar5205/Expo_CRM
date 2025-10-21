@@ -5,7 +5,12 @@ import { TbCaretUpDownFilled } from "react-icons/tb";
 const getValue = (obj, path) =>
   path.split(".").reduce((acc, part) => acc && acc[part], obj) || "";
 
-const Globallytable = ({ rows = [], colomns = [], onRowClick,extrabutton=true  }) => {
+const Globallytable = ({
+  rows = [],
+  colomns = [],
+  onRowClick,
+  extrabutton = true,
+}) => {
   const [filters, setFilters] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -182,19 +187,19 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick,extrabutton=true  }
         <div className="flex flex-col md:flex-row items-center gap-2">
           {extrabutton && (
             <>
-            <button
-            onClick={handlePrint}
-            className="text-[#2f353b] h-7 w-24 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
-          >
-            Print
-          </button>
-          <button
-            onClick={exportToCsv}
-            className="h-7 w-24 text-[#78a300] text-xs text-center cursor-pointer hover:bg-[#78a300] hover:text-white border border-[#78a300]"
-          >
-            Excel
-          </button>
-           </>
+              <button
+                onClick={handlePrint}
+                className="text-[#2f353b] h-7 w-24 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
+              >
+                Print
+              </button>
+              <button
+                onClick={exportToCsv}
+                className="h-7 w-24 text-[#78a300] text-xs text-center cursor-pointer hover:bg-[#78a300] hover:text-white border border-[#78a300]"
+              >
+                Excel
+              </button>
+            </>
           )}
           <div className="flex items-center w-full md:w-50">
             <label className="pt-1 text-[#2f353b] text-sm" htmlFor="Search">
@@ -250,10 +255,10 @@ const Globallytable = ({ rows = [], colomns = [], onRowClick,extrabutton=true  }
                     style={{ width: col.width }}
                   >
                     {col.label}
-                    
+
                     {sortConfig.key === col.accessor && (
                       <span className="ml-3">
-                        {sortConfig.direction === "asc"? "▲" : "▼"}
+                        {sortConfig.direction === "asc" ? "▲" : "▼"}
                       </span>
                     )}
                   </th>

@@ -47,14 +47,6 @@ const ClientOverview = ({ client, onBack }) => {
       details:
         "Call back required after 7 days, he will visit in office | By: Abhay Raj | On September 19, 2025 at 12:28",
     },
-    {
-      id: 3,
-      title: "FOLLOW-UP CALL ON 19 SEP 25 AT 11:25",
-      reminder: "CALL THE CLIENT ON 19 SEP 25 AT 11:25",
-      isActive: false,
-      details:
-        "Call not pick will try to connect on whatsapp | By: Abhay Raj | On September 18, 2025 at 15:39",
-    },
   ];
 
   const defaultClient = {
@@ -208,7 +200,9 @@ const ClientOverview = ({ client, onBack }) => {
   };
 
   const handleEdit = () => {
-    navigate("/addNewClients", { state: { heading: "Edit Client Details" } });
+    navigate("/ihweClientData2026/addNewClients", {
+      state: { heading: "Edit Client Details" },
+    });
   };
 
   if (showAccounts) {
@@ -271,10 +265,6 @@ const ClientOverview = ({ client, onBack }) => {
               >
                 Payments
               </button>
-              {/* <Link
-                to="/addNewClients"
-                state={{ heading: "Edit Client Details" }}
-              > */}
               <button
                 onClick={handleEdit}
                 className="flex items-center justify-center w-8 h-8 rounded-sm text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"

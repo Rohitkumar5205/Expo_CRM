@@ -11,58 +11,48 @@ import { fetchStates } from "../../features/state/stateSlice";
 import { fetchCities } from "../../features/city/citySlice";
 import { fetchDataSources } from "../../features/add_by_admin/dataSource/dataSourceSlice";
 import { fetchEvents } from "../../features/crmEvent/crmEventSlice";
-import { addCompany } from "../../features/company/companySlice";
+import {
+  addCompany,
+  fetchCompanies,
+  updateCompany,
+} from "../../features/company/companySlice";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
+// Helper function to format ISO date string to "YYYY-MM-DDThh:mm" for datetime-local input
+const formatReminderDate = (isoString) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  // Check for invalid date
+  if (isNaN(date.getTime())) return "";
+
+  // Get local date and time components
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  // Return the required format: YYYY-MM-DDThh:mm
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 const AddNewClients = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const navigate = useNavigate(); // users redux
-  const { users, loading, error } = useSelector((state) => state.users);
-  // categories redux
+  const navigate = useNavigate();
+  const { id } = useParams(); // Check if we are in Edit mode (id exists)
+
+  // Redux Selectors
+  const { users } = useSelector((state) => state.users);
   const { categories } = useSelector((state) => state.categories);
-  // natures redux
   const { natures } = useSelector((state) => state.natures);
-  //  countries redux
   const { countries } = useSelector((state) => state.countries);
-  // states redux
   const { states } = useSelector((state) => state.states);
-  // cities redux
   const { cities } = useSelector((state) => state.cities);
-  // dataSources redux
   const { dataSources } = useSelector((state) => state.dataSources);
-  // events redux
   const { events } = useSelector((state) => state.events);
-
-  //   console.log("users data", users);
-  //   console.log("categories data", categories);
-  //   console.log("natures data", natures);
-  //   console.log("countries data", countries);
-  //   console.log("states data", states);
-  // console.log("cities data", cities);
-  //   console.log("dataSources data", dataSources);
-  // console.log("events data", events);
-
-  useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchCategories());
-    dispatch(fetchNatures());
-    dispatch(fetchCountries());
-    dispatch(fetchStates());
-    dispatch(fetchCities());
-    dispatch(fetchDataSources());
-    dispatch(fetchEvents());
-  }, [dispatch]);
-
-  const heading = location.state?.heading || "Add New Company";
-
-  const Options = ["Select Here", "Acupressure/Acupuncture"];
-  const Options1 = ["Select Here", "Agency"];
-
-  const countryStateCityData = {
-    India: {
-      UttarPradesh: ["Agra", "Aligarh", "Amethi", "Amroha"],
-    },
-  };
+  const { companies } = useSelector((state) => state.companies);
 
   // 🧩 Form State
   const [formData, setFormData] = useState({
@@ -94,6 +84,68 @@ const AddNewClients = () => {
     ],
   });
 
+  // Fetch Companies on mount for editing logic
+  useEffect(() => {
+    if (companies.length === 0) dispatch(fetchCompanies());
+  }, [dispatch, companies]);
+
+  // Fetch all master data (users, categories, etc.)
+  useEffect(() => {
+    dispatch(fetchUsers());
+    dispatch(fetchCategories());
+    dispatch(fetchNatures());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
+    dispatch(fetchDataSources());
+    dispatch(fetchEvents());
+  }, [dispatch]);
+
+  // 3️⃣ If editing, prefill form
+  useEffect(() => {
+    if (id && companies.length > 0) {
+      const companyToEdit = companies.find((c) => c._id === id);
+      if (companyToEdit) {
+        setFormData({
+          companyName: companyToEdit.companyName || "",
+          category: companyToEdit.category || "",
+          businessNature: companyToEdit.businessNature || "",
+          address: companyToEdit.address || "",
+          country: companyToEdit.country || "",
+          state: companyToEdit.state || "",
+          city: companyToEdit.city || "",
+          pincode: companyToEdit.pincode || "",
+          website: companyToEdit.website || "",
+          landline: companyToEdit.landline || "",
+          email: companyToEdit.email || "",
+          dataSource: companyToEdit.dataSource || "",
+          eventName: companyToEdit.eventName || "",
+
+          // 💡 FIXED: Date/Time formatting for datetime-local input
+          reminder: formatReminderDate(companyToEdit.reminder) || "",
+
+          forwardTo: companyToEdit.forwardTo || "",
+          contacts:
+            companyToEdit.contacts.length > 0
+              ? companyToEdit.contacts
+              : [
+                  {
+                    title: "",
+                    firstName: "",
+                    surname: "",
+                    designation: "",
+                    email: "",
+                    mobile: "",
+                    alternate: "",
+                  },
+                ],
+        });
+      }
+    }
+  }, [id, companies]);
+
+  const heading = id ? "Edit Company Details" : "Add New Company";
+
   // 🧠 Update any input value dynamically
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -101,9 +153,17 @@ const AddNewClients = () => {
 
   // 🧩 Contact field change
   const handleContactChange = (index, field, value) => {
-    const updatedContacts = [...formData.contacts];
-    updatedContacts[index][field] = value;
-    setFormData((prev) => ({ ...prev, contacts: updatedContacts }));
+    // Immutable update for nested contacts array
+    setFormData((prev) => {
+      const updatedContacts = prev.contacts.map((contact, i) => {
+        if (i === index) {
+          // Keep the existing contact structure (including _id for updates)
+          return { ...contact, [field]: value };
+        }
+        return contact;
+      });
+      return { ...prev, contacts: updatedContacts };
+    });
   };
 
   // ➕ Add new contact
@@ -134,13 +194,39 @@ const AddNewClients = () => {
     }));
   };
 
-  // 💾 Save (print data)
+  // 💾 Save (Add or Update)
   const handleSave = (e) => {
     e.preventDefault();
-    dispatch(addCompany(formData));
+
+    if (id) {
+      // Editing existing company
+      dispatch(updateCompany({ id, data: formData }))
+        .unwrap()
+        .then(() => {
+          showSuccess("Company updated successfully!");
+          handleReset();
+          navigate(`/clientOverview1/${id}`);
+        })
+        .catch((err) => {
+          console.error("Failed to update company:", err);
+          // Show error toast
+        });
+    } else {
+      // Adding new company
+      dispatch(addCompany(formData))
+        .unwrap()
+        .then(() => {
+          showSuccess("New company added successfully!");
+          handleReset();
+          navigate("/ihweClientData2026/newLeadList"); // Navigate to the list
+        })
+        .catch((err) => {
+          console.error("Failed to add company:", err);
+          // Show error toast
+        });
+    }
+
     console.log("Form Data:", formData);
-    showSuccess("Form data saved successfully!.");
-    handleReset();
   };
 
   // 🔁 Reset
@@ -174,6 +260,8 @@ const AddNewClients = () => {
       ],
     });
   };
+
+  // Navigation handlers
   const handleMasterList = () => {
     navigate("/ihweClientData2026/masterData");
   };
@@ -183,9 +271,10 @@ const AddNewClients = () => {
   const handleUploadExhibitor = () => {
     navigate("/ihweClientData2026/uploadExhibitor");
   };
+
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      {/* Heading */}
+      {/* Heading and Navigation Buttons */}
       <div className="w-full h-fit bg-white shadow-md">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0">
@@ -198,14 +287,12 @@ const AddNewClients = () => {
             >
               Upload Exhibitor
             </button>
-
             <button
               onClick={handleMasterList}
               className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
             >
               Master List
             </button>
-
             <button
               onClick={handleConformList}
               className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
@@ -274,7 +361,10 @@ const AddNewClients = () => {
               >
                 <option value="">Select Nature</option>
                 {natures.map((nature, i) => (
-                  <option key={i}>{nature?.nature_name}</option>
+                  // 💡 FIXED: Added value attribute for correct pre-filling
+                  <option key={i} value={nature?.nature_name}>
+                    {nature?.nature_name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -368,7 +458,7 @@ const AddNewClients = () => {
                 name="pincode"
                 value={formData.pincode}
                 onChange={(e) => {
-               const value = e.target.value;
+                  const value = e.target.value;
                   // Allow only digits and maximum length 6
                   if (!isNaN(value) && value.length <= 6) {
                     setFormData((prev) => ({
@@ -376,7 +466,7 @@ const AddNewClients = () => {
                       pincode: value,
                     }));
                   }
-                }}   
+                }}
                 maxLength={6} // HTML also prevents more than 6 chars
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter pin code"
@@ -473,7 +563,11 @@ const AddNewClients = () => {
                 type="datetime-local"
                 value={formData.reminder}
                 onChange={(e) => handleChange("reminder", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                // 💡 FIXED: Read-Only in Edit mode
+                readOnly={!!id}
+                className={`w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none ${
+                  !!id ? "bg-gray-200 cursor-not-allowed" : "" // Read-only styling
+                }`}
                 required
               />
             </div>
@@ -486,7 +580,9 @@ const AddNewClients = () => {
               <select
                 value={formData.forwardTo}
                 onChange={(e) => handleChange("forwardTo", e.target.value)}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                // 💡 FIXED: Disabled in Edit mode
+                disabled={!!id}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 disabled:bg-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               >
                 <option value="">Select Here</option>
@@ -506,7 +602,7 @@ const AddNewClients = () => {
           <hr className="mb-4" />
 
           {formData.contacts.map((contact, index) => (
-            <div key={index} className=" p-3 bg-gray-50">
+            <div key={index} className=" p-3 bg-gray-50 mb-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {/* Title */}
                 <div>
@@ -622,7 +718,6 @@ const AddNewClients = () => {
                   />
                 </div>
 
-                {/* Alternate Number */}
                 {/* Alternate Number */}
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center mb-1">
