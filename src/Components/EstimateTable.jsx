@@ -8,7 +8,7 @@ const EstimateTable = () => {
   // function to pass heading
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto p-2">
       <table className="min-w-full border-collapse border border-gray-300">
         <thead className="border  border-gray-300">
           <tr>

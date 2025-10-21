@@ -12,6 +12,7 @@ import statusOptionReducer from "../features/add_by_admin/statusOption/statusOpt
 import bankReducer from "../features/add_by_admin/banks/bankSlice";
 import crmMessageReducer from "../features/add_by_admin/crm_wat_mess/CrmWatMessage";
 import authReducer from "../features/auth/authSlice";
+import crmExhibatorReviewReducer from "../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,12 +23,13 @@ export const store = configureStore({
     states: stateReducer,
     cities: cityReducer,
     dataSources: dataSourceReducer,
-    events: crmEventReducer,
+    crmEvents: crmEventReducer,
     companies: companyReducer,
     statusOptions: statusOptionReducer,
     banks: bankReducer,
     crm_messages: crmMessageReducer,
     auth: authReducer,
+    reviews: crmExhibatorReviewReducer,
   },
 });
 

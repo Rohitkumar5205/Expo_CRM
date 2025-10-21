@@ -15,8 +15,7 @@ export const fetchEvents = createAsyncThunk(
     }
   }
 );
-
-// ✅ Fetch Event by ID
+// ✅ Get single event by ID
 export const fetchEventById = createAsyncThunk(
   "crmEvents/fetchById",
   async (id, { rejectWithValue }) => {
@@ -32,9 +31,9 @@ export const fetchEventById = createAsyncThunk(
 // ✅ Create New Event
 export const createEvent = createAsyncThunk(
   "crmEvents/create",
-  async (data, { rejectWithValue }) => {
+  async (eventData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${BASE_URL}/crm-events`, data);
+      const res = await axios.post(`${BASE_URL}/crm-events`, eventData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -61,7 +60,7 @@ export const deleteEvent = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await axios.delete(`${BASE_URL}/crm-events/${id}`);
-      return id; // Return deleted id for local removal
+      return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -74,7 +73,6 @@ const initialState = {
   error: null,
 };
 
-// ✅ Slice Definition
 const crmEventSlice = createSlice({
   name: "crmEvents",
   initialState,
@@ -85,7 +83,7 @@ const crmEventSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // 🔸 FETCH ALL
+      // Fetch All
       .addCase(fetchEvents.pending, (state) => {
         state.loading = true;
       })
@@ -97,8 +95,21 @@ const crmEventSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Fetch Single Event
+      .addCase(fetchEventById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEventById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.events = action.payload;
+      })
+      .addCase(fetchEventById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-      // 🔸 CREATE
+      // Create
       .addCase(createEvent.pending, (state) => {
         state.loading = true;
       })
@@ -111,7 +122,7 @@ const crmEventSlice = createSlice({
         state.error = action.payload;
       })
 
-      // 🔸 UPDATE
+      // Update
       .addCase(updateEvent.pending, (state) => {
         state.loading = true;
       })
@@ -120,24 +131,20 @@ const crmEventSlice = createSlice({
         const index = state.events.findIndex(
           (event) => event._id === action.payload._id
         );
-        if (index !== -1) {
-          state.events[index] = action.payload;
-        }
+        if (index !== -1) state.events[index] = action.payload;
       })
       .addCase(updateEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // 🔸 DELETE
+      // Delete
       .addCase(deleteEvent.pending, (state) => {
         state.loading = true;
       })
       .addCase(deleteEvent.fulfilled, (state, action) => {
         state.loading = false;
-        state.events = state.events.filter(
-          (event) => event._id !== action.payload
-        );
+        state.events = state.events.filter((e) => e._id !== action.payload);
       })
       .addCase(deleteEvent.rejected, (state, action) => {
         state.loading = false;

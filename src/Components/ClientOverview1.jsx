@@ -5,6 +5,18 @@ import { fetchCompanies } from "../features/company/companySlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { fetchStatusOptions } from "../features/add_by_admin/statusOption/statusOptionSlice";
+import { fetchUsers } from "../features/auth/userSlice";
+import {
+  fetchEvents,
+  fetchEventById,
+} from "../features/crmEvent/crmEventSlice";
+import {
+  fetchReviews,
+  deleteReview,
+  createReview,
+} from "../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
+import { showError, showSuccess } from "../utils/toastMessage";
 
 const ClientOverview1 = () => {
   const navigate = useNavigate();
@@ -18,18 +30,71 @@ const ClientOverview1 = () => {
   // company redux
   const { companies, loading, error } = useSelector((state) => state.companies);
   const [company, setCompany] = useState(null);
+  const companyId = company?._id;
+  const updateBy = localStorage.getItem("user_name");
+  console.log("companyId...", companyId);
+  const [reviewData, setReviewData] = useState({
+    cmpny_id: companyId || "",
+    evnt_id: "",
+    status_short: "",
+    reminder_dt: "",
+    forward_to: "",
+    re_msg: "",
+    updated_by: updateBy || "",
+  });
 
-  console.log("ClientOverview1", companies);
+  // status redux
+  const {
+    statusOptions,
+    loading: statusLoading,
+    error: statusError,
+  } = useSelector((state) => state.statusOptions);
+
+  // user redux
+  const {
+    users,
+    loading: userLoading,
+    error: userError,
+  } = useSelector((state) => state.users);
+
+  // event redux
+  const {
+    events,
+    loading: eventLoading,
+    error: eventError,
+  } = useSelector((state) => state.crmEvents);
+
+  // review redux
+  const {
+    reviews,
+    loading: reviewLoading,
+    error: reviewError,
+  } = useSelector((state) => state.reviews);
+
+  // console.log("events..", events);
+  console.log("ClientOverview1...", companyId);
+  // console.log("reviews///", reviews);
   useEffect(() => {
     if (companies.length === 0) {
       dispatch(fetchCompanies());
     }
+    dispatch(fetchStatusOptions());
+    dispatch(fetchUsers());
+    dispatch(fetchEvents());
+    dispatch(fetchReviews());
   }, [dispatch, companies]);
 
   useEffect(() => {
     if (companies.length > 0) {
       const matched = companies.find((c) => c._id === id);
       setCompany(matched);
+      // 🎯 FIX: कंपनी मिलते ही उसकी ID को reviewData में सेट करें।
+      if (matched) {
+        setReviewData((prev) => ({
+          ...prev,
+          cmpny_id: matched._id, // यह ID अब state में आ जाएगी
+        }));
+      }
     }
   }, [companies, id]);
 
@@ -44,32 +109,86 @@ const ClientOverview1 = () => {
   if (error) return <p>Error: {error}</p>;
   if (!company) return <p>No company found with ID: {id}</p>;
 
+  // यह फ़ंक्शन events array में से ID के आधार पर Event Name ढूंढता है।
+  const getEventName = (eventId) => {
+    const event = events.find((e) => e._id === eventId);
+    return event ? event.event_name : eventId; // अगर नाम मिला तो नाम, वरना ID ही दिखा दो।
+  };
   const baseInputClass =
     "mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
 
-  const communicationHistoryData = [
-    {
-      id: 1,
-      title: "FOLLOW-UP CALL FOR ORGANIC EXPO 2026",
-      reminder: "CALL THE CLIENT ON 25 SEP 25 AT 15:45",
-      isActive: true,
-      details:
-        "Call back required after 7 days, he will visit the office | By: Abhay Raj | On September 20, 2025 at 15:50",
-    },
-    {
-      id: 2,
-      title: "FOLLOW-UP CALL FOR ORGANIC EXPO 2026",
-      reminder: "CALL THE CLIENT ON 20 SEP 25 AT 12:15",
-      isActive: false,
-      details:
-        "Call back required after 7 days, he will visit in office | By: Abhay Raj | On September 19, 2025 at 12:28",
-    },
-  ];
+  // ✅ Handle all input changes
+  const handleChange = (e) => {
+    const { id, value } = e.target;
 
-  const handleDelete = (id) => {
-    Swal.fire("Deleted!", `Record with ID ${id} has been deleted.`, "success");
+    // match field names to state keys
+    const keyMap = {
+      ClientStatus: "status_short",
+      EventName: "evnt_id",
+      ReminderDateTime: "reminder_dt",
+      ForwardTo: "forward_to",
+      Remark: "re_msg",
+      cmpny_id: "cmpny_id",
+    };
+
+    setReviewData((prev) => ({
+      ...prev,
+      [keyMap[id] || id]: value,
+    }));
   };
 
+  // ✅ Handle submit
+  const handleAddReview = async (e) => {
+    e.preventDefault();
+
+    // 🎯 FIX: cmpny_id की जाँच करें
+    if (!reviewData.cmpny_id) {
+      showError("Company ID लोड नहीं हुआ है। कृपया पेज रिफ्रेश करें।");
+      console.error("Validation failed: cmpny_id is missing.");
+      return; // अगर ID नहीं है तो आगे न बढ़ें
+    }
+
+    // बाकी ज़रूरी फ़ील्ड की जाँच
+    if (!reviewData.status_short || !reviewData.evnt_id || !reviewData.re_msg) {
+      showError("कृपया Client Status, Event Name, और Remark भरें।");
+      return;
+    }
+
+    try {
+      await dispatch(createReview(reviewData)).unwrap();
+      showSuccess("Review added successfully!");
+      setPopUp(false);
+      // console.log("New Review:", reviewData);
+      dispatch(fetchReviews()); // refresh list
+      // console.log("status Update", companyId);
+      // Reset form
+      setReviewData({
+        cmpny_id: companyId || "",
+        evnt_id: "",
+        status_short: "",
+        reminder_dt: "",
+        forward_to: "",
+        re_msg: "",
+        updated_by: updateBy || "",
+      });
+    } catch (err) {
+      showError("Failed to add review. Please try again.");
+      console.error("Add review error:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!id) return;
+
+    try {
+      await dispatch(deleteReview(id)).unwrap(); // redux toolkit async thunk
+      showSuccess("Review deleted successfully!");
+      dispatch(fetchReviews()); // refresh the list
+    } catch (err) {
+      showError("Failed to delete review. Please try again.");
+      console.error("Delete review error:", err);
+    }
+  };
   const handleSendWhatsapp = () => {
     Swal.fire({
       title: "Send WhatsApp Message",
@@ -77,6 +196,9 @@ const ClientOverview1 = () => {
       icon: "info",
       confirmButtonText: "OK",
     });
+  };
+  const handleAccount = () => {
+    navigate("/ihweClientData2026/accountSection1");
   };
 
   return (
@@ -112,7 +234,7 @@ const ClientOverview1 = () => {
                 Send Whatsapp
               </button>
               <button
-                onClick={() => setShowAccounts(true)}
+                onClick={handleAccount}
                 className="bg-white text-black px-3 py-2 text-xs rounded-sm cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 Account
@@ -181,34 +303,58 @@ const ClientOverview1 = () => {
           </div>
         </div>
 
-        {/* Pop-Up Form (toggle simulation) */}
-        {popUp && (
-          <div className="w-full h-auto bg-white rounded-md shadow-md px-4 py-4 gap-4">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-7">
-              <div className="w-auto">
+        {/* Pop-Up Form — Show only when no history or when manually toggled */}
+        {(reviews.length === 0 || popUp) && (
+          <form
+            onSubmit={handleAddReview}
+            className="w-full h-auto bg-white rounded-md shadow-md px-4 py-4 gap-4"
+          >
+            <div className="flex items-end justify-between gap-4 overflow-x-auto">
+              {/* Hidden Company ID Field */}
+              <input
+                type="hidden"
+                id="cmpny_id"
+                value={companyId}
+                onChange={handleChange}
+              />
+
+              {/* Client Status */}
+              <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="ClientStatus"
-                  className="block text-xs font-medium text-gray-700"
+                  className="block text-xs font-medium text-gray-700 mb-1"
                 >
                   Client Status
                 </label>
                 <select
-                  onChange={(e) => setFlip(e.target.value !== "")}
                   id="ClientStatus"
-                  className={baseInputClass}
+                  value={reviewData.status_short}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const hideFor = ["Not Interested"];
+                    setFlip(!hideFor.includes(value));
+                    handleChange(e);
+                  }}
+                  className={`${baseInputClass} h-[42px]`}
                 >
                   <option value="">Select Current Status</option>
-                  <option value="Sent Details">Sent Details</option>
-                  <option value="Follow-up Call">Follow-up Call</option>
+                  {statusOptions
+                    .filter((opt) => opt.status === "active")
+                    .map((opt) => (
+                      <option key={opt._id} value={opt.name}>
+                        {opt.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
+              {/* Reminder & Forward Fields */}
               {Flip && (
-                <div className="flex flex-col md:flex-row gap-4 md:gap-7">
-                  <div className="w-auto">
+                <>
+                  <div className="flex flex-col flex-1 min-w-[200px]">
                     <label
                       htmlFor="ReminderDateTime"
-                      className="block text-xs font-medium text-gray-700"
+                      className="block text-xs font-medium text-gray-700 mb-1"
                     >
                       Reminder Date & Time{" "}
                       <span className="text-red-700">*</span>
@@ -216,30 +362,48 @@ const ClientOverview1 = () => {
                     <input
                       type="datetime-local"
                       id="ReminderDateTime"
-                      className={baseInputClass}
+                      value={reviewData.reminder_dt}
+                      onChange={handleChange}
+                      className={`${baseInputClass} h-[42px]`}
                     />
                   </div>
 
-                  <div className="w-auto">
+                  <div className="flex flex-col flex-1 min-w-[200px]">
                     <label
                       htmlFor="ForwardTo"
-                      className="block text-xs font-medium text-gray-700"
+                      className="block text-xs font-medium text-gray-700 mb-1"
                     >
                       Forward To <span className="text-red-700">*</span>
                     </label>
-                    <select id="ForwardTo" className={baseInputClass}>
+
+                    <select
+                      id="ForwardTo"
+                      value={reviewData.forward_to}
+                      onChange={handleChange}
+                      className={`${baseInputClass} h-[42px]`}
+                    >
                       <option value="">Select Here</option>
-                      <option value="Vijay Sharma">Vijay Sharma</option>
-                      <option value="Rishav Singh">Rishav Singh</option>
+                      {users.length > 0 ? (
+                        users
+                          .filter((user) => user.user_status === "Active")
+                          .map((user) => (
+                            <option key={user._id} value={user.user_fullname}>
+                              {user.user_fullname}
+                            </option>
+                          ))
+                      ) : (
+                        <option disabled>No Users Found</option>
+                      )}
                     </select>
                   </div>
-                </div>
+                </>
               )}
 
-              <div className="w-auto">
+              {/* Previous Status */}
+              <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="PreviousStatus"
-                  className="block text-xs font-medium text-gray-700"
+                  className="block text-xs font-medium text-gray-700 mb-1"
                 >
                   Previous Status
                 </label>
@@ -248,23 +412,42 @@ const ClientOverview1 = () => {
                   id="PreviousStatus"
                   value="Follow Up call"
                   readOnly
-                  className={baseInputClass}
+                  className={`${baseInputClass} h-[42px]`}
                 />
               </div>
 
-              <div className="w-auto">
+              {/* Event Name */}
+              <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="EventName"
-                  className="block text-xs font-medium text-gray-700"
+                  className="block text-xs font-medium text-gray-700 mb-1"
                 >
                   Event Name <span className="text-red-700">*</span>
                 </label>
-                <select id="EventName" className={baseInputClass}>
-                  <option value="Organic Expo 2026">Organic Expo 2026</option>
+
+                <select
+                  id="EventName"
+                  value={reviewData.evnt_id}
+                  onChange={handleChange}
+                  className={`${baseInputClass} h-[42px]`}
+                >
+                  <option value="">Select Event</option>
+                  {events.length > 0 ? (
+                    events
+                      .filter((event) => event.event_status === "active")
+                      .map((event) => (
+                        <option key={event._id} value={event._id}>
+                          {event.event_name}
+                        </option>
+                      ))
+                  ) : (
+                    <option disabled>No Events Found</option>
+                  )}
                 </select>
               </div>
             </div>
 
+            {/* Remark */}
             <div className="mt-4">
               <label
                 htmlFor="Remark"
@@ -275,59 +458,72 @@ const ClientOverview1 = () => {
               <div className="flex flex-col md:flex-row gap-2 mt-1">
                 <textarea
                   id="Remark"
+                  value={reviewData.re_msg}
+                  onChange={handleChange}
                   className="w-full border p-2 text-xs"
                   placeholder="update status"
                 ></textarea>
-                <button className="w-full md:w-auto px-4 py-2 text-xs bg-[#3598dc] text-white hover:bg-[#246a99] transition">
+                <button
+                  type="submit"
+                  className="w-full md:w-auto px-4 py-2 text-xs bg-[#3598dc] text-white hover:bg-[#246a99] transition"
+                >
                   SAVE
                 </button>
               </div>
             </div>
-          </div>
+          </form>
         )}
 
         {/* Communication History */}
-        <div className="bg-white shadow-md rounded-md w-full">
-          <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 rounded-t-md border-b border-gray-200">
-            <p className="flex items-center gap-2">
-              <FaBuilding className="text-lg text-gray-600" /> Communication
-              Status History
-            </p>
-          </h3>
-          <div className="space-y-0.5 p-2">
-            {communicationHistoryData.map((entry) => (
-              <div
-                key={entry.id}
-                className="flex items-start gap-2 py-1.5 px-2 bg-white rounded-md border border-gray-200 text-sm"
-              >
-                <FaUser className="w-4 h-4 text-gray-500 mt-1" />
-                <div className="flex-grow">
-                  <p className="font-medium text-xs sm:text-sm">
-                    <span className="text-blue-400">{entry.title}</span>
-                    <span
-                      onClick={() => setPopUp(!popUp)}
-                      className={`${
-                        entry.isActive ? "text-red-500" : "text-gray-700"
-                      } cursor-pointer hover:underline`}
-                    >
-                      {" "}
-                      | ▲ {entry.reminder}
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-500 leading-tight">
-                    {entry.details}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleDelete(entry.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+        {reviews.length > 0 && (
+          <div className="bg-white shadow-md rounded-md w-full">
+            <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 rounded-t-md border-b border-gray-200">
+              <p className="flex items-center gap-2">
+                <FaBuilding className="text-lg text-gray-600" /> Communication
+                Status History
+              </p>
+            </h3>
+            <div className="space-y-0.5 p-2">
+              {reviews.map((entry, index) => (
+                <div
+                  key={entry?._id}
+                  className="flex items-start gap-2 py-1.5 px-2 bg-white rounded-md border border-gray-200 text-sm"
                 >
-                  <FaTrash className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+                  <FaUser className="w-4 h-4 text-gray-500 mt-1" />
+                  <div className="flex-grow">
+                    <p className="font-medium text-xs sm:text-sm">
+                      <span className="text-blue-400 uppercase">
+                        {entry?.status_short} for {getEventName(entry?.evnt_id)}
+                      </span>
+                      <span
+                        onClick={() => {
+                          if (index === 0) setPopUp(!popUp);
+                        }}
+                        className={`${
+                          index === 0
+                            ? "text-red-500 cursor-pointer hover:underline"
+                            : "text-gray-700"
+                        }  uppercase`}
+                      >
+                        | ▲ call the client on {entry?.reminder_dt}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-500 leading-tight">
+                      {entry?.re_msg} | By: {entry?.updated_by} | On:{" "}
+                      {entry?.re_updated}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(entry?._id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <FaTrash className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

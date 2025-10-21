@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   });
 
   const [items, setItems] = useState([
-    { 
+    {
       id: Date.now(),
       itemDesc: "",
       hsn: "",
@@ -28,8 +28,8 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
       taxable: 0,
       gstRate: 0,
       finalAmount: 0,
-      remarks: ""
-    }
+      remarks: "",
+    },
   ]);
 
   const handleBasicChange = (e) => {
@@ -37,8 +37,8 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   };
 
   const handleItemChange = (id, field, value) => {
-    setItems(prevItems =>
-      prevItems.map(item => {
+    setItems((prevItems) =>
+      prevItems.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
 
@@ -48,8 +48,8 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           const gstRate = Number(updatedItem.gstRate) || 0;
 
           const newAmount = qty * rate;
-          const newTaxable = newAmount - (newAmount * (disc / 100));
-          const newFinalAmount = newTaxable + (newTaxable * (gstRate / 100));
+          const newTaxable = newAmount - newAmount * (disc / 100);
+          const newFinalAmount = newTaxable + newTaxable * (gstRate / 100);
 
           return {
             ...updatedItem,
@@ -77,14 +77,14 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
       taxable: 0,
       gstRate: 0,
       finalAmount: 0,
-      remarks: ""
+      remarks: "",
     };
     setItems([...items, newItem]);
   };
 
   const removeItemRow = (id) => {
     if (items.length > 1) {
-      setItems(prevItems => prevItems.filter(item => item.id !== id));
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
     }
   };
 
@@ -94,7 +94,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
     if (!formData.supplyDate) return "Please select supply date";
     if (!formData.state) return "Please select state";
     if (!formData.city) return "Please select city";
-    
+
     for (let item of items) {
       if (!item.itemDesc) return "Please enter item description";
       if (!item.hsn) return "Please enter HSN number";
@@ -102,7 +102,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
       if (!item.unit) return "Please select unit";
       if (!item.rate) return "Please enter rate";
     }
-    
+
     return null;
   };
 
@@ -114,9 +114,15 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
     }
 
     // Calculate totals
-    const totalAmount = items.reduce((sum, item) => sum + parseFloat(item.finalAmount || 0), 0);
-    const totalTaxable = items.reduce((sum, item) => sum + parseFloat(item.taxable || 0), 0);
-    
+    const totalAmount = items.reduce(
+      (sum, item) => sum + parseFloat(item.finalAmount || 0),
+      0
+    );
+    const totalTaxable = items.reduce(
+      (sum, item) => sum + parseFloat(item.taxable || 0),
+      0
+    );
+
     const estimateData = {
       id: Date.now(),
       ...formData,
@@ -124,12 +130,16 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
       totalAmount: totalAmount.toFixed(2),
       totalTaxable: totalTaxable.toFixed(2),
       createdDate: new Date().toLocaleDateString(),
-      status: 'Active'
+      status: "Active",
     };
 
     // Show success message
-    alert(`✅ Estimate saved successfully!\n\nEstimate No: ${formData.estimateNo}\nTotal Amount: ₹${totalAmount.toFixed(2)}\nItems: ${items.length}`);
-    
+    alert(
+      `✅ Estimate saved successfully!\n\nEstimate No: ${
+        formData.estimateNo
+      }\nTotal Amount: ₹${totalAmount.toFixed(2)}\nItems: ${items.length}`
+    );
+
     // Pass data to parent component
     if (onEstimateCreated) {
       onEstimateCreated(estimateData);
@@ -141,8 +151,14 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   };
 
   const ArrowIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
     </svg>
   );
 
@@ -169,7 +185,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
       {/* Main Form Section */}
       <div className="max-w-full mx-auto bg-white shadow-lg m-4 rounded-lg">
         <div className="p-4">
-          <h2 className="text-base font-medium text-gray-700 mb-3">Create Estimate</h2>
+          <h2 className="text-base font-medium text-gray-700 mb-3">
+            Create Estimate
+          </h2>
           <hr className="mb-4" />
 
           {/* Basic Information - Row 1 */}
@@ -323,14 +341,18 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           </div>
 
           {/* Items Section */}
-          <h3 className="text-base font-medium text-gray-700 mb-3 mt-6">Items</h3>
+          <h3 className="text-base font-medium text-gray-700 mb-3 mt-6">
+            Items
+          </h3>
           <hr className="mb-4" />
 
           {items.map((item, index) => (
             <div key={item.id} className="mb-4 p-3 bg-gray-50 rounded border">
               {/* Item Header */}
               <div className="flex justify-between items-center mb-3">
-                <h4 className="text-sm font-medium text-gray-700">Item No. {index + 1}</h4>
+                <h4 className="text-sm font-medium text-gray-700">
+                  Item No. {index + 1}
+                </h4>
                 {items.length > 1 && (
                   <button
                     type="button"
@@ -351,7 +373,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="text"
                     value={item.itemDesc}
-                    onChange={(e) => handleItemChange(item.id, 'itemDesc', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "itemDesc", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Type here..."
                   />
@@ -363,7 +387,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="text"
                     value={item.hsn}
-                    onChange={(e) => handleItemChange(item.id, 'hsn', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "hsn", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -374,7 +400,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="number"
                     value={item.qty}
-                    onChange={(e) => handleItemChange(item.id, 'qty', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "qty", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -385,7 +413,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="text"
                     value={item.size}
-                    onChange={(e) => handleItemChange(item.id, 'size', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "size", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -395,7 +425,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   </label>
                   <select
                     value={item.unit}
-                    onChange={(e) => handleItemChange(item.id, 'unit', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "unit", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Unit</option>
@@ -411,7 +443,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="number"
                     value={item.rate}
-                    onChange={(e) => handleItemChange(item.id, 'rate', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "rate", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -433,7 +467,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="number"
                     value={item.disc}
-                    onChange={(e) => handleItemChange(item.id, 'disc', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "disc", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -460,10 +496,14 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     <input
                       type="number"
                       value={item.gstRate}
-                      onChange={(e) => handleItemChange(item.id, 'gstRate', e.target.value)}
+                      onChange={(e) =>
+                        handleItemChange(item.id, "gstRate", e.target.value)
+                      }
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <span className="ml-2 text-xs font-normal text-gray-700">%</span>
+                    <span className="ml-2 text-xs font-normal text-gray-700">
+                      %
+                    </span>
                   </div>
                 </div>
 
@@ -486,7 +526,9 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <input
                     type="text"
                     value={item.remarks}
-                    onChange={(e) => handleItemChange(item.id, 'remarks', e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "remarks", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Type here..."
                   />
@@ -523,13 +565,13 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
               <span className="text-red-500 text-sm">*</span> Required Fields
             </p>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={handleAddEstimate}
                 className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200 flex items-center gap-1"
               >
                 ADD ESTIMATE <ArrowIcon />
               </button>
-              <button 
+              <button
                 onClick={onCancel}
                 className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200"
               >

@@ -51,7 +51,7 @@ const AddNewClients = () => {
   const { states } = useSelector((state) => state.states);
   const { cities } = useSelector((state) => state.cities);
   const { dataSources } = useSelector((state) => state.dataSources);
-  const { events } = useSelector((state) => state.events);
+  const { events } = useSelector((state) => state.crmEvents);
   const { companies } = useSelector((state) => state.companies);
 
   // 🧩 Form State

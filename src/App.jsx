@@ -51,7 +51,9 @@ import AddStatus from "./pages/add_by_admin/AddStatus";
 import AddBank from "./pages/add_by_admin/AddBank";
 import UploadExhibitor from "./pages/ihwe_client_data_2026/uploadExhibitor";
 import ClientOverview1 from "./Components/ClientOverview1";
-import Event from "./pages/add_by_admin/Event";
+import AddEvent from "./pages/add_by_admin/AddEvent";
+import AccountSection1 from "./Components/AccountSection1";
+import CreateEstimate1 from "./Components/CreateEstimate1";
 const App = () => {
   return (
     <>
@@ -109,6 +111,14 @@ const App = () => {
           <Route
             path="/ihweClientData2026/uploadExhibitor"
             element={<UploadExhibitor />}
+          />
+          <Route
+            path="/ihweClientData2026/accountSection1"
+            element={<AccountSection1 />}
+          />
+          <Route
+            path="/ihweClientData2026/createEstimate1"
+            element={<CreateEstimate1 />}
           />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
@@ -198,7 +208,7 @@ const App = () => {
           <Route path="/addByAdmin/dataSource" element={<AddDataSource />} />
           <Route path="/addByAdmin/status" element={<AddStatus />} />
           <Route path="/addByAdmin/bank" element={<AddBank />} />
-          <Route path="/addByAdmin/event" element={<Event />} />
+          <Route path="/addByAdmin/event" element={<AddEvent />} />
 
           {/* Invoice / Utility */}
 
