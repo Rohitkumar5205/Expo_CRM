@@ -189,13 +189,13 @@ const Globallytable = ({
             <>
               <button
                 onClick={handlePrint}
-                className="text-[#2f353b] h-7 w-24 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
+                className="text-[#2f353b] h-7 w-18 text-xs text-center cursor-pointer hover:bg-black hover:text-white border border-[#2f353b]"
               >
                 Print
               </button>
               <button
                 onClick={exportToCsv}
-                className="h-7 w-24 text-[#78a300] text-xs text-center cursor-pointer hover:bg-[#78a300] hover:text-white border border-[#78a300]"
+                className="h-7 w-18 text-[#78a300] text-xs text-center cursor-pointer hover:bg-[#78a300] hover:text-white border border-[#78a300]"
               >
                 Excel
               </button>
@@ -284,7 +284,7 @@ const Globallytable = ({
                     {colomns.map((col) => (
                       <td
                         key={col.accessor}
-                        className="h-8 pl-3 border border-gray-200 text-left"
+                        className="h-8 pl-3 border border-gray-200 text-left text-xs font-medium "
                         style={{ width: col.width }}
                       >
                         {col.render ? (
@@ -324,11 +324,11 @@ const Globallytable = ({
                     className="border border-gray-200"
                     style={{ width: col.width }}
                   >
-                    <div className="h-8">
+                    <div className="h-8 py-1 px-1  ">
                       <input
                         type="text"
                         placeholder={`Search ${col.label}`}
-                        className="w-full px-1 text-xs border-none outline-none"
+                        className="w-full py-0.5 text-xs border border-gray-300  outline-none  text-center"
                         value={filters[col.accessor] || ""}
                         onChange={(e) =>
                           handleFilterChange(col.accessor, e.target.value)

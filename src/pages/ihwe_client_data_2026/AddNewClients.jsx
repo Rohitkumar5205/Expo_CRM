@@ -277,7 +277,7 @@ const AddNewClients = () => {
       {/* Heading and Navigation Buttons */}
       <div className="w-full h-fit bg-white shadow-md">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
-          <h1 className="text-xl text-gray-500 mb-2 lg:mb-0">
+          <h1 className="text-xl text-gray-600 mb-2 lg:mb-0">
             COMPANY DETAILS
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
@@ -306,13 +306,13 @@ const AddNewClients = () => {
       {/* Form */}
       <form
         onSubmit={handleSave}
-        className="max-w-full bg-white shadow-lg  rounded-lg m-4"
+        className="max-w-full bg-white shadow-lg m-4"
       >
         <div className="p-4">
-          <h2 className="text-base font-medium text-gray-700 mb-3 uppercase">
+          <h2 className="text-xl font-normal text-gray-500 mb-1 uppercase">
             {heading}
           </h2>
-          <hr className="mb-4" />
+          <hr className="mb-3 opacity-10" />
 
           {/* --- Company Details --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
@@ -596,13 +596,13 @@ const AddNewClients = () => {
           </div>
 
           {/* --- Contact Details --- */}
-          <h3 className="text-base font-medium text-gray-700 mb-3 mt-6">
+          <h3 className="text-base font-medium text-gray-700 mb-1 mt-6">
             Contact Details
           </h3>
-          <hr className="mb-4" />
+          <hr className="mb-0.5 opacity-10" />
 
           {formData.contacts.map((contact, index) => (
-            <div key={index} className=" p-3 bg-gray-50 mb-3">
+            <div key={index} className=" p-3 bg-gray-50 mb-0.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {/* Title */}
                 <div>
@@ -758,7 +758,7 @@ const AddNewClients = () => {
             </div>
           ))}
 
-          <hr className="my-4" />
+          <hr className="my-0.5 opacity-10" />
 
           {/* --- Footer --- */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3">
