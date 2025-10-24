@@ -75,7 +75,7 @@ const NewLeadList = () => {
       {/* 🔹 Header */}
       <div className="w-full bg-white shadow-md">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-2 mb-3">
-          <h1 className="text-xl text-gray-600 font-semibold">
+          <h1 className="text-xl text-gray-500 font-normal">
             CLIENT DATA 2023
           </h1>
         </div>
@@ -92,37 +92,37 @@ const NewLeadList = () => {
           <div className="flex flex-wrap justify-end gap-2">
             <Link
               to="/ihweClientData2026/addNewClients"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Add New Lead
             </Link>
             <Link
               to="/ihweClientData2026/warmClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Warm Client
             </Link>
             <Link
               to="/ihweClientData2026/hotClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Hot Client
             </Link>
             <Link
               to="/ihweClientData2026/confirmClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Confirm Client
             </Link>
             <Link
               to="/ihweClientData2026/coldClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Cold Client
             </Link>
             <Link
               to="/ihweClientData2026/rawDataList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white rounded transition"
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
             >
               Raw Data List
             </Link>
@@ -146,7 +146,7 @@ const NewLeadList = () => {
       </div>
 
       {/* 🔹 Notes Section */}
-      <div className="bg-white shadow-md m-3 ml-5 p-3 rounded-md">
+      <div className="bg-white shadow-md m-3 ml-5 p-3 -md">
         <Textarea />
       </div>
     </div>
