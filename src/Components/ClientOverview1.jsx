@@ -112,8 +112,7 @@ const ClientOverview1 = () => {
     const event = events.find((e) => e._id === eventId);
     return event ? event.event_name : eventId; // अगर नाम मिला तो नाम, वरना ID ही दिखा दो।
   };
-  const baseInputClass =
-    "mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm";
+  
 
   // ✅ Handle all input changes
   const handleChange = (e) => {
@@ -205,16 +204,16 @@ const ClientOverview1 = () => {
   return (
     <div className="w-full h-auto bg-[#eef1f5]">
       {/* Header */}
-      <div className="flex justify-between items-center bg-white  px-6 py-1 ">
-        <h2 className="text-lg font-semibold text-gray-800">CLIENT OVERVIEW</h2>
+      <div className="flex justify-between items-center bg-white  px-5 py-0.5 ">
+        <h2 className="text-xl font-normal text-gray-600">CLIENT OVERVIEW</h2>
         <div className="flex gap-2">
-          <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Back to List
           </button>
-          <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Add Client
           </button>
-          <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded-sm text-sm font-medium">
+          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Master List
           </button>
         </div>
@@ -223,41 +222,41 @@ const ClientOverview1 = () => {
       {/* Main Content */}
       <div className="flex flex-col m-4 gap-4">
         <div className="bg-white shadow-md p-4 rounded-md w-full">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-700">
+          <div className="flex justify-between items-center mb-1.5">
+            <h2 className="text-xl font-normal text-gray-600">
               {company.companyName} | Details
             </h2>
             <div className="flex gap-2">
               <button
                 onClick={handleSendWhatsapp}
-                className="bg-white text-black px-3 py-2 text-xs rounded-sm cursor-pointer border border-gray-400 hover:bg-gray-100 transition-colors"
+                className="bg-white text-black px-2 py-0.5  text-xs  cursor-pointer border border-gray-400 hover:bg-gray-100 transition-colors"
               >
                 Send Whatsapp
               </button>
               <button
                 onClick={handleAccount}
-                className="bg-white text-black px-3 py-2 text-xs rounded-sm cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
+                className="bg-white text-black px-2 py-0.5  text-xs  cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 Account
               </button>
               {/* <button
                 onClick={handlePayments}
-                className="bg-white text-black px-3 py-2 text-xs rounded-sm cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
+                className="bg-white text-black px-2 py-0.5  text-xs  cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 Payments
               </button> */}
               <button
                 onClick={handleEdit}
-                className="flex items-center justify-center w-8 h-8 rounded-sm text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-center w-6 h-6  text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"
                 aria-label="Edit"
               >
                 <FaPencilAlt className="w-3 h-3" />
               </button>
             </div>
           </div>
-
+         <hr className="w-full opacity-10 mb-3"/>
           {/* Client Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600 border-b pb-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600  pb-4 mb-4">
             <div>
               <p className="font-semibold text-gray-800">Company Details</p>
               <p>
@@ -299,7 +298,7 @@ const ClientOverview1 = () => {
             </div>
             <div>
               <p className="font-semibold text-gray-800">Client Status</p>
-              <p>{company.status || "New Client"}</p>
+              <p className="text-green-700">{company.status || "New Client"}</p>
             </div>
           </div>
         </div>
@@ -320,10 +319,10 @@ const ClientOverview1 = () => {
               />
 
               {/* Client Status */}
-              <div className="flex flex-col flex-1 min-w-[200px]">
+              <div className="flex flex-col flex-1 min-w-[120px]">
                 <label
                   htmlFor="ClientStatus"
-                  className="block text-xs font-medium text-gray-700 mb-1"
+                  className="block text-xs font-medium text-gray-900 mb-1"
                 >
                   Client Status
                 </label>
@@ -336,7 +335,7 @@ const ClientOverview1 = () => {
                     setFlip(!hideFor.includes(value));
                     handleChange(e);
                   }}
-                  className={`${baseInputClass} h-[42px]`}
+                  className=" h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 >
                   <option value="">Select Current Status</option>
                   {statusOptions
@@ -355,7 +354,7 @@ const ClientOverview1 = () => {
                   <div className="flex flex-col flex-1 min-w-[200px]">
                     <label
                       htmlFor="ReminderDateTime"
-                      className="block text-xs font-medium text-gray-700 mb-1"
+                      className="block text-xs font-medium text-gray-900 mb-1"
                     >
                       Reminder Date & Time{" "}
                       <span className="text-red-700">*</span>
@@ -365,14 +364,14 @@ const ClientOverview1 = () => {
                       id="ReminderDateTime"
                       value={reviewData.reminder_dt}
                       onChange={handleChange}
-                      className={`${baseInputClass} h-[42px]`}
+                      className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                     />
                   </div>
 
                   <div className="flex flex-col flex-1 min-w-[200px]">
                     <label
                       htmlFor="ForwardTo"
-                      className="block text-xs font-medium text-gray-700 mb-1"
+                      className="block text-xs font-medium text-gray-900 mb-1"
                     >
                       Forward To <span className="text-red-700">*</span>
                     </label>
@@ -381,7 +380,7 @@ const ClientOverview1 = () => {
                       id="ForwardTo"
                       value={reviewData.forward_to}
                       onChange={handleChange}
-                      className={`${baseInputClass} h-[42px]`}
+                      className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                     >
                       <option value="">Select Here</option>
                       {users.length > 0 ? (
@@ -404,7 +403,7 @@ const ClientOverview1 = () => {
               <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="PreviousStatus"
-                  className="block text-xs font-medium text-gray-700 mb-1"
+                  className="block text-xs font-medium text-gray-900 mb-1"
                 >
                   Previous Status
                 </label>
@@ -413,7 +412,7 @@ const ClientOverview1 = () => {
                   id="PreviousStatus"
                   value="Follow Up call"
                   readOnly
-                  className={`${baseInputClass} h-[42px]`}
+                  className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 />
               </div>
 
@@ -421,7 +420,7 @@ const ClientOverview1 = () => {
               <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="EventName"
-                  className="block text-xs font-medium text-gray-700 mb-1"
+                  className="block text-xs font-medium text-gray-900 mb-1"
                 >
                   Event Name <span className="text-red-700">*</span>
                 </label>
@@ -430,7 +429,7 @@ const ClientOverview1 = () => {
                   id="EventName"
                   value={reviewData.evnt_id}
                   onChange={handleChange}
-                  className={`${baseInputClass} h-[42px]`}
+                  className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 >
                   <option value="">Select Event</option>
                   {events.length > 0 ? (
@@ -452,7 +451,7 @@ const ClientOverview1 = () => {
             <div className="mt-4">
               <label
                 htmlFor="Remark"
-                className="flex gap-2 text-xs font-medium text-gray-700"
+                className="flex gap-2 text-xs font-medium text-gray-900"
               >
                 Any Remark <span className="text-red-600">*</span>
               </label>
@@ -484,11 +483,11 @@ const ClientOverview1 = () => {
                 Status History
               </p>
             </h3>
-            <div className="space-y-0.5 p-2">
+            <div className="space-y-0.5 p-2 "> 
               {reviews.map((entry, index) => (
                 <div
                   key={entry?._id}
-                  className="flex items-start gap-2 py-1.5 px-2 bg-white rounded-md border border-gray-200 text-sm"
+                  className="flex items-start hover:bg-gray-200 gap-2 py-1.5 px-2 bg-white rounded-md border border-gray-200 text-sm"
                 >
                   <FaUser className="w-4 h-4 text-gray-500 mt-1" />
                   <div className="flex-grow">

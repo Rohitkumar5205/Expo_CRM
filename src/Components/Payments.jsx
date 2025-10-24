@@ -389,7 +389,7 @@ const Payments = ({ client, onBack }) => {
     <div className="w-full min-h-screen bg-gray-100 font-sans">
       {/* 1. Heading and Navigation Buttons */}
       <div className="max-w-full mx-auto bg-white shadow-lg sticky top-0 z-10">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
             ACCOUNT SECTION | PAYMENTS
           </h1>
@@ -406,33 +406,33 @@ const Payments = ({ client, onBack }) => {
 
       {/* 2. Add/Edit Payments Form */}
       <div className="bg-white shadow-md p-4 m-4 rounded">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">
+        <div className="flex justify-between items-center mb-1">
+          <h2 className="text-xl font-normal text-gray-600">
             {editingItem ? "Edit Payment" : "Add Payments"}
           </h2>
           {editingItem && (
             <button
               onClick={handleCancelEdit}
-              className="text-red-500 text-sm hover:text-red-700 font-medium bg-white border border-gray-400 hover:bg-gray-200 px-3 py-1 rounded-sm"
+              className="text-red-500 text-sm hover:text-red-700 font-medium bg-white border border-gray-400 hover:bg-gray-200 px-3 py-1 "
             >
               Cancel Edit
             </button>
           )}
         </div>
-
+         <hr className="w-full opacity-10 mb-6" />
         <form onSubmit={handleSubmit}>
           {/* Inputs grid (Row 1 & 2) - Kept same as previous structure */}
           <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
             {/* Row 1 Fields */}
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 PYMT Against For *
               </label>
               <select
                 name="pymtAgainst"
                 value={formData.pymtAgainst}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
               >
                 <option value="">Select Here</option>
                 <option value="Performa Invoice">Performa Invoice</option>
@@ -441,14 +441,14 @@ const Payments = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Document No. *
               </label>
               <select
                 name="documentNo"
                 value={formData.documentNo}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
               >
                 <option value="">Select Here</option>
                 <option value="DOC-001">DOC-001</option>
@@ -456,7 +456,7 @@ const Payments = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Final Amount
               </label>
               <input
@@ -464,12 +464,13 @@ const Payments = ({ client, onBack }) => {
                 name="finalAmount"
                 value={formData.finalAmount}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
+              
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Recieved Amount *
               </label>
               <input
@@ -477,13 +478,13 @@ const Payments = ({ client, onBack }) => {
                 name="receivedAmount"
                 value={formData.receivedAmount}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
                 required
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 TDS Amount
               </label>
               <input
@@ -491,12 +492,12 @@ const Payments = ({ client, onBack }) => {
                 name="tdsAmount"
                 value={formData.tdsAmount}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Recieved Date *
               </label>
               <input
@@ -504,14 +505,14 @@ const Payments = ({ client, onBack }) => {
                 name="receivedDate"
                 value={formData.receivedDate}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
                 required
               />
             </div>
 
             {/* Row 2 Fields */}
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Debit Note No.
               </label>
               <input
@@ -519,12 +520,12 @@ const Payments = ({ client, onBack }) => {
                 name="debitNoteNo"
                 value={formData.debitNoteNo}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Debit Note Amount
               </label>
               <input
@@ -532,12 +533,12 @@ const Payments = ({ client, onBack }) => {
                 name="debitNoteAmount"
                 value={formData.debitNoteAmount}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Debit Note Date
               </label>
               <input
@@ -545,19 +546,19 @@ const Payments = ({ client, onBack }) => {
                 name="debitNoteDate"
                 value={formData.debitNoteDate}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                className="border border-gray-300 px-2 text-xs  h-8"
               />
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Type of Payment *
               </label>
               <select
                 name="typeOfPayment"
                 value={formData.typeOfPayment}
                 onChange={handlePaymentTypeChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                 required
               >
                 <option value="">Select Here</option>
@@ -569,14 +570,14 @@ const Payments = ({ client, onBack }) => {
             </div>
 
             <div className="flex flex-col md:col-span-1">
-              <label className="text-[10px] text-gray-600 font-medium mb-1">
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Payment Mode *
               </label>
               <select
                 name="paymentMode"
                 value={formData.paymentMode}
                 onChange={handlePaymentModeChange}
-                className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                 required
               >
                 <option value="">Select Here</option>
@@ -595,14 +596,14 @@ const Payments = ({ client, onBack }) => {
           {showAdvanceFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Forward To *
                 </label>
                 <select
                   name="forwardTo"
                   value={formData.forwardTo}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                   required
                 >
                   <option value="">Select Here</option>
@@ -612,7 +613,7 @@ const Payments = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Reminder Date & Time *
                 </label>
                 <input
@@ -620,7 +621,7 @@ const Payments = ({ client, onBack }) => {
                   name="reminderDateTime"
                   value={formData.reminderDateTime}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                   required
                 />
               </div>
@@ -630,14 +631,14 @@ const Payments = ({ client, onBack }) => {
           {showCardFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-1">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Card Type
                 </label>
                 <select
                   name="cardType"
                   value={formData.cardType}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                 >
                   <option value="">Select Card Type</option>
                   <option value="Debit Card">Debit Card</option>
@@ -645,7 +646,7 @@ const Payments = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col md:col-span-1">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Name on Card
                 </label>
                 <input
@@ -653,11 +654,11 @@ const Payments = ({ client, onBack }) => {
                   name="nameOnCard"
                   value={formData.nameOnCard}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
               <div className="flex flex-col md:col-span-1">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Transaction Number
                 </label>
                 <input
@@ -665,11 +666,11 @@ const Payments = ({ client, onBack }) => {
                   name="transactionNumberCard"
                   value={formData.transactionNumberCard}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
               <div className="flex flex-col md:col-span-1">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Card Last Four Digit
                 </label>
                 <input
@@ -677,18 +678,18 @@ const Payments = ({ client, onBack }) => {
                   name="cardLastFourDigit"
                   value={formData.cardLastFourDigit}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Bank Name of Card *
                 </label>
                 <select
                   name="bankNameCard"
                   value={formData.bankNameCard}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                   required={showCardFields}
                 >
                   <option value="">Select Bank Name</option>
@@ -705,14 +706,14 @@ const Payments = ({ client, onBack }) => {
           {showEwalletFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   e-Wallet Name
                 </label>
                 <select
                   name="eWalletName"
                   value={formData.eWalletName}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                 >
                   <option value="">Select e-Wallet</option>
                   <option value="Paytm">Paytm</option>
@@ -723,7 +724,7 @@ const Payments = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Transaction Number
                 </label>
                 <input
@@ -731,11 +732,11 @@ const Payments = ({ client, onBack }) => {
                   name="transactionNumberEwallet"
                   value={formData.transactionNumberEwallet}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Mobile Number
                 </label>
                 <input
@@ -743,7 +744,7 @@ const Payments = ({ client, onBack }) => {
                   name="mobileNumberEwallet"
                   value={formData.mobileNumberEwallet}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
             </div>
@@ -752,14 +753,14 @@ const Payments = ({ client, onBack }) => {
           {showNeftFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Bank Name
                 </label>
                 <select
                   name="bankNameNeft"
                   value={formData.bankNameNeft}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
                 >
                   <option value="">Select Here</option>
                   <option value="AU Small Finance Bank">
@@ -773,7 +774,7 @@ const Payments = ({ client, onBack }) => {
                 </select>
               </div>
               <div className="flex flex-col md:col-span-2">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   UTR No.
                 </label>
                 <input
@@ -781,7 +782,7 @@ const Payments = ({ client, onBack }) => {
                   name="utrNo"
                   value={formData.utrNo}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
             </div>
@@ -790,7 +791,7 @@ const Payments = ({ client, onBack }) => {
           {showUpiFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-3">
-                <label className="text-[10px] text-gray-600 font-medium mb-1">
+                <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Transaction Details
                 </label>
                 <input
@@ -798,7 +799,7 @@ const Payments = ({ client, onBack }) => {
                   name="transactionDetailsUpi"
                   value={formData.transactionDetailsUpi}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs rounded-sm h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8"
                 />
               </div>
             </div>
@@ -811,7 +812,7 @@ const Payments = ({ client, onBack }) => {
             <div className="">
               <button
                 type="submit"
-                className="bg-[#337ab7] text-white px-4 py-2 text-sm rounded-sm font-medium hover:bg-blue-700"
+                className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700"
               >
                 {editingItem ? "SAVE CHANGES" : "ADD PAYMENT"}
               </button>

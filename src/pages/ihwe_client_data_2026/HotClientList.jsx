@@ -84,43 +84,43 @@ const HotClientList = () => {
           </div>
           <div className="w-[97%] bg-white p-1 m-4">
             <div className="flex justify-between md:justify-between ">
-              <h1 className="text-base font-semibold text-gray-950 pl-4 pt-1">
+              <h1 className="text-base font-semibold text-gray-900 pl-4 pt-1">
               HOT CLIENT LIST
             </h1>
             <div className="flex flex-wrap justify-start gap-2 mb-1">
               <button
                 onClick={handleAddNewLeadClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Add New Lead
               </button>
               <button
                 onClick={handleWarmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Warm Client
               </button>
               <button
                 onClick={handleHotClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Hot Client
               </button>
               <button
                 onClick={handleConfirmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Confirm Client
               </button>
               <button
                 onClick={handleColdClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Cold Client
               </button>
               <button
                 onClick={handleRawDataListClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Raw Data List
               </button>

@@ -174,22 +174,22 @@ const ColdClientList = () => {
                 COLD CLIENT LIST
               </h1>
               <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Add New Lead
                 </button>
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Warm Client
                 </button>
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Hot Client
                 </button>
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Confirm Client
                 </button>
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Cold Client
                 </button>
-                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-sm font-medium">
+                <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium">
                   Raw Data List
                 </button>
               </div>

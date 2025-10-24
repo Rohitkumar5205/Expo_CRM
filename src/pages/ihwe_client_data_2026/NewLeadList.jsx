@@ -92,37 +92,37 @@ const NewLeadList = () => {
           <div className="flex flex-wrap justify-end gap-2">
             <Link
               to="/ihweClientData2026/addNewClients"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Add New Lead
             </Link>
             <Link
               to="/ihweClientData2026/warmClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Warm Client
             </Link>
             <Link
               to="/ihweClientData2026/hotClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Hot Client
             </Link>
             <Link
               to="/ihweClientData2026/confirmClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Confirm Client
             </Link>
             <Link
               to="/ihweClientData2026/coldClientList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Cold Client
             </Link>
             <Link
               to="/ihweClientData2026/rawDataList"
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white  transition"
+              className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
             >
               Raw Data List
             </Link>

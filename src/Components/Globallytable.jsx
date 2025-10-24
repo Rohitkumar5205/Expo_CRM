@@ -284,7 +284,7 @@ const Globallytable = ({
                     {colomns.map((col) => (
                       <td
                         key={col.accessor}
-                        className="h-8 pl-3 border border-gray-200 text-left"
+                        className="h-8 pl-3 border border-gray-200 text-left text-xs font-medium "
                         style={{ width: col.width }}
                       >
                         {col.render ? (
