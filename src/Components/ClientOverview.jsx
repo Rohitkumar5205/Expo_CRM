@@ -3,12 +3,12 @@ import Swal from "sweetalert2";
 import { FaTrash, FaUser, FaBuilding, FaPencilAlt } from "react-icons/fa";
 import { IoCallSharp } from "react-icons/io5";
 import AccountsComponent from "./AccountsComponent";
-import PaymentsComponent from "./PaymentsComponent";
 import HeaderComponent from "./HeaderComponent";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCompanies } from "../features/company/companySlice";
 import { useNavigate } from "react-router-dom";
+import Payments from "./Payments";
 
 const ClientOverview = ({ client, onBack }) => {
   const navigate = useNavigate();
@@ -215,7 +215,7 @@ const ClientOverview = ({ client, onBack }) => {
   }
   if (showPayments) {
     return (
-      <PaymentsComponent
+      <Payments
         client={clientData}
         onBack={() => setShowPayments(false)}
       />

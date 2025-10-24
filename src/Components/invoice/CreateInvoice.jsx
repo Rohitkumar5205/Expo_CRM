@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 const CreateInvoice = () => {
+  const navigate = useNavigate();
   // states
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
@@ -329,6 +330,10 @@ const CreateInvoice = () => {
   const SelectStyle =
     "px-2 py-1.5 w-full border border-gray-300 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500";
 
+  const handleCreditNote = () => {
+    navigate("/ihweClientData2026/creditNote");
+  };
+
   return (
     <>
       {/* Header */}
@@ -522,11 +527,14 @@ const CreateInvoice = () => {
                     Accounts
                   </td>
                   <td className="px-6 py-2  border border-gray-300 text-center text-xs">
-                    <Link to="/addCreditNote">
-                      <button className="px-2  border border-blue-500 text-blue-500 hover:bg-gray-100 text-center cursor-pointer">
-                        Credit Note
-                      </button>
-                    </Link>
+                    {/* <Link to="/addCreditNote"> */}
+                    <button
+                      onClick={handleCreditNote}
+                      className="px-2  border border-blue-500 text-blue-500 hover:bg-gray-100 text-center cursor-pointer"
+                    >
+                      Credit Note
+                    </button>
+                    {/* </Link> */}
                   </td>
                 </tr>
               </tbody>

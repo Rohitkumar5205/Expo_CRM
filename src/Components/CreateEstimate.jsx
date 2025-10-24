@@ -165,22 +165,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   return (
     <div className="w-full min-h-screen bg-gray-100 font-sans">
       {/* Heading Section */}
-      <div className="w-full bg-white shadow-md border-b">
-        {/* <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-          <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">ACCOUNT SECTION | ESTIMATE</h1>
-          <div className="flex flex-wrap gap-2">
-            <button 
-              onClick={handleSave}
-              className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200"
-            >
-              Save
-            </button>
-            <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
-              Export
-            </button>
-          </div>
-        </div> */}
-      </div>
+     
 
       {/* Main Form Section */}
       <div className="max-w-full mx-auto bg-white shadow-lg m-4 rounded-lg">

@@ -1,11 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 const stylebutton =
   "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
 
 const EstimateTable = () => {
-  // function to pass heading
+  const navigate = useNavigate();
+
+  // New function to handle navigation for Print/Copy buttons
+  const handlePrintCopyNavigation = (copyType) => {
+    navigate("/payments/taxInvoiceDetails", {
+      state: { heading: copyType },
+    });
+  };
 
   return (
     <div className="overflow-x-auto p-2">
@@ -72,26 +80,31 @@ const EstimateTable = () => {
             </td>
 
             <td className="border border-gray-300 px-4 py-2 whitespace-now-wrap text-xs text-black">
-              <Link to="/estimateDetails">
-                <button className="text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1">
-                  NGW/24-25/EST/019{" "}
-                </button>
-              </Link>
+              <button
+                onClick={() => navigate("/payments/estimateDetails")}
+                className="text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1"
+              >
+                NGW/24-25/EST/019{" "}
+              </button>
               | 21 Dec 24 | 53100
             </td>
 
             <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-              <Link to="/performanceInvoiceDetails">
-                <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
-                  NGW/25-26/PI/116 | 06 Sep 25 | 70800
-                </button>
-              </Link>
+              <button
+                onClick={() => navigate("/payments/performanceInvoiceDetails")}
+                className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium"
+              >
+                NGW/25-26/PI/116 | 06 Sep 25 | 70800
+              </button>
             </td>
 
             <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black ">
-              <Link to="/createInvoice" className="flex justify-center">
-                <button className={stylebutton}>Create INV</button>
-              </Link>
+              <button
+                onClick={() => navigate("/payments/createInvoice")}
+                className={stylebutton}
+              >
+                Create INV
+              </button>
             </td>
             <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black"></td>
 
@@ -131,26 +144,32 @@ const EstimateTable = () => {
             <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
               NGW/INV/24-25/026 | 19 Feb 25 | 53100
             </td>
+            {/* THIS IS THE CELL YOU ASKED TO CHANGE */}
             <td className="border border-gray-300 px-2 py-2 whitespace-nowrap text-xs text-black ">
               <div className="flex justify-between gap-1">
-                <Link
-                  to="/taxInvoiceDetails"
-                  state={{ heading: "Original Copy" }}
+                {/* Original Copy Button */}
+                <button
+                  onClick={() => handlePrintCopyNavigation("Original Copy")}
+                  className={stylebutton}
                 >
-                  <button className={stylebutton}>O</button>
-                </Link>
-                <Link
-                  to="/taxInvoiceDetails"
-                  state={{ heading: "Duplicate Copy" }}
+                  O
+                </button>
+
+                {/* Duplicate Copy Button */}
+                <button
+                  onClick={() => handlePrintCopyNavigation("Duplicate Copy")}
+                  className={stylebutton}
                 >
-                  <button className={stylebutton}>D</button>
-                </Link>
-                <Link
-                  to="/taxInvoiceDetails"
-                  state={{ heading: "Triplicate Copy" }}
+                  D
+                </button>
+
+                {/* Triplicate Copy Button */}
+                <button
+                  onClick={() => handlePrintCopyNavigation("Triplicate Copy")}
+                  className={stylebutton}
                 >
-                  <button className={stylebutton}>T</button>
-                </Link>
+                  T
+                </button>
               </div>
             </td>
 

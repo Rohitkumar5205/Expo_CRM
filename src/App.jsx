@@ -9,7 +9,6 @@ import OtpPage from "./authUI/OtpPage";
 import MainComponent from "./Components/MainComponent";
 // import ClientOverview from "./Components/ClientOverview";
 import EditEstimate from "./Components/EditEstimate";
-import AddCreditNote from "./Components/AddCreditNote";
 // rohit kumar
 import AddNewClients from "./pages/ihwe_client_data_2026/AddNewClients";
 import NewLeadList from "./pages/ihwe_client_data_2026/NewLeadList";
@@ -54,6 +53,8 @@ import ClientOverview1 from "./Components/ClientOverview1";
 import AddEvent from "./pages/add_by_admin/AddEvent";
 import AccountSection1 from "./Components/AccountSection1";
 import CreateEstimate1 from "./Components/CreateEstimate1";
+import CreditNote from "./Components/CreditNote";
+import Payments from "./Components/Payments";
 const App = () => {
   return (
     <>
@@ -120,18 +121,30 @@ const App = () => {
             path="/ihweClientData2026/createEstimate1"
             element={<CreateEstimate1 />}
           />
+          <Route
+            path="/ihweClientData2026/creditNote"
+            element={<CreditNote />}
+          />
+          <Route path="/ihweClientData2026/payments" element={<Payments />} />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
-          <Route path="/createInvoice" element={<CreateInvoice />} />
+          <Route path="/payments/createInvoice" element={<CreateInvoice />} />
+          <Route
+            path="/payments/taxInvoiceDetails"
+            element={<TaxInvoiceDetails />}
+          />
           <Route
             path="/invoiceNumberDetails"
             element={<InvoiceNumberDetails />}
           />
           <Route
-            path="/performanceInvoiceDetails"
+            path="/payments/performanceInvoiceDetails"
             element={<PerformaInvoiceDetails />}
           />
-          <Route path="/estimateDetails" element={<EstimateDetails />} />
+          <Route
+            path="/payments/estimateDetails"
+            element={<EstimateDetails />}
+          />
 
           {/* Old Visitor Data */}
           <Route
@@ -212,10 +225,7 @@ const App = () => {
 
           {/* Invoice / Utility */}
 
-          <Route path="/taxInvoiceDetails" element={<TaxInvoiceDetails />} />
-
           <Route path="/editestimate" element={<EditEstimate />} />
-          <Route path="/addCreditNote" element={<AddCreditNote />} />
         </Route>
       </Routes>
     </>

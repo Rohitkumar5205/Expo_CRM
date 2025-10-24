@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const indianStates = [
   "Andaman and Nicobar Islands",
@@ -69,6 +70,7 @@ const unitOptions = [
 ];
 
 const CreateEstimate1 = () => {
+  const navigate = useNavigate();
   // State to manage the form data for the main estimate fields
   const [estimateData, setEstimateData] = useState({
     estimateType: "",
@@ -191,14 +193,43 @@ const CreateEstimate1 = () => {
     console.log("Items Data:", items);
     alert("Estimate Submitted (Check console for data)");
   };
+  // Navigation handlers
+  const handleMasterList = () => {
+    navigate("/ihweClientData2026/masterData");
+  };
+  const handleAddClient = () => {
+    navigate("/ihweClientData2026/addNewClients");
+  };
 
   const inputClass =
     "p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500";
   const labelClass = "block text-xs font-semibold text-gray-700 mb-1";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100">
+      {/* Heading and Navigation Buttons */}
+      <div className="w-full h-fit bg-white shadow-md">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
+          <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
+            Account Section | Estimate
+          </h1>
+          <div className="flex flex-wrap gap-2 cursor-pointer">
+            <button
+              onClick={handleAddClient}
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+            >
+              Add Client
+            </button>
+            <button
+              onClick={handleMasterList}
+              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+            >
+              Master List
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 m-4">
         <h2 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
           Create Estimate
         </h2>
@@ -560,24 +591,38 @@ const CreateEstimate1 = () => {
                 </div>
 
                 {/* 10. GST Rate (Takes 2/12 columns) */}
-                <div className="col-span-3 md:col-span-2 lg:col-span-2">
+                {/* GST Rate (Takes 3/12 columns to accommodate the extra field) */}
+                <div className="col-span-3 md:col-span-3 lg:col-span-2">
                   <label htmlFor={`gstRate-${index}`} className={labelClass}>
                     GST Rate *
                   </label>
                   <div className="flex items-center">
+                    {/* 1. Main Input Field (Left section) */}
                     <input
                       type="number"
                       id={`gstRate-${index}`}
                       name="gstRate"
                       value={item.gstRate}
                       onChange={(e) => handleItemChange(index, e)}
-                      className={`w-full ${inputClass} rounded-r-none`}
+                      // Adjust styling: Remove right-rounding, border-r-0 to connect to the span
+                      className={`w-1/3 ${inputClass} rounded-r-none border-r-0`}
                       placeholder="e.g. 18"
                       required
                     />
-                    <span className="bg-gray-200 p-2 border border-l-0 border-gray-300 rounded-r-md text-sm text-gray-600">
+                    {/* 2. % Sign (Middle section) */}
+                    <span className="bg-gray-200 p-2 border border-gray-300 text-sm text-gray-600">
                       %
                     </span>
+                    {/* 3. Calculated Value (Right section) */}
+                    <input
+                      type="text"
+                      value={(item.taxableValue * (item.gstRate / 100)).toFixed(
+                        2
+                      )} // Calculated GST Amount
+                      readOnly
+                      // Adjust styling: Remove left-rounding, use gray background
+                      className={`w-1/3 bg-gray-100 cursor-not-allowed ${inputClass} rounded-l-none border-l-0`}
+                    />
                   </div>
                 </div>
 

@@ -22,8 +22,6 @@ const ClientOverview1 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [showAccounts, setShowAccounts] = useState(false);
-  const [showPayments, setShowPayments] = useState(false);
   const [popUp, setPopUp] = useState(false);
   const [Flip, setFlip] = useState(false);
 
@@ -200,6 +198,9 @@ const ClientOverview1 = () => {
   const handleAccount = () => {
     navigate("/ihweClientData2026/accountSection1");
   };
+  // const handlePayments = () => {
+  //   navigate("/ihweClientData2026/payments");
+  // };
 
   return (
     <div className="w-full h-auto bg-[#eef1f5]">
@@ -239,12 +240,12 @@ const ClientOverview1 = () => {
               >
                 Account
               </button>
-              <button
-                onClick={() => setShowPayments(true)}
+              {/* <button
+                onClick={handlePayments}
                 className="bg-white text-black px-3 py-2 text-xs rounded-sm cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 Payments
-              </button>
+              </button> */}
               <button
                 onClick={handleEdit}
                 className="flex items-center justify-center w-8 h-8 rounded-sm text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"

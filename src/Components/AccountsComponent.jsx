@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import PaymentsComponent from "./PaymentsComponent";
 import CreateEstimate from "./CreateEstimate";
-import AddCreditNote from "./AddCreditNote";
+// import AddCreditNote from "./AddCreditNote";
 import { useNavigate } from "react-router-dom";
 import EstimateTable from "./EstimateTable";
+import Payments from "./Payments";
 
 const stylebutton =
   "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
@@ -16,9 +16,9 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
 
   const [currentView, setCurrentView] = useState("estimates"); // 'estimates', 'payments', 'createEstimate', or 'creditNote'
 
-  const handleCreateEstimate = () => {
-    setCurrentView("createEstimate");
-  };
+  // const handleCreateEstimate = () => {
+  //   setCurrentView("createEstimate");
+  // };
 
   const handleViewPayments = () => {
     setCurrentView("payments");
@@ -39,7 +39,7 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
       return <CreateEstimate onCancel={handleCancel} />;
     } else if (currentView === "payments") {
       return (
-        <PaymentsComponent
+        <Payments
           onBackToOverview={onBackToOverview}
           client={client}
           onBackToAccounts={handleCancel}
@@ -57,7 +57,7 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
 
             <div className="flex flex-wrap gap-2 justify-center">
               <button
-                onClick={handleCreateEstimate}
+                // onClick={handleCreateEstimate}
                 className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium cursor-pointer"
               >
                 Create Estimate
