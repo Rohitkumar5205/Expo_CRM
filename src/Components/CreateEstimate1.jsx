@@ -1,44 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"; // ⬅️ NEW: Redux hooks imported
+import {
+  addEstimate,
+  clearEstimateState,
+  fetchNextEstimateNo,
+} from "../features/estimates/estimateSlice";
+import { fetchEvents } from "../features/crmEvent/crmEventSlice";
+import { fetchCountries } from "../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../features/state/stateSlice";
+import { fetchCities } from "../features/city/citySlice";
+import { showError, showSuccess } from "../utils/toastMessage";
 
-const indianStates = [
-  "Andaman and Nicobar Islands",
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chandigarh",
-  "Chhattisgarh",
-  "Dadra and Nagar Haveli",
-  "Daman and Diu",
-  "Delhi",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jammu and Kashmir",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Lakshadweep",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Pondicherry",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-];
+const indianStates = ["Uttar Pradesh"];
 
 const unitOptions = [
   "Inch",
@@ -49,9 +23,7 @@ const unitOptions = [
   "%",
   "L.S.",
   "Rft.",
-  "Nos.",
   "Rmt.",
-  "Sqft.",
   "Pcs.",
   "Sqmtr.",
   "Roll",
@@ -61,58 +33,88 @@ const unitOptions = [
   "RFT",
   "RMT",
   "l.s.",
-  "%",
-  "meter",
-  "sqft",
-  "feet",
-  "inch",
-  "nos",
 ];
 
 const CreateEstimate1 = () => {
   const navigate = useNavigate();
-  // State to manage the form data for the main estimate fields
+  const dispatch = useDispatch();
+  // 🟢 NEW: Get state from Redux store for feedback/loading
+  const { loading, error, success } = useSelector((state) => state.estimates);
+  const { events } = useSelector((state) => state.crmEvents);
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
+
+  useEffect(() => {
+    dispatch(fetchEvents());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
+    dispatch(fetchNextEstimateNo())
+      .unwrap()
+      .then((nextEstNo) => {
+        // 🟢 Update the local state with the fetched number
+        setEstimateData((prev) => ({
+          ...prev,
+          est_no: nextEstNo,
+        }));
+      })
+      .catch((err) => {
+        showError(`Failed to fetch estimate number: ${err.message || err}`);
+      });
+  }, [dispatch]);
+
+  // --- State Initialization ---
   const [estimateData, setEstimateData] = useState({
-    estimateType: "",
-    estimateNo: "NGW/25-26/EST/117", // Pre-filled as in screenshot
-    gstinPan: "",
-    supplyDate: "",
-    consigneeName: "Organic Expo 2026", // Pre-filled
-    consigneeAddress: "Hall No -12, Ground Floor, ITPO, Pragati Maidan", // Pre-filled
-    country: "India", // Pre-filled
+    est_type: "",
+    est_no: "",
+    gst_no: "",
+    supply_date: "",
+    consignee_name: "",
+    consignee_addr: "",
+    country: "",
     state: "",
     city: "",
-    pinCode: "110001", // Pre-filled
-    gstRate: "", // For the overall GST
-    finalAmount: "",
-    anyRemarks: "",
+    pincode: "",
+    remarks: "",
   });
 
-  // State to manage the list of item rows, starting with one default row
   const [items, setItems] = useState([
     {
       description: "",
-      hsnNo: "",
+      hsn: "",
       qty: "",
       size: "",
       unit: "",
       rate: "",
-      amount: "0.00", // Default calculated values to avoid NaN on render
+      amount: "0.00",
       disc: "0",
-      taxableValue: "0.00",
-      gstRate: "", // GST rate for this specific item
-      finalAmount: "0.00", // Final amount for this specific item
-      anyRemarks: "",
+      tax: "0.00",
+      gstRate: "",
+      finalAmount: "0.00",
+      remarks: "",
     },
   ]);
 
-  // Handle changes for main estimate fields
+  // 🟢 NEW: Handle API feedback (Success/Error)
+  useEffect(() => {
+    if (success) {
+      showSuccess("Estimate created successfully!");
+      dispatch(clearEstimateState()); // Clear success message after showing
+      navigate("/ihweClientData2026/accountSection1"); // Navigate to the estimate list page
+    }
+    if (error) {
+      showError(`Error: ${error.message || error}`); // Show error message
+      dispatch(clearEstimateState()); // Clear error message
+    }
+  }, [success, error, dispatch, navigate]);
+
+  // --- Handlers (Unchanged) ---
   const handleEstimateChange = (e) => {
     const { name, value } = e.target;
     setEstimateData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle changes for item specific fields
   const handleItemChange = (index, e) => {
     const { name, value } = e.target;
     const newItems = [...items];
@@ -120,85 +122,164 @@ const CreateEstimate1 = () => {
     setItems(newItems);
   };
 
-  // Calculation logic for item row amounts
+  // --- Calculation Logic (Unchanged) ---
   useEffect(() => {
+    let totalFinalAmount = 0;
+
     const calculateItems = items.map((item) => {
-      // Use parseFloat or default to 0 for calculations
       const qty = parseFloat(item.qty) || 0;
       const rate = parseFloat(item.rate) || 0;
       const disc = parseFloat(item.disc) || 0;
       const gstRate = parseFloat(item.gstRate) || 0;
 
-      // 1. Amount: Qty * Rate
       const amount = qty * rate;
-
-      // 2. Taxable Value: Amount - Discount
       const taxableValue = amount - amount * (disc / 100);
-
-      // 3. GST Amount: Taxable Value * GST Rate
       const gstAmount = taxableValue * (gstRate / 100);
-
-      // 4. Final Amount: Taxable Value + GST Amount
       const finalAmount = taxableValue + gstAmount;
+
+      totalFinalAmount += finalAmount;
 
       return {
         ...item,
         amount: amount.toFixed(2),
-        taxableValue: taxableValue.toFixed(2),
+        tax: taxableValue.toFixed(2),
         finalAmount: finalAmount.toFixed(2),
       };
     });
+
     setItems(calculateItems);
+
+    setEstimateData((prev) => ({
+      ...prev,
+      finalAmount: totalFinalAmount.toFixed(2),
+    }));
   }, [
     items.length,
-    // Dependency array for deep changes in key fields
     ...items
       .map((item) => [item.qty, item.rate, item.disc, item.gstRate])
       .flat(),
   ]);
 
-  // Add a new item row
   const handleAddItem = () => {
     setItems((prev) => [
       ...prev,
       {
         description: "",
-        hsnNo: "",
+        hsn: "",
         qty: "",
         size: "",
         unit: "",
         rate: "",
         amount: "0.00",
         disc: "0",
-        taxableValue: "0.00",
+        tax: "0.00",
         gstRate: "",
         finalAmount: "0.00",
-        anyRemarks: "",
+        remarks: "",
       },
     ]);
   };
 
-  // Remove an item row
   const handleRemoveItem = (index) => {
-    // Prevent removing the last row
     if (items.length > 1) {
       setItems((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
-  // Handle form submission
+  // 3. FORM SUBMISSION AND API CALL (FIXED)
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Estimate Data:", estimateData);
-    console.log("Items Data:", items);
-    alert("Estimate Submitted (Check console for data)");
+
+    const isIntrastate = estimateData.est_type === "Intrastate";
+    const isInterstate = estimateData.est_type === "Interstate Sale";
+    const isForeignSale = estimateData.est_type === "Foreign Sale";
+
+    const addedBy = localStorage.getItem("user_name") || "";
+    // Assuming 'company_id' holds the companyId value
+    const companyId = localStorage.getItem("company_id") || "DEFAULT_COMPANY";
+
+    // Item Data Transformation with GST Breakdown
+    const transformedItems = items.map((item) => {
+      const taxableValue = parseFloat(item.tax) || 0;
+      const totalGstRate = parseFloat(item.gstRate) || 0;
+
+      let cgstPer = "0";
+      let cgstAmount = "0.00";
+      let igstPer = "0";
+
+      if (isIntrastate) {
+        cgstPer = (totalGstRate / 2).toFixed(0);
+        cgstAmount = (taxableValue * (parseFloat(cgstPer) / 100)).toFixed(2);
+      } else if (isInterstate) {
+        igstPer = totalGstRate.toFixed(0);
+        cgstAmount = (taxableValue * (totalGstRate / 100)).toFixed(2); // Using cgst field for IGST amount as per your schema structure
+      } else if (isForeignSale) {
+        cgstPer = "0";
+        cgstAmount = "0.00";
+        igstPer = "0";
+      }
+
+      return {
+        // ... direct mapping fields
+        description: item.description,
+        hsn: item.hsn,
+        qty: item.qty,
+        size: item.size,
+        unit: item.unit,
+        rate: item.rate,
+        amount: item.amount,
+        disc: item.disc,
+        tax: item.tax,
+        gstRate: item.gstRate,
+        finalAmount: item.finalAmount,
+        remarks: item.remarks,
+        // ... calculated fields
+        depth: item.depth || "",
+        cgst: cgstAmount,
+        cgst_per: cgstPer,
+        igst_per: igstPer,
+      };
+    });
+
+    // Main Estimate Data Transformation
+    const finalEstimateData = {
+      // ... direct mapping fields
+      est_type: estimateData.est_type,
+      est_no: estimateData.est_no,
+      gst_no: estimateData.gst_no,
+      supply_date: estimateData.supply_date,
+      consignee_name: estimateData.consignee_name,
+      consignee_addr: estimateData.consignee_addr,
+      country: estimateData.country,
+      state: estimateData.state,
+      city: estimateData.city,
+      pincode: estimateData.pincode,
+      remarks: estimateData.remarks,
+
+      // Final Amount
+      finalAmount: estimateData.finalAmount,
+
+      // 🔴 MANDATORY: Auth Context से आनी चाहिए
+      companyId: companyId,
+      added_by: addedBy,
+
+      items: transformedItems,
+      status: "active",
+    };
+    console.log("finalEstimateData...", finalEstimateData);
+    // 🟢 NEW: Dispatch the Redux Thunk
+    dispatch(addEstimate(finalEstimateData));
   };
-  // Navigation handlers
+
+  // --- Navigation Handlers (Unchanged) ---
   const handleMasterList = () => {
     navigate("/ihweClientData2026/masterData");
   };
   const handleAddClient = () => {
     navigate("/ihweClientData2026/addNewClients");
+  };
+  const handleCancel = () => {
+    navigate(-1); // navigate(-1) is equivalent to window.history.back()
   };
 
   const inputClass =
@@ -207,7 +288,7 @@ const CreateEstimate1 = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Heading and Navigation Buttons */}
+      {/* ... (JSX remains largely the same) ... */}
       <div className="w-full h-fit bg-white shadow-md">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
@@ -235,17 +316,17 @@ const CreateEstimate1 = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Main Estimate Details Section */}
+          {/* Main Estimate Details Section (Unchanged) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-4 mb-8">
             {/* Estimate Types */}
             <div>
-              <label htmlFor="estimateType" className={labelClass}>
+              <label htmlFor="est_type" className={labelClass}>
                 Estimate Types *
               </label>
               <select
-                id="estimateType"
-                name="estimateType"
-                value={estimateData.estimateType}
+                id="est_type"
+                name="est_type"
+                value={estimateData.est_type}
                 onChange={handleEstimateChange}
                 className={`w-full ${inputClass}`}
                 required
@@ -259,14 +340,14 @@ const CreateEstimate1 = () => {
 
             {/* Estimate No. */}
             <div>
-              <label htmlFor="estimateNo" className={labelClass}>
+              <label htmlFor="est_no" className={labelClass}>
                 Estimate No. *
               </label>
               <input
                 type="text"
-                id="estimateNo"
-                name="estimateNo"
-                value={estimateData.estimateNo}
+                id="est_no"
+                name="est_no"
+                value={estimateData.est_no}
                 onChange={handleEstimateChange}
                 className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
                 readOnly
@@ -276,14 +357,14 @@ const CreateEstimate1 = () => {
 
             {/* GSTIN No./PAN No. */}
             <div>
-              <label htmlFor="gstinPan" className={labelClass}>
+              <label htmlFor="gst_no" className={labelClass}>
                 GSTIN No./PAN No. *
               </label>
               <input
                 type="text"
-                id="gstinPan"
-                name="gstinPan"
-                value={estimateData.gstinPan}
+                id="gst_no"
+                name="gst_no"
+                value={estimateData.gst_no}
                 onChange={handleEstimateChange}
                 className={`w-full ${inputClass}`}
                 placeholder="Enter GSTIN/PAN No."
@@ -293,14 +374,14 @@ const CreateEstimate1 = () => {
 
             {/* Supply Date */}
             <div>
-              <label htmlFor="supplyDate" className={labelClass}>
+              <label htmlFor="supply_date" className={labelClass}>
                 Supply Date *
               </label>
               <input
                 type="date"
-                id="supplyDate"
-                name="supplyDate"
-                value={estimateData.supplyDate}
+                id="supply_date"
+                name="supply_date"
+                value={estimateData.supply_date}
                 onChange={handleEstimateChange}
                 className={`w-full ${inputClass}`}
                 required
@@ -309,34 +390,38 @@ const CreateEstimate1 = () => {
 
             {/* Consignee Name */}
             <div>
-              <label htmlFor="consigneeName" className={labelClass}>
+              <label htmlFor="consignee_name" className={labelClass}>
                 Consignee Name *
               </label>
-              <input
-                type="text"
-                id="consigneeName"
-                name="consigneeName"
-                value={estimateData.consigneeName}
+              <select
+                id="consignee_name"
+                name="consignee_name"
+                value={estimateData.consignee_name}
                 onChange={handleEstimateChange}
-                className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
-                readOnly
+                className={`w-full ${inputClass}`}
                 required
-              />
+              >
+                <option value="">Select Here</option>
+                {events.map((event, i) => (
+                  <option key={i} value={event?.event_name}>
+                    {event?.event_name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Consignee Address */}
             <div>
-              <label htmlFor="consigneeAddress" className={labelClass}>
+              <label htmlFor="consignee_addr" className={labelClass}>
                 Consignee Address *
               </label>
               <input
                 type="text"
-                id="consigneeAddress"
-                name="consigneeAddress"
-                value={estimateData.consigneeAddress}
+                id="consignee_addr"
+                name="consignee_addr"
+                value={estimateData.consignee_addr}
                 onChange={handleEstimateChange}
-                className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
-                readOnly
+                className={`w-full ${inputClass}`}
                 required
               />
             </div>
@@ -351,11 +436,13 @@ const CreateEstimate1 = () => {
                 name="country"
                 value={estimateData.country}
                 onChange={handleEstimateChange}
-                className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
-                readOnly
+                className={`w-full  ${inputClass}`}
                 required
               >
-                <option value="India">India</option>
+                <option value="">Select Country</option>
+                {countries.map((country, i) => (
+                  <option key={i}>{country?.name}</option>
+                ))}
               </select>
             </div>
 
@@ -372,12 +459,11 @@ const CreateEstimate1 = () => {
                 className={`w-full ${inputClass}`}
                 required
               >
-                <option value="">Select State :</option>
-                {indianStates.map((state) => (
-                  <option key={state} value={state}>
-                    {state}
-                  </option>
-                ))}
+                <option value="">Select State</option>
+                {estimateData.country &&
+                  states.map((state, i) => (
+                    <option key={i}>{state?.name}</option>
+                  ))}
               </select>
             </div>
 
@@ -394,32 +480,33 @@ const CreateEstimate1 = () => {
                 className={`w-full ${inputClass}`}
                 required
               >
-                <option value="">Select Here</option>
-                {/* Dynamically filter/load cities based on selected state in a real application */}
-                <option value="New Delhi">New Delhi</option>
-                <option value="Mumbai">Mumbai</option>
+                <option value="">Select City</option>
+                {estimateData.country &&
+                  estimateData.state &&
+                  cities?.data?.map((city, i) => (
+                    <option key={i}>{city?.name}</option>
+                  ))}
               </select>
             </div>
 
             {/* Pin Code */}
             <div>
-              <label htmlFor="pinCode" className={labelClass}>
+              <label htmlFor="pincode" className={labelClass}>
                 Pin Code *
               </label>
               <input
                 type="text"
-                id="pinCode"
-                name="pinCode"
-                value={estimateData.pinCode}
+                id="pincode"
+                name="pincode"
+                value={estimateData.pincode}
                 onChange={handleEstimateChange}
-                className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
-                readOnly
+                className={`w-full   ${inputClass}`}
                 required
               />
             </div>
           </div>
 
-          {/* Item Rows Section */}
+          {/* Item Rows Section (Unchanged) */}
           {items.map((item, index) => (
             <div
               key={index}
@@ -430,9 +517,8 @@ const CreateEstimate1 = () => {
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-x-4 gap-y-3 items-end">
-                {/* --- ROW 1: Description, HSN, Qty, Size, Unit, Rate, Amount --- */}
-
-                {/* 1. Item Description (Takes 3/12 columns on large screens) */}
+                {/* ... (Item fields: Description, HSN, Qty, Size, Unit, Rate, Amount) ... */}
+                {/* 1. Item Description */}
                 <div className="col-span-full md:col-span-3 lg:col-span-3">
                   <label
                     htmlFor={`description-${index}`}
@@ -451,24 +537,22 @@ const CreateEstimate1 = () => {
                     required
                   />
                 </div>
-
-                {/* 2. HSN No. (Takes 2/12 columns) */}
+                {/* 2. HSN No. */}
                 <div className="col-span-3 md:col-span-3 lg:col-span-2">
-                  <label htmlFor={`hsnNo-${index}`} className={labelClass}>
+                  <label htmlFor={`hsn-${index}`} className={labelClass}>
                     HSN No. *
                   </label>
                   <input
                     type="text"
-                    id={`hsnNo-${index}`}
-                    name="hsnNo"
-                    value={item.hsnNo}
+                    id={`hsn-${index}`}
+                    name="hsn"
+                    value={item.hsn}
                     onChange={(e) => handleItemChange(index, e)}
                     className={`w-full ${inputClass}`}
                     required
                   />
                 </div>
-
-                {/* 3. Qty (Takes 1/12 column) */}
+                {/* 3. Qty */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-1">
                   <label htmlFor={`qty-${index}`} className={labelClass}>
                     Qty. *
@@ -483,8 +567,7 @@ const CreateEstimate1 = () => {
                     required
                   />
                 </div>
-
-                {/* 4. Size (Takes 1/12 column) */}
+                {/* 4. Size */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-1">
                   <label htmlFor={`size-${index}`} className={labelClass}>
                     Size
@@ -498,8 +581,7 @@ const CreateEstimate1 = () => {
                     className={`w-full ${inputClass}`}
                   />
                 </div>
-
-                {/* 5. Unit (Takes 2/12 columns) */}
+                {/* 5. Unit */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-2">
                   <label htmlFor={`unit-${index}`} className={labelClass}>
                     Unit *
@@ -520,8 +602,7 @@ const CreateEstimate1 = () => {
                     ))}
                   </select>
                 </div>
-
-                {/* 6. Rate (Takes 1/12 column) */}
+                {/* 6. Rate */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-1">
                   <label htmlFor={`rate-${index}`} className={labelClass}>
                     Rate *
@@ -536,8 +617,7 @@ const CreateEstimate1 = () => {
                     required
                   />
                 </div>
-
-                {/* 7. Amount (Takes 2/12 columns) - End of first logical row */}
+                {/* 7. Amount */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-2">
                   <label htmlFor={`amount-${index}`} className={labelClass}>
                     Amount *
@@ -555,7 +635,7 @@ const CreateEstimate1 = () => {
 
                 {/* --- ROW 2: DISC, Taxable Value, GST, Final Amount, Remarks, Buttons --- */}
 
-                {/* 8. DISC % (Takes 2/12 columns) */}
+                {/* 8. DISC % */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-2">
                   <label htmlFor={`disc-${index}`} className={labelClass}>
                     DISC % *
@@ -570,63 +650,52 @@ const CreateEstimate1 = () => {
                     required
                   />
                 </div>
-
-                {/* 9. Taxable Value (Takes 2/12 columns) */}
+                {/* 9. Taxable Value */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-2">
-                  <label
-                    htmlFor={`taxableValue-${index}`}
-                    className={labelClass}
-                  >
+                  <label htmlFor={`tax-${index}`} className={labelClass}>
                     Taxable Value *
                   </label>
                   <input
                     type="text"
-                    id={`taxableValue-${index}`}
-                    name="taxableValue"
-                    value={item.taxableValue}
+                    id={`tax-${index}`}
+                    name="tax"
+                    value={item.tax}
                     readOnly
                     className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
                     required
                   />
                 </div>
-
-                {/* 10. GST Rate (Takes 2/12 columns) */}
-                {/* GST Rate (Takes 3/12 columns to accommodate the extra field) */}
+                {/* 10. GST Rate */}
                 <div className="col-span-3 md:col-span-3 lg:col-span-2">
                   <label htmlFor={`gstRate-${index}`} className={labelClass}>
                     GST Rate *
                   </label>
                   <div className="flex items-center">
-                    {/* 1. Main Input Field (Left section) */}
                     <input
                       type="number"
                       id={`gstRate-${index}`}
                       name="gstRate"
                       value={item.gstRate}
                       onChange={(e) => handleItemChange(index, e)}
-                      // Adjust styling: Remove right-rounding, border-r-0 to connect to the span
                       className={`w-1/3 ${inputClass} rounded-r-none border-r-0`}
                       placeholder="e.g. 18"
                       required
                     />
-                    {/* 2. % Sign (Middle section) */}
                     <span className="bg-gray-200 p-2 border border-gray-300 text-sm text-gray-600">
                       %
                     </span>
-                    {/* 3. Calculated Value (Right section) */}
                     <input
                       type="text"
-                      value={(item.taxableValue * (item.gstRate / 100)).toFixed(
-                        2
-                      )} // Calculated GST Amount
+                      value={(
+                        (parseFloat(item.tax) || 0) *
+                        ((parseFloat(item.gstRate) || 0) / 100)
+                      ).toFixed(2)}
                       readOnly
-                      // Adjust styling: Remove left-rounding, use gray background
                       className={`w-1/3 bg-gray-100 cursor-not-allowed ${inputClass} rounded-l-none border-l-0`}
                     />
                   </div>
                 </div>
-
-                {/* 11. Final Amount (Takes 2/12 columns) */}
+                {/* 11. Final Amount */}
                 <div className="col-span-3 md:col-span-2 lg:col-span-2">
                   <label
                     htmlFor={`finalAmount-${index}`}
@@ -643,8 +712,7 @@ const CreateEstimate1 = () => {
                     className={`w-full bg-gray-100 cursor-not-allowed ${inputClass}`}
                   />
                 </div>
-
-                {/* 12. Any Remarks (Takes 3/12 columns) */}
+                {/* 12. Any Remarks */}
                 <div className="col-span-full md:col-span-5 lg:col-span-3">
                   <label
                     htmlFor={`itemRemarks-${index}`}
@@ -654,15 +722,14 @@ const CreateEstimate1 = () => {
                   </label>
                   <textarea
                     id={`itemRemarks-${index}`}
-                    name="anyRemarks"
-                    value={item.anyRemarks}
+                    name="remarks"
+                    value={item.remarks}
                     onChange={(e) => handleItemChange(index, e)}
                     className={`w-full ${inputClass} h-10 resize-y`}
                     placeholder="Type Here..."
                   ></textarea>
                 </div>
-
-                {/* 13. Add/Remove Buttons (Takes 1/12 column) */}
+                {/* 13. Add/Remove Buttons */}
                 <div className="flex items-end justify-end gap-2 col-span-full md:col-span-1 lg:col-span-1 min-w-[70px]">
                   {items.length > 1 && (
                     <button
@@ -691,17 +758,16 @@ const CreateEstimate1 = () => {
           <div className="mt-10 flex space-x-4">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              disabled={loading} // 🟢 Disable button while loading
             >
-              ADD ESTIMATE
+              {loading ? "ADDING..." : "ADD ESTIMATE"}{" "}
+              {/* 🟢 Loading state feedback */}
             </button>
             <button
               type="button"
+              onClick={handleCancel}
               className="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-md hover:bg-gray-400 transition-colors"
-              onClick={() => {
-                // Simplified form reset
-                window.location.reload();
-              }}
             >
               CANCEL
             </button>
