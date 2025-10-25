@@ -13,6 +13,7 @@ import bankReducer from "../features/add_by_admin/banks/bankSlice";
 import crmMessageReducer from "../features/add_by_admin/crm_wat_mess/CrmWatMessage";
 import authReducer from "../features/auth/authSlice";
 import crmExhibatorReviewReducer from "../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
+import estimateReducer from "../features/estimates/estimateSlice";
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     crm_messages: crmMessageReducer,
     auth: authReducer,
     reviews: crmExhibatorReviewReducer,
+    estimates: estimateReducer,
   },
 });
 
