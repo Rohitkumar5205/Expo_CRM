@@ -503,14 +503,36 @@ const ClientOverview1 = () => {
                           index === 0
                             ? "text-red-500 cursor-pointer hover:underline"
                             : "text-gray-700"
-                        }  uppercase`}
+                        } uppercase`}
                       >
-                        | ▲ call the client on {entry?.reminder_dt}
+                        | ▲ call the client on{" "}
+                        {entry?.reminder_dt
+                          ? new Date(entry.reminder_dt).toLocaleString(
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : "N/A"}
                       </span>
                     </p>
                     <p className="text-xs text-gray-500 leading-tight">
                       {entry?.re_msg} | By: {entry?.updated_by} | On:{" "}
-                      {entry?.re_updated}
+                      {entry?.re_updated
+                        ? new Date(entry.re_updated).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : "N/A"}
                     </p>
                   </div>
                   <button
