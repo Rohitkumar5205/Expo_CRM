@@ -4,6 +4,8 @@ import { FaEye, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 // Import MdOutlineEdit for Edit icon
 import { MdOutlineEdit } from "react-icons/md";
+import { Target } from "lucide-react";
+import { ValueType } from "exceljs";
 
 // --- Component: BankNameModal (Professional Design) ---
 const BankNameModal = ({ isModalOpen, setIsModalOpen, onSave }) => {
@@ -432,7 +434,7 @@ const Payments = ({ client, onBack }) => {
                 name="pymtAgainst"
                 value={formData.pymtAgainst}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Here</option>
                 <option value="Performa Invoice">Performa Invoice</option>
@@ -448,7 +450,7 @@ const Payments = ({ client, onBack }) => {
                 name="documentNo"
                 value={formData.documentNo}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Here</option>
                 <option value="DOC-001">DOC-001</option>
@@ -459,14 +461,29 @@ const Payments = ({ client, onBack }) => {
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Final Amount
               </label>
-              <input
-                type="number"
-                name="finalAmount"
-                value={formData.finalAmount}
-                onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
-              
-              />
+             <input
+             type="text"
+             name="finalAmount"
+             value={formData.finalAmount}
+             onChange={(e) => {
+               let value = e.target.value;
+           
+               // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               // Update state safely
+               setFormData((prev) => ({
+                 ...prev,
+                 finalAmount: value,
+               }));
+             }}
+             className="border border-gray-300 px-2 text-xs h-8  focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+             inputMode="decimal" // shows numeric keypad on mobile
+           />
             </div>
 
             <div className="flex flex-col md:col-span-1">
@@ -474,11 +491,27 @@ const Payments = ({ client, onBack }) => {
                 Recieved Amount *
               </label>
               <input
-                type="number"
+                type="text"
                 name="receivedAmount"
                 value={formData.receivedAmount}
-                onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                  onChange={(e) => {
+               let value = e.target.value;
+           
+               // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               // Update state safely
+               setFormData((prev) => ({
+                 ...prev,
+                 receivedAmount: value,
+               }));
+             }}
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+                inputMode="decimal"
                 required
               />
             </div>
@@ -488,11 +521,25 @@ const Payments = ({ client, onBack }) => {
                 TDS Amount
               </label>
               <input
-                type="number"
+                type="text"
                 name="tdsAmount"
                 value={formData.tdsAmount}
-                onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                onChange={(e)=>{
+                  let value = e.target.value;
+                  // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               setFormData((prev)=>({
+                ...prev,
+                tdsAmount:value,
+               }))
+                }}
+                className="border border-gray-300 px-2 text-xs h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                inputMode="decimal"
               />
             </div>
 
@@ -505,7 +552,7 @@ const Payments = ({ client, onBack }) => {
                 name="receivedDate"
                 value={formData.receivedDate}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               />
             </div>
@@ -520,7 +567,7 @@ const Payments = ({ client, onBack }) => {
                 name="debitNoteNo"
                 value={formData.debitNoteNo}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
 
@@ -529,11 +576,25 @@ const Payments = ({ client, onBack }) => {
                 Debit Note Amount
               </label>
               <input
-                type="number"
+                type="text"
                 name="debitNoteAmount"
                 value={formData.debitNoteAmount}
-                onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                 onChange={(e)=>{
+                  let value = e.target.value;
+                  // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               setFormData((prev)=>({
+                ...prev,
+                debitNoteAmount:value,
+               }))
+                }}
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                inputMode="decimal"
               />
             </div>
 
@@ -546,7 +607,7 @@ const Payments = ({ client, onBack }) => {
                 name="debitNoteDate"
                 value={formData.debitNoteDate}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8"
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
 
@@ -558,7 +619,7 @@ const Payments = ({ client, onBack }) => {
                 name="typeOfPayment"
                 value={formData.typeOfPayment}
                 onChange={handlePaymentTypeChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 required
               >
                 <option value="">Select Here</option>
@@ -577,7 +638,7 @@ const Payments = ({ client, onBack }) => {
                 name="paymentMode"
                 value={formData.paymentMode}
                 onChange={handlePaymentModeChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 required
               >
                 <option value="">Select Here</option>
@@ -603,7 +664,7 @@ const Payments = ({ client, onBack }) => {
                   name="forwardTo"
                   value={formData.forwardTo}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                   required
                 >
                   <option value="">Select Here</option>
@@ -621,7 +682,7 @@ const Payments = ({ client, onBack }) => {
                   name="reminderDateTime"
                   value={formData.reminderDateTime}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   required
                 />
               </div>
@@ -638,7 +699,7 @@ const Payments = ({ client, onBack }) => {
                   name="cardType"
                   value={formData.cardType}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select Card Type</option>
                   <option value="Debit Card">Debit Card</option>
@@ -654,7 +715,7 @@ const Payments = ({ client, onBack }) => {
                   name="nameOnCard"
                   value={formData.nameOnCard}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
               <div className="flex flex-col md:col-span-1">
@@ -665,8 +726,21 @@ const Payments = ({ client, onBack }) => {
                   type="text"
                   name="transactionNumberCard"
                   value={formData.transactionNumberCard}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                   onChange={(e)=>{
+                  let value = e.target.value;
+                  // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               setFormData((prev)=>({
+                ...prev,
+                transactionNumberCard:value,
+               }))
+                }}
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
               <div className="flex flex-col md:col-span-1">
@@ -677,8 +751,16 @@ const Payments = ({ client, onBack }) => {
                   type="text"
                   name="cardLastFourDigit"
                   value={formData.cardLastFourDigit}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  onChange={(e)=>{
+                    const value = e.target.value;
+                   if (!isNaN(value)&&value.length<=4) {
+                    setFormData((prev)=>({
+                      ...prev,
+                      cardLastFourDigit:value,
+                    }))
+                   }
+                  }}
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
               <div className="flex flex-col md:col-span-2">
@@ -689,7 +771,7 @@ const Payments = ({ client, onBack }) => {
                   name="bankNameCard"
                   value={formData.bankNameCard}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   required={showCardFields}
                 >
                   <option value="">Select Bank Name</option>
@@ -713,7 +795,7 @@ const Payments = ({ client, onBack }) => {
                   name="eWalletName"
                   value={formData.eWalletName}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select e-Wallet</option>
                   <option value="Paytm">Paytm</option>
@@ -732,7 +814,7 @@ const Payments = ({ client, onBack }) => {
                   name="transactionNumberEwallet"
                   value={formData.transactionNumberEwallet}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
               <div className="flex flex-col md:col-span-2">
@@ -743,8 +825,16 @@ const Payments = ({ client, onBack }) => {
                   type="text"
                   name="mobileNumberEwallet"
                   value={formData.mobileNumberEwallet}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  onChange={(e)=>{
+                    const value = e.target.value;
+                    if (!isNaN(value)&&value.length<=10) {
+                      setFormData((prev)=>({
+                        ...prev,
+                        mobileNumberEwallet:value,
+                      }))
+                    }
+                  }}
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
             </div>
@@ -760,7 +850,7 @@ const Payments = ({ client, onBack }) => {
                   name="bankNameNeft"
                   value={formData.bankNameNeft}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium"
+                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select Here</option>
                   <option value="AU Small Finance Bank">
@@ -781,8 +871,21 @@ const Payments = ({ client, onBack }) => {
                   type="text"
                   name="utrNo"
                   value={formData.utrNo}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  onChange={(e)=>{
+                    let value = e.target.value;
+                    // Allow only digits and one decimal point
+               value = value.replace(/[^0-9.]/g, "");
+           
+               // Prevent multiple decimals
+               if ((value.match(/\./g) || []).length > 1) {
+                 return;
+               }
+               setFormData((prev)=>({
+                ...prev,
+                utrNo:value,
+               }))
+                  }}
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
             </div>
@@ -799,7 +902,7 @@ const Payments = ({ client, onBack }) => {
                   name="transactionDetailsUpi"
                   value={formData.transactionDetailsUpi}
                   onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8"
+                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
             </div>
