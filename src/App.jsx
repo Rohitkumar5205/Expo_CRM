@@ -114,18 +114,18 @@ const App = () => {
             element={<UploadExhibitor />}
           />
           <Route
-            path="/ihweClientData2026/accountSection1"
+            path="/ihweClientData2026/accountSection1/:id"
             element={<AccountSection1 />}
           />
           <Route
-            path="/ihweClientData2026/createEstimate1"
+            path="/ihweClientData2026/createEstimate1/:id"
             element={<CreateEstimate1 />}
           />
           <Route
-            path="/ihweClientData2026/creditNote"
+            path="/ihweClientData2026/creditNote/:id"
             element={<CreditNote />}
           />
-          <Route path="/ihweClientData2026/payments" element={<Payments />} />
+          <Route path="/ihweClientData2026/payments/:id" element={<Payments />} />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
           <Route path="/payments/createInvoice" element={<CreateInvoice />} />

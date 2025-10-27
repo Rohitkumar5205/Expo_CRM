@@ -9,7 +9,13 @@ import {
 } from "../../features/crmEvent/crmEventSlice";
 import { showError, showSuccess } from "../../utils/toastMessage";
 
-/** Simple Pagination component */
+// --- DUMMY DATA FOR DROPDOWNS ---
+const DUMMY_OPTIONS = {
+  countries: ["India", "USA", "Canada"],
+  states: ["Maharashtra", "Delhi", "Karnataka"],
+  cities: ["Mumbai", "New Delhi", "Bangalore"],
+};
+/** Simple Pagination component (No changes needed) */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
   const start = Math.max(1, currentPage - 2);
@@ -83,15 +89,25 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 const AddEvent = () => {
   const dispatch = useDispatch();
   const [editingStatus, setEditingStatus] = useState(null);
+
+  const addedBy = localStorage.getItem("user_name") || "";
   const [formData, setFormData] = useState({
-    event_name: "", // KEEP: Matches the input field name and backend schema
-    status: "Active", // KEEP: Matches the radio input name, will be mapped to event_status on submit
+    event_name: "",
+    status: "Active",
+    event_fullName: "",
+    event_fromDate: "",
+    event_toDate: "",
+    event_address: "",
+    event_country: "",
+    event_state: "",
+    event_city: "",
+    event_pincode: "",
+    added_by: addedBy,
   });
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  // FIX: Change default sort key to 'event_name' to match data
   const [sortBy, setSortBy] = useState({ key: "event_name", dir: "asc" });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -105,14 +121,25 @@ const AddEvent = () => {
     error = null,
   } = useSelector((state) => state.crmEvents || {});
 
-  console.log("add events", events);
-
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // 🟢 FIX 2: Special handling for pincode (only 6 digits, non-negative)
+    if (name === "event_pincode") {
+      const numericValue = value.replace(/\D/g, ""); // Remove all non-digit characters
+      if (numericValue.length <= 6) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: numericValue,
+        }));
+      }
+      return;
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -120,21 +147,52 @@ const AddEvent = () => {
   };
 
   const resetForm = () => {
-    // FIX: Change name key to event_name for consistency (though it resets anyway)
-    setFormData({ event_name: "", status: "Active" });
+    // 🟢 FIX 3: Reset all new fields
+    setFormData({
+      event_name: "",
+      status: "Active",
+      event_fullName: "",
+      event_fromDate: "",
+      event_toDate: "",
+      event_address: "",
+      event_country: "",
+      event_state: "",
+      event_city: "",
+      event_pincode: "",
+      added_by: addedBy,
+    });
     setEditingStatus(null);
   };
 
   const handleAddEvent = async () => {
-    // FIX: Check formData.event_name
-    if (!formData.event_name || !formData.event_name.trim()) {
-      showError("Please enter a status name!");
+    const {
+      event_name,
+      event_fullName,
+      event_fromDate,
+      event_toDate,
+      event_address,
+      event_country,
+      event_state,
+      event_city,
+      event_pincode,
+      status,
+      added_by,
+    } = formData;
+
+    // Basic Validation for core fields
+    if (!event_name || !event_name.trim()) {
+      showError("Please enter an Event Name!");
       return;
     }
+    if (!event_fullName || !event_fullName.trim()) {
+      showError("Please enter the Full Name!");
+      return;
+    }
+    // Add more validation here (e.g., date checks, pincode length)
 
-    const trimmedName = formData.event_name.trim(); // FIX: Use formData.event_name
+    const trimmedName = event_name.trim();
 
-    // FIX: Check item?.event_name for duplicate
+    // Check for duplicate (only using event_name)
     const duplicate = (Array.isArray(events) ? events : []).find(
       (item) =>
         (item?.event_name || "").trim().toLowerCase() ===
@@ -142,76 +200,116 @@ const AddEvent = () => {
         (!editingStatus || item._id !== editingStatus._id)
     );
     if (duplicate) {
-      showError("A status/event with that name already exists!");
+      showError("An event with that name already exists!");
       return;
     }
 
-    // FIX: Build the payload using backend keys: event_name and event_status
-    const statusData = {
+    // 🟢 FIX 4: Build the payload with all new and existing backend keys
+    const eventData = {
       event_name: trimmedName,
-      event_status: formData.status.toLowerCase(), // FIX: Use event_status
+      event_status: status.toLowerCase(),
+      event_fullName: event_fullName.trim(),
+      event_fromDate: event_fromDate,
+      event_toDate: event_toDate,
+      event_address: event_address.trim(),
+      event_country: event_country,
+      event_state: event_state,
+      event_city: event_city,
+      event_pincode: event_pincode,
+      added_by: added_by || localStorage.getItem("user_name") || "System",
     };
 
     try {
       if (editingStatus) {
         await dispatch(
-          updateEvent({ id: editingStatus._id, updates: statusData })
+          updateEvent({ id: editingStatus._id, updates: eventData })
         ).unwrap();
-        showSuccess("Status updated successfully!");
+        showSuccess("Event updated successfully!");
       } else {
-        await dispatch(createEvent(statusData)).unwrap();
-        showSuccess("Status added successfully!");
+        await dispatch(createEvent(eventData)).unwrap();
+        showSuccess("Event added successfully!");
       }
       resetForm();
+      // Optional: Re-fetch to update table, though redux update should handle it
       dispatch(fetchEvents());
     } catch (err) {
       const action = editingStatus ? "update" : "create";
-      showError(`Failed to ${action} status. Please try again.`);
-      console.error(`Failed to ${action} status:`, err);
+      showError(`Failed to ${action} event. Please try again.`);
+      console.error(`Failed to ${action} event:`, err);
     }
   };
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    try {
+      // Only extract the date part (YYYY-MM-DD) if it's an ISO string
+      if (dateString.includes("T")) {
+        return dateString.split("T")[0];
+      }
+      // For other formats, try parsing
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
 
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    } catch (e) {
+      return "";
+    }
+  };
   const handleEdit = (statusId) => {
     const statusToEdit = events.find((item) => item?._id === statusId);
     if (statusToEdit) {
+      // 🟢 FIX 5: Set all fields when editing
       setFormData({
-        // FIX: Read from statusToEdit.event_name
-        event_name: statusToEdit.event_name,
-        // FIX: Read from statusToEdit.event_status
+        event_name: statusToEdit.event_name || "",
         status: statusToEdit.event_status
           ? statusToEdit.event_status.charAt(0).toUpperCase() +
             statusToEdit.event_status.slice(1)
           : "Active",
+        event_fullName: statusToEdit.event_fullName || "",
+        // event_fromDate: statusToEdit.event_fromDate || "",
+        // event_toDate: statusToEdit.event_toDate || "",
+        event_fromDate: formatDateForInput(statusToEdit.event_fromDate),
+        event_toDate: formatDateForInput(statusToEdit.event_toDate),
+        event_address: statusToEdit.event_address || "",
+        event_country: statusToEdit.event_country || "",
+        event_state: statusToEdit.event_state || "",
+        event_city: statusToEdit.event_city || "",
+        event_pincode: statusToEdit.event_pincode || "",
       });
       setEditingStatus(statusToEdit);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
+  // ... (handleDelete and filteredAndSortedStatusOptions remain the same) ...
+
   const handleDelete = async (statusId) => {
     const statusToDelete = events.find((item) => item?._id === statusId);
     if (!statusToDelete) return;
     try {
       await dispatch(deleteEvent(statusId)).unwrap();
-      showSuccess("Status deleted successfully!");
+      showSuccess("Event deleted successfully!");
       dispatch(fetchEvents());
     } catch (err) {
-      showError("Failed to delete status. Please try again.", 3000);
-      console.error("Failed to delete status:", err);
+      showError("Failed to delete event. Please try again.", 3000);
+      console.error("Failed to delete event:", err);
     }
   };
+
   const filteredAndSortedStatusOptions = useMemo(() => {
     let list = Array.isArray(events) ? events.filter(Boolean) : [];
+    // ... (rest of filtering/sorting logic) ...
     if (searchText && searchText.trim()) {
       const s = searchText.trim().toLowerCase();
       list = list.filter((item) =>
-        // FIX: Search by item?.event_name
         (item?.event_name || "").toLowerCase().includes(s)
       );
     }
     if (statusFilter === "Active" || statusFilter === "Inactive") {
       list = list.filter(
-        // FIX: Filter by item?.event_status
         (item) =>
           (item?.event_status || "").toLowerCase() ===
           statusFilter.toLowerCase()
@@ -302,44 +400,178 @@ const AddEvent = () => {
           </div>
 
           <div className="p-6">
-            <div
-              className="flex items-start gap-8"
-              style={{ alignItems: "flex-end" }}
-            >
-              {/* Name Field (event_name is correct here) */}
-              <div style={{ flex: 1 }}>
-                <label
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#333" }}
-                >
-                  Name <span style={{ color: "#f44336" }}>*</span>
+            {/* 🟢 NEW INPUT FIELDS - ROW 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              {/* Event Name */}
+              <div>
+                <label style={styles.label}>
+                  Event Name <span style={{ color: "#f44336" }}>*</span>
                 </label>
                 <input
                   type="text"
                   name="event_name"
                   value={formData.event_name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-sm"
-                  style={{
-                    ...styles.input,
-                  }}
+                  style={styles.input}
+                  required
                   placeholder="Enter event name"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleAddEvent();
-                    }
-                  }}
                 />
               </div>
 
-              {/* Status Field (status is correct here as it maps to state) */}
-              <div style={{ width: 280 }}>
-                <label
-                  className="block text-sm font-medium mb-2"
-                  style={{ color: "#333" }}
-                >
-                  Status <span style={{ color: "#f44336" }}>*</span>
+              {/* Full Name */}
+              <div>
+                <label style={styles.label}>
+                  Full Name <span style={{ color: "#f44336" }}>*</span>
                 </label>
+                <input
+                  type="text"
+                  name="event_fullName"
+                  value={formData.event_fullName}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                  placeholder="Enter contact person's name"
+                />
+              </div>
+
+              {/* From Date */}
+              <div>
+                <label style={styles.label}>
+                  From Date <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <input
+                  type="date"
+                  name="event_fromDate"
+                  value={formData.event_fromDate}
+                  onChange={handleChange}
+                  required
+                  style={styles.input}
+                />
+              </div>
+
+              {/* To Date */}
+              <div>
+                <label style={styles.label}>
+                  To Date <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <input
+                  type="date"
+                  name="event_toDate"
+                  value={formData.event_toDate}
+                  onChange={handleChange}
+                  required
+                  style={styles.input}
+                />
+              </div>
+            </div>
+
+            {/* 🟢 NEW INPUT FIELDS - ROW 2 (Address/Location) */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              {/* Address */}
+              <div className="">
+                <label style={styles.label}>
+                  Address <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="event_address"
+                  value={formData.event_address}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                  placeholder="Enter event address"
+                />
+              </div>
+
+              {/* Country Dropdown */}
+              <div>
+                <label style={styles.label}>
+                  Country <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <select
+                  name="event_country"
+                  value={formData.event_country}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                >
+                  <option value="">Select Country</option>
+                  {DUMMY_OPTIONS.countries.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* State Dropdown */}
+              <div>
+                <label style={styles.label}>
+                  State <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <select
+                  name="event_state"
+                  value={formData.event_state}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                >
+                  <option value="">Select State</option>
+                  {DUMMY_OPTIONS.states.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* City Dropdown */}
+              <div>
+                <label style={styles.label}>
+                  City <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <select
+                  name="event_city"
+                  value={formData.event_city}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                >
+                  <option value="">Select City</option>
+                  {DUMMY_OPTIONS.cities.map((ct) => (
+                    <option key={ct} value={ct}>
+                      {ct}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 🟢 NEW INPUT FIELDS - ROW 3 (Pincode and Status) */}
+            <div
+              className="flex items-start gap-8"
+              style={{ alignItems: "flex-end" }}
+            >
+              {/* Pincode (6 digits) */}
+              <div style={{ width: 200 }}>
+                <label style={styles.label}>
+                  Pincode <span style={{ color: "#f44336" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="event_pincode"
+                  value={formData.event_pincode}
+                  onChange={handleChange}
+                  maxLength={6} // Browser max length
+                  style={styles.input}
+                  placeholder="Enter 6 digit pincode"
+                  required
+                />
+              </div>
+
+              {/* Status Field (Original) */}
+              <div style={{ width: 200 }}>
+                <label style={styles.label}>Status</label>
                 <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                   <label style={styles.radioLabel}>
                     <input
@@ -367,7 +599,13 @@ const AddEvent = () => {
               </div>
 
               {/* Add / Update Button */}
-              <div style={{ display: "flex", alignItems: "flex-end" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  marginLeft: "auto",
+                }}
+              >
                 <button
                   onClick={handleAddEvent}
                   className="px-6 py-2 text-sm text-white"
@@ -405,6 +643,7 @@ const AddEvent = () => {
           </div>
         </div>
 
+        {/* ... (Rest of the List Section/Table remains the same) ... */}
         {/* List Section */}
         <div className="bg-white" style={{ border: "1px solid #ddd" }}>
           {/* Filter / Search / Sort Row */}
@@ -482,7 +721,6 @@ const AddEvent = () => {
                   setSearchText("");
                   setStatusFilter("All");
                   setRowsPerPage(10);
-                  // FIX: Change to use event_name as default sort key
                   setSortBy({ key: "event_name", dir: "asc" });
                 }}
                 style={styles.clearBtn}
@@ -531,11 +769,70 @@ const AddEvent = () => {
                     >
                       Name
                       <button
-                        // FIX: Change to toggleSort("event_name")
-                        onClick={() => toggleSort("event_name")}
+                        onClick={() => toggleSort("event_fullName")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "event_name"
+                        {sortBy.key === "event_fullName"
+                          ? sortBy.dir === "asc"
+                            ? "▲"
+                            : "▼"
+                          : "↕"}
+                      </button>
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle()}
+                  >
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      To Date
+                      <button
+                        onClick={() => toggleSort("event_toDate")}
+                        style={styles.sortBtn}
+                      >
+                        {sortBy.key === "event_toDate"
+                          ? sortBy.dir === "asc"
+                            ? "▲"
+                            : "▼"
+                          : "↕"}
+                      </button>
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle()}
+                  >
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      Form Date
+                      <button
+                        onClick={() => toggleSort("event_formDate")}
+                        style={styles.sortBtn}
+                      >
+                        {sortBy.key === "event_formDate"
+                          ? sortBy.dir === "asc"
+                            ? "▲"
+                            : "▼"
+                          : "↕"}
+                      </button>
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-sm font-semibold text-left"
+                    style={thStyle()}
+                  >
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      Added By
+                      <button
+                        onClick={() => toggleSort("added_by")}
+                        style={styles.sortBtn}
+                      >
+                        {sortBy.key === "event_added_by"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"
@@ -557,7 +854,6 @@ const AddEvent = () => {
                     >
                       Status
                       <button
-                        // FIX: Change to toggleSort("event_status")
                         onClick={() => toggleSort("event_status")}
                         style={styles.sortBtn}
                       >
@@ -628,12 +924,45 @@ const AddEvent = () => {
                         className="px-4 py-3 text-sm"
                         style={{ color: "#333" }}
                       >
-                        {/* NO FIX NEEDED: statusItem?.event_name is correct */}
-                        {statusItem?.event_name || ""}
+                        {statusItem?.event_fullName || ""}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {statusItem?.event_toDate
+                          ? new Date(
+                              statusItem.event_toDate
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </td>
+
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {statusItem?.event_fromDate
+                          ? new Date(
+                              statusItem.event_fromDate
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </td>
+                      <td
+                        className="px-4 py-3 text-sm"
+                        style={{ color: "#333" }}
+                      >
+                        {statusItem?.added_by || ""}
                       </td>
 
                       <td className="px-4 py-3 text-center">
-                        {/* NO FIX NEEDED: statusItem?.event_status is correct */}
                         {statusItem?.event_status ? (
                           <span
                             className="inline-block px-3 py-1 text-xs text-white"
@@ -734,8 +1063,8 @@ const AddEvent = () => {
   );
 };
 
+// ... (Styles object remains the same) ...
 const styles = {
-  // ... (styles remain the same)
   input: {
     border: "1px solid #d2d6de",
     borderRadius: 3,
@@ -743,6 +1072,13 @@ const styles = {
     fontSize: 14,
     width: "100%",
     boxSizing: "border-box",
+  },
+  label: {
+    display: "block",
+    fontSize: 14,
+    fontWeight: 500,
+    color: "#333",
+    marginBottom: 6,
   },
   radioLabel: {
     display: "inline-flex",
