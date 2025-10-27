@@ -18,13 +18,13 @@ const EstimateDetails = () => {
 
   return (
     <>
-      <div className="w-full h-10  flex justify-between bg-white px-3 py-2 ">
+      <div className="w-full h-10  flex justify-between bg-white px-3 py-1 ">
         <h1 className="text-xl text-gray-600">ESTIMATE</h1>
         <div className="flex gap-2">
-          <button className="w-fit h-6 text-sm text-center text-white border-2 border-[#3598dc] bg-[#3598dc] px-2 hover:bg-[#1f6fa5] cursor-pointer">
+          <button className="w-auto h-auto text-xs text-center text-white border border-[#3598dc] bg-[#3598dc] px-2   hover:bg-[#1f6fa5] cursor-pointer">
             ADD NEW CLIENTS
           </button>
-          <button className="w-fit h-6 text-sm text-center text-white border-2 border-[#3598dc] bg-[#3598dc] px-2 hover:bg-[#2678ae] cursor-pointer">
+          <button className="w-auto h-auto text-xs text-center text-white border border-[#3598dc] bg-[#3598dc] px-2  hover:bg-[#2678ae] cursor-pointer">
             CLIENTS LIST
           </button>
           <Link to="/editestimate">

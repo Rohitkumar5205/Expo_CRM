@@ -317,7 +317,7 @@ const AddNewClients = () => {
           {/* --- Company Details --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Company Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -331,7 +331,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Category <span className="text-red-500">*</span>
               </label>
               <select
@@ -350,7 +350,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Nature of Business <span className="text-red-500">*</span>
               </label>
               <select
@@ -370,7 +370,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -384,7 +384,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Country <span className="text-red-500">*</span>
               </label>
               <select
@@ -408,7 +408,7 @@ const AddNewClients = () => {
           {/* --- State / City --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 State <span className="text-red-500">*</span>
               </label>
               <select
@@ -430,7 +430,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 City <span className="text-red-500">*</span>
               </label>
               <select
@@ -450,7 +450,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Pin Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -475,7 +475,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Website <span className="text-red-500">*</span>
               </label>
               <input
@@ -489,7 +489,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 LandLine No.
               </label>
               <input
@@ -505,7 +505,7 @@ const AddNewClients = () => {
           {/* --- Additional Fields --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 mb-4">
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Email Id <span className="text-red-500">*</span>
               </label>
               <input
@@ -518,7 +518,7 @@ const AddNewClients = () => {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Data Source <span className="text-red-500">*</span>
               </label>
               <select
@@ -537,7 +537,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Event Name <span className="text-red-500">*</span>
               </label>
               <select
@@ -556,7 +556,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Reminder Date &amp; Time <span className="text-red-500">*</span>
               </label>
               <input
@@ -573,7 +573,7 @@ const AddNewClients = () => {
             </div>
 
             <div>
-              <label className="text-xs text-gray-700 mb-1 block">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Forward To <span className="text-red-500">*</span>
               </label>
 
@@ -606,7 +606,7 @@ const AddNewClients = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {/* Title */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Title <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -628,7 +628,7 @@ const AddNewClients = () => {
 
                 {/* First Name */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     First Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -646,7 +646,7 @@ const AddNewClients = () => {
 
                 {/* Surname */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Surname <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -664,7 +664,7 @@ const AddNewClients = () => {
 
                 {/* Designation */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Designation <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -682,7 +682,7 @@ const AddNewClients = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -700,7 +700,7 @@ const AddNewClients = () => {
 
                 {/* Mobile */}
                 <div>
-                  <label className="text-xs text-gray-700 mb-1 block">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Mobile <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -721,7 +721,7 @@ const AddNewClients = () => {
                 {/* Alternate Number */}
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs text-gray-700 block">
+                    <label className="text-xs font-medium text-gray-900 block">
                       Alternate No.
                     </label>
                     {index === 0 ? (
