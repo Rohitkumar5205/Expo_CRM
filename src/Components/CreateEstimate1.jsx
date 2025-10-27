@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux"; // ⬅️ NEW: Redux hooks imported
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addEstimate,
   clearEstimateState,
@@ -10,9 +10,8 @@ import { fetchEvents } from "../features/crmEvent/crmEventSlice";
 import { fetchCountries } from "../features/add_by_admin/country/countrySlice";
 import { fetchStates } from "../features/state/stateSlice";
 import { fetchCities } from "../features/city/citySlice";
+import { fetchCompanies } from "../features/company/companySlice";
 import { showError, showSuccess } from "../utils/toastMessage";
-
-const indianStates = ["Uttar Pradesh"];
 
 const unitOptions = [
   "Inch",
@@ -38,18 +37,22 @@ const unitOptions = [
 const CreateEstimate1 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // 🟢 NEW: Get state from Redux store for feedback/loading
+  const { id: companyIdFromParams } = useParams();
   const { loading, error, success } = useSelector((state) => state.estimates);
   const { events } = useSelector((state) => state.crmEvents);
   const { countries } = useSelector((state) => state.countries);
   const { states } = useSelector((state) => state.states);
   const { cities } = useSelector((state) => state.cities);
+  const { companies } = useSelector((state) => state.companies);
 
   useEffect(() => {
     dispatch(fetchEvents());
     dispatch(fetchCountries());
     dispatch(fetchStates());
     dispatch(fetchCities());
+    if (companies.length === 0) {
+      dispatch(fetchCompanies());
+    }
     dispatch(fetchNextEstimateNo())
       .unwrap()
       .then((nextEstNo) => {
@@ -62,7 +65,7 @@ const CreateEstimate1 = () => {
       .catch((err) => {
         showError(`Failed to fetch estimate number: ${err.message || err}`);
       });
-  }, [dispatch]);
+  }, [dispatch, companies.length]);
 
   // --- State Initialization ---
   const [estimateData, setEstimateData] = useState({
@@ -101,7 +104,7 @@ const CreateEstimate1 = () => {
     if (success) {
       showSuccess("Estimate created successfully!");
       dispatch(clearEstimateState()); // Clear success message after showing
-      navigate("/ihweClientData2026/accountSection1"); // Navigate to the estimate list page
+      navigate(`/ihweClientData2026/accountSection1/${companyIdFromParams}`);
     }
     if (error) {
       showError(`Error: ${error.message || error}`); // Show error message
@@ -196,8 +199,7 @@ const CreateEstimate1 = () => {
 
     const addedBy = localStorage.getItem("user_name") || "";
     // Assuming 'company_id' holds the companyId value
-    const companyId = localStorage.getItem("company_id") || "DEFAULT_COMPANY";
-
+    const companyId = companyIdFromParams;
     // Item Data Transformation with GST Breakdown
     const transformedItems = items.map((item) => {
       const taxableValue = parseFloat(item.tax) || 0;

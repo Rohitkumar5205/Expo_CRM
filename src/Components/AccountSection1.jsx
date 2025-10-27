@@ -1,10 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCompanies } from "../features/company/companySlice";
 import EstimateTable from "./EstimateTable";
-import { useNavigate } from "react-router-dom";
 
-const AccountSection1 = ({ client }) => {
+const AccountSection1 = () => {
   const navigate = useNavigate();
-  const companyName = client?.company?.name || "Loading Company...";
+  const dispatch = useDispatch();
+  const { id } = useParams(); 
+  const location = useLocation();
+
+  // Redux state for companies (assuming this is how you manage client data)
+  const { companies, loading } = useSelector((state) => state.companies);
+  const [company, setCompany] = useState(null);
+
+  // 1. Fetch company data if not already present in Redux
+  useEffect(() => {
+    if (companies.length === 0) {
+      dispatch(fetchCompanies());
+    }
+  }, [dispatch, companies.length]);
+
+  // 2. Find the specific company based on the ID from the URL
+  useEffect(() => {
+    if (companies.length > 0 && id) {
+      const matchedCompany = companies.find((c) => c._id === id);
+      setCompany(matchedCompany);
+    }
+  }, [companies, id]);
+
+  // Use companyName from state (if passed) or from fetched company data
+  let companyName = "Loading Company...";
+
+  // Get company name from state if possible (passed from ClientOverview1)
+  const stateCompanyName = location.state?.heading?.companyName;
+  if (stateCompanyName) {
+    companyName = stateCompanyName;
+  }
+
+  // Or use the name from the fetched company object
+  if (company) {
+    companyName = company.companyName || companyName;
+  }
+
+  if (loading) return <p>Loading client data...</p>;
+  if (!id) return <p>Error: Client ID is missing in the URL.</p>;
+  // if (!company) return <p>No client found with ID: {id}</p>; // Optional: show if company isn't found
 
   return (
     <div className="w-full h-auto bg-[#eef1f5] min-h-screen">
@@ -34,24 +75,27 @@ const AccountSection1 = ({ client }) => {
       {/* Company Info & Action Buttons */}
       <div className="bg-white shadow-md rounded-md  m-4 ">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-1 p-2">
+          {/* Display the dynamically retrieved company name */}
           <h2 className="text-lg text-gray-700 mb-2 sm:mb-0">
-            {companyName} Information
+            {companyName}. Information
           </h2>
           <div className="flex flex-wrap gap-2 justify-center">
             <button
-              onClick={() => navigate("/ihweClientData2026/createEstimate1")}
+              onClick={() =>
+                navigate(`/ihweClientData2026/createEstimate1/${company._id}`)
+              }
               className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium"
             >
               Create Estimate
             </button>
             <button
-              onClick={() => navigate("/ihweClientData2026/payments")}
+              onClick={() => navigate(`/ihweClientData2026/payments/${id}`)}
               className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium"
             >
               Payments
             </button>
             <button
-              onClick={() => navigate("/ihweClientData2026/creditNote")}
+              onClick={() => navigate(`/ihweClientData2026/creditNote/${id}`)}
               className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium"
             >
               Credit Note
@@ -60,8 +104,8 @@ const AccountSection1 = ({ client }) => {
         </div>
         <hr />
 
-        {/* Estimate Table */}
-        <EstimateTable />
+        {/* Estimate Table - Pass company ID for data fetching */}
+        <EstimateTable clientId={id} />
       </div>
     </div>
   );

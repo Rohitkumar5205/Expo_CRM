@@ -86,18 +86,17 @@ const ClientOverview1 = () => {
     if (companies.length > 0) {
       const matched = companies.find((c) => c._id === id);
       setCompany(matched);
-      // 🎯 FIX: कंपनी मिलते ही उसकी ID को reviewData में सेट करें।
       if (matched) {
         setReviewData((prev) => ({
           ...prev,
-          cmpny_id: matched._id, // यह ID अब state में आ जाएगी
+          cmpny_id: matched._id,
         }));
       }
     }
   }, [companies, id]);
 
   const handleEdit = () => {
-    if (!company) return; // safety check
+    if (!company) return;
     navigate(`/ihweClientData2026/addNewClients/${company._id}`, {
       state: { heading: "Edit Client Details" },
     });
@@ -139,14 +138,12 @@ const ClientOverview1 = () => {
   const handleAddReview = async (e) => {
     e.preventDefault();
 
-    // 🎯 FIX: cmpny_id की जाँच करें
     if (!reviewData.cmpny_id) {
       showError("Company ID लोड नहीं हुआ है। कृपया पेज रिफ्रेश करें।");
       console.error("Validation failed: cmpny_id is missing.");
-      return; // अगर ID नहीं है तो आगे न बढ़ें
+      return;
     }
 
-    // बाकी ज़रूरी फ़ील्ड की जाँच
     if (!reviewData.status_short || !reviewData.evnt_id || !reviewData.re_msg) {
       showError("कृपया Client Status, Event Name, और Remark भरें।");
       return;
@@ -196,7 +193,11 @@ const ClientOverview1 = () => {
     });
   };
   const handleAccount = () => {
-    navigate("/ihweClientData2026/accountSection1");
+    // navigate(`/ihweClientData2026/accountSection1/${id}`);
+    if (!company) return;
+    navigate(`/ihweClientData2026/accountSection1/${company._id}`, {
+      // state: { heading: {company?.companyName} },
+    });
   };
   // const handlePayments = () => {
   //   navigate("/ihweClientData2026/payments");
