@@ -1,15 +1,41 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {  Link, useNavigate, useParams } from "react-router-dom";
 import Globallytable from "../../Components/Globallytable";
 import Textarea from "../../Components/Textarea";
 import ClientOverview from "../../Components/ClientOverview";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCompanies } from "../../features/company/companySlice";
 
 const WarmClientList = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const navigate = useNavigate();
+ 
+ 
+  //logic of table data
+  const dispatch = useDispatch();
+
+  // 🏢 Company redux data
+  const { companies, loading, error } = useSelector((state) => state.companies);
+
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+
+  // useparms for id
+
+  const { id } = useParams();
+ 
 
      const columns = [
-        { label: "Company Name", accessor: "company.name" }, 
+        { label: "Company Name", accessor: "company.name",
+         render:(value,row)=>(
+          <Link to={`/clientOverview1/${row.id}`}
+          className="hover:underline text-blue-500"
+          >
+          {value}
+          </Link>
+         )
+         }, 
         { label: "Contact Details", accessor: "contact.details" },
         { label: "Category", accessor: "category.main" },
         { label: "Nature Bussiness", accessor: "Nature Bussiness" },
@@ -22,8 +48,35 @@ const WarmClientList = () => {
         { label: "Update Details", accessor: "Update.detail" },
     ];
 
-   const rows = [
+     // 🧱 Prepare Rows
+  const rows = companies.map((c) => ({
+    id: c._id,
+    checkbox: true,
+    company: {
+      name: c.companyName,
+    },
+    contact: {
+      details: c.contacts
+        ?.map(
+          (contact) =>
+            `${contact.firstName} ${contact.surname} | ${contact.mobile}`
+        )
+        .join(", "),
+    },
+    category: { main: c.category },
+    business: { type: c.businessNature },
+    location: { city: c.city, state: c.state },
+    source: { name: c.dataSource || "-" },
+    update: {
+      details: `${new Date(c.updatedAt).toLocaleDateString()} | ${
+        c.contacts?.[0]?.firstName || "-"
+      }`,
+    },
+  }));
+
+  {/* const rows = [
   {
+    id: {_id:1},
     company: { name: "Tentamus India Pvt. Ltd" },
     contact: { details: "Rohit Sharma | +91-9876543210 | rohit@tentamus.com" },
     category: { main: "Food & Beverages" },
@@ -36,6 +89,7 @@ const WarmClientList = () => {
     Update: { detail: "Updated by Abhay Raj on 20 Sep 2025" },
   },
   {
+    id: {_id:2},
     company: { name: "AgroTech Solutions" },
     contact: { details: "Priya Verma | +91-9876501234 | priya@agrotech.com" },
     category: { main: "Agriculture" },
@@ -48,6 +102,7 @@ const WarmClientList = () => {
     Update: { detail: "Updated by Rishabh Singh on 18 Sep 2025" },
   },
   {
+    id: {_id:3},
     company: { name: "Green Organics Ltd" },
     contact: { details: "Ankit Mehra | +91-9012345678 | ankit@greenorganics.com" },
     category: { main: "Organic Products" },
@@ -60,6 +115,7 @@ const WarmClientList = () => {
     Update: { detail: "Updated by Tanya Jaiswal on 16 Sep 2025" },
   },
   {
+    id: {_id:4},
     company: { name: "Herbal Life Care" },
     contact: { details: "Sunita Gupta | +91-9090909090 | sunita@herballife.com" },
     category: { main: "Healthcare" },
@@ -72,6 +128,7 @@ const WarmClientList = () => {
     Update: { detail: "Updated by Shimpi Rawat on 14 Sep 2025" },
   },
   {
+    id: {_id:5},
     company: { name: "Spice World Exporters" },
     contact: { details: "Arjun Yadav | +91-9123456789 | arjun@spiceworld.com" },
     category: { main: "Export" },
@@ -83,7 +140,7 @@ const WarmClientList = () => {
     Event: { type: "International Trade Fair 2025" },
     Update: { detail: "Updated by Manoj Mishra on 10 Sep 2025" },
   }
-];
+];*/}
 
   const handleClientClick = (clientData) => {
     setSelectedClient(clientData);

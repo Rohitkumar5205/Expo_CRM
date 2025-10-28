@@ -303,6 +303,7 @@ const AddRemarkLengthFixed = () => {
                   className="w-full px-3 py-2 text-sm"
                   style={{ ...styles.input }}
                   placeholder="Enter fixed length"
+                  required
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAddFixLength();

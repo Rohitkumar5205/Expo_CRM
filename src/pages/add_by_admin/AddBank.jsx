@@ -418,6 +418,7 @@ const AddBank = () => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-sm"
                   style={styles.input}
+                  required
                 >
                   <option value="" disabled>
                     Select Here

@@ -692,6 +692,7 @@ const CreateEstimate1 = () => {
                         (parseFloat(item.tax) || 0) *
                         ((parseFloat(item.gstRate) || 0) / 100)
                       ).toFixed(2)}
+                      required
                       readOnly
                       className={`w-1/3 bg-gray-100 cursor-not-allowed ${inputClass} rounded-l-none border-l-0`}
                     />

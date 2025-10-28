@@ -434,8 +434,10 @@ const Payments = ({ client, onBack }) => {
                 name="pymtAgainst"
                 value={formData.pymtAgainst}
                 onChange={handleInputChange}
+                required
                 className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
+                
                 <option value="">Select Here</option>
                 <option value="Performa Invoice">Performa Invoice</option>
                 <option value="Invoice">Invoice</option>
@@ -450,6 +452,7 @@ const Payments = ({ client, onBack }) => {
                 name="documentNo"
                 value={formData.documentNo}
                 onChange={handleInputChange}
+                required
                 className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Here</option>

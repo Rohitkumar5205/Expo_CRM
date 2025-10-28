@@ -269,6 +269,7 @@ const AddCrmWhatsappMessage = () => {
                       onChange={handleChange}
                       style={styles.hiddenFileInput}
                       disabled={isLoading}
+                      required
                     />
                     <div style={styles.fileInputText}>
                       {formData.file_attach

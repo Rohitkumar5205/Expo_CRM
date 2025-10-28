@@ -329,6 +329,7 @@ const AddNatureOfBusiness = () => {
                     ...styles.input,
                   }}
                   placeholder="Enter name"
+                  required
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAddNature();

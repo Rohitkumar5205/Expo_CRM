@@ -368,7 +368,7 @@ const AddEvent = () => {
         className="w-full bg-white"
         style={{ borderBottom: "1px solid #e0e0e0" }}
       >
-        <div className="flex items-center justify-between px-6 py-3">
+        <div className="flex items-center justify-between px-6 py-1">
           <h1 className="text-lg font-normal" style={{ color: "#666" }}>
             Events
           </h1>
@@ -783,13 +783,13 @@ const AddEvent = () => {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-left"
+                    className="px-4 py-3 text-sm font-semibold text-center"
                     style={thStyle()}
                   >
-                    <div
+                     <div
                       style={{ display: "flex", alignItems: "center", gap: 8 }}
                     >
-                      To Date
+                      From Date
                       <button
                         onClick={() => toggleSort("event_toDate")}
                         style={styles.sortBtn}
@@ -803,18 +803,18 @@ const AddEvent = () => {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-sm font-semibold text-left"
+                    className="px-4 py-3 text-sm font-semibold text-center"
                     style={thStyle()}
                   >
-                    <div
+                   <div
                       style={{ display: "flex", alignItems: "center", gap: 8 }}
                     >
-                      Form Date
+                      To Date
                       <button
-                        onClick={() => toggleSort("event_formDate")}
+                        onClick={() => toggleSort("event_toDate")}
                         style={styles.sortBtn}
                       >
-                        {sortBy.key === "event_formDate"
+                        {sortBy.key === "event_toDate"
                           ? sortBy.dir === "asc"
                             ? "▲"
                             : "▼"

@@ -222,9 +222,9 @@ const ClientOverview1 = () => {
 
       {/* Main Content */}
       <div className="flex flex-col m-4 gap-4">
-        <div className="bg-white shadow-md p-4 rounded-md w-full">
+        <div className="bg-white shadow-md px-5 pb-4 pt-2 w-full">
           <div className="flex justify-between items-center mb-1.5">
-            <h2 className="text-xl font-normal text-gray-600">
+            <h2 className="text-lg font-normal text-gray-600">
               {company.companyName} | Details
             </h2>
             <div className="flex gap-2">
@@ -258,46 +258,46 @@ const ClientOverview1 = () => {
          <hr className="w-full opacity-10 mb-3"/>
           {/* Client Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600  pb-4 mb-4">
-            <div>
-              <p className="font-semibold text-gray-800">Company Details</p>
+            <div className="flex gap-11">
+              <p className="font-semibold text-gray-800">Company <br /> Details</p>
               <p>
                 {company.companyName} | {company.businessNature} |{" "}
                 {company.category}
               </p>
             </div>
-            <div>
+            <div className="flex gap-10">
               <p className="font-semibold text-gray-800">Data Source</p>
               <p>{company.dataSource || "-"}</p>
             </div>
-            <div>
+            <div className="flex gap-16">
               <p className="font-semibold text-gray-800">Website</p>
               <p>{company.website || "-"}</p>
             </div>
-            <div>
+            <div className="flex gap-12.5">
               <p className="font-semibold text-gray-800">Address</p>
               <p>{company.address}</p>
             </div>
-            <div>
+            <div className="flex gap-16.5">
               <p className="font-semibold text-gray-800">Email Id</p>
               <p className="text-blue-600">{company.email}</p>
             </div>
-            <div>
+            <div className="flex gap-9">
               <p className="font-semibold text-gray-800">Landline No.</p>
               <p>{company.landline || "-"}</p>
             </div>
-            <div>
-              <p className="font-semibold text-gray-800">Contact Person</p>
+            <div className="flex gap-13"> 
+              <p className="font-semibold text-gray-800">Contact <br /> Person</p>
               <p>
                 {company.contacts
                   ?.map((c) => `${c.firstName} ${c.surname} | ${c.mobile}`)
                   .join(", ")}
               </p>
             </div>
-            <div>
-              <p className="font-semibold text-gray-800">Added / Updated By</p>
+            <div className="flex gap-11.5">
+              <p className="font-semibold text-gray-800">Added / <br /> Updated By</p>
               <p>{company.updated_by || "-"}</p>
             </div>
-            <div>
+            <div className="flex gap-9">
               <p className="font-semibold text-gray-800">Client Status</p>
               <p className="text-green-700">{company.status || "New Client"}</p>
             </div>
@@ -308,7 +308,7 @@ const ClientOverview1 = () => {
         {(reviews.length === 0 || popUp) && (
           <form
             onSubmit={handleAddReview}
-            className="w-full h-auto bg-white rounded-md shadow-md px-4 py-4 gap-4"
+            className="w-full h-auto bg-white  shadow-md px-4 py-4 gap-4"
           >
             <div className="flex items-end justify-between gap-4 overflow-x-auto">
               {/* Hidden Company ID Field */}
@@ -477,8 +477,8 @@ const ClientOverview1 = () => {
 
         {/* Communication History */}
         {reviews.length > 0 && (
-          <div className="bg-white shadow-md rounded-md w-full">
-            <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 rounded-t-md border-b border-gray-200">
+          <div className="bg-white shadow-md  w-full">
+            <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 border border-gray-300">
               <p className="flex items-center gap-2">
                 <FaBuilding className="text-lg text-gray-600" /> Communication
                 Status History
@@ -488,7 +488,7 @@ const ClientOverview1 = () => {
               {reviews.map((entry, index) => (
                 <div
                   key={entry?._id}
-                  className="flex items-start hover:bg-gray-200 gap-2 py-1.5 px-2 bg-white rounded-md border border-gray-200 text-sm"
+                  className="flex items-start hover:bg-gray-200 gap-2 py-1.5 px-2 bg-white  border border-gray-200 text-sm"
                 >
                   <FaUser className="w-4 h-4 text-gray-500 mt-1" />
                   <div className="flex-grow">
