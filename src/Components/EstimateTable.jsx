@@ -1,27 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-// ⚠️ ADJUST THESE IMPORT PATHS ⚠️
 import { fetchEstimates } from "../features/estimates/estimateSlice";
-import { createPerformaInvoice } from "../features/performaInvoice/performaInvoiceSlice";
+import {
+  createPerformaInvoice,
+  fetchPerformaInvoices,
+} from "../features/performaInvoice/performaInvoiceSlice";
 
 const stylebutton =
   "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
-
-// Helper function to format the PI details
-const formatPiDisplay = (pi) => {
-  if (!pi || !pi.added) return "";
-  const dateObj = new Date(pi.added);
-  const date = dateObj
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "2-digit",
-    })
-    .replace(/\//g, " ");
-  return `${pi.pi_no} | ${date} | ${pi.finalAmount}`;
-};
 
 const EstimateTable = () => {
   const navigate = useNavigate();
@@ -32,24 +19,22 @@ const EstimateTable = () => {
   const { estimates, loading: estimatesLoading } = useSelector(
     (state) => state.estimates
   );
-
-  // Local state to track PI creation status for EACH row
-  // Format: { [estimateId]: { isCreating: boolean, piData: object | null, error: string | null } }
+  // Redux state for PIs
+  const { invoices, loading: piLoading } = useSelector(
+    (state) => state.perinvoice
+  );
   const [perInvoiceState, setPerInvoiceState] = useState({});
+  console.log("invoices..", invoices);
 
-  // 2. Find the specific company based on the ID from the URL
   useEffect(() => {
     if (estimates.length > 0 && id) {
       const matchedEstimate = estimates.find((c) => c._id === id);
-      // This line was causing an error in your original code since 'matchedEstimate' was not defined in the scope
-      // For now, let's keep it simple or remove it if not strictly necessary for the table view.
-      // setEstimate(matchedEstimate);
     }
   }, [estimates, id]);
 
-  // Fetch all estimates on component mount
   useEffect(() => {
     dispatch(fetchEstimates());
+    dispatch(fetchPerformaInvoices());
   }, [dispatch]);
 
   // Handler for PI creation
@@ -99,6 +84,19 @@ const EstimateTable = () => {
     navigate("/payments/taxInvoiceDetails", {
       state: { heading: copyType },
     });
+  };
+
+  // 📝 Helper function to format the PI date
+  const formatPiDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const dateObj = new Date(dateString);
+    return dateObj
+      .toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      })
+      .replace(/\//g, " ");
   };
 
   return (
@@ -183,11 +181,24 @@ const EstimateTable = () => {
                 .replace(/\//g, " ");
             }
 
-            // 🔍 Get PI status from local state
-            const rowState = perInvoiceState[estimate._id] || {};
-            // ℹ️ Check if PI data exists (either already in estimate or in local state after creation)
-            const currentPiData =
-              rowState.piData || estimate.performa_invoice_data; // Replace 'performa_invoice_data' with actual property name
+            // --- 🚀 NEW PI LOGIC START 🚀 ---
+
+            // 1. Check local state (for just created PI)
+            const localPiState = perInvoiceState[estimate._id];
+            let piDataToDisplay = localPiState?.piData;
+
+            // 2. If no local PI, check Redux state (for previously created PI)
+            if (!piDataToDisplay) {
+              piDataToDisplay = invoices.find(
+                (pi) => pi.est_no === estimate.est_no
+              );
+            }
+
+            const isPiCreated = !!piDataToDisplay;
+            const isPiCreating = localPiState?.isCreating;
+            const piError = localPiState?.error;
+
+            // --- 🚀 NEW PI LOGIC END 🚀 ---
 
             return (
               <tr key={estimate._id}>
@@ -206,26 +217,40 @@ const EstimateTable = () => {
 
                 {/* 🚀 PERFORMA INVOICE CELL LOGIC 🚀 */}
                 <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                  {rowState.error && (
-                    <p className="text-red-500 mb-1">{rowState.error}</p>
-                  )}
-
-                  {currentPiData ? (
-                    // 🟢 Show PI Link
-                    <Link to={`/performaInvoice/${currentPiData._id}`}>
+                  {/* Display PI Data if it exists or is being created */}
+                  {isPiCreated && (
+                    <Link to={`/performaInvoice/${piDataToDisplay._id}`}>
                       <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
-                        {formatPiDisplay(currentPiData)}
+                        {`${piDataToDisplay.pi_no} | ${
+                          formatPiDate(piDataToDisplay.createdAt) || "N/A"
+                        } | ${
+                          piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
+                        }`}
                       </button>
                     </Link>
-                  ) : (
-                    // 🟡 Show Create PI Button
+                  )}
+
+                  {/* Display Create PI button only if no PI is created and not loading */}
+                  {!isPiCreated && !isPiCreating && (
                     <button
                       className={stylebutton}
                       onClick={() => handleCreatePI(estimate, totalFinalAmount)}
-                      disabled={rowState.isCreating}
+                      disabled={isPiCreating}
                     >
-                      {rowState.isCreating ? "Creating..." : "Create PI"}
+                      Create PI
                     </button>
+                  )}
+
+                  {/* Display Loading state */}
+                  {isPiCreating && (
+                    <span className="text-[#3598dc] font-medium">
+                      Creating...
+                    </span>
+                  )}
+
+                  {/* Display Error state */}
+                  {piError && (
+                    <span className="text-red-500 font-medium">{piError}</span>
                   )}
                 </td>
 
