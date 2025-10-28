@@ -1,16 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/perinvoice"; // backend base URL
+// NOTE: Since VITE_API_URL is not defined in this environment, it's assumed to be available at runtime.
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // 🟢 CREATE (Add new Performa Invoice)
 export const createPerformaInvoice = createAsyncThunk(
   "perinvoice/create",
   async (invoiceData, thunkAPI) => {
     try {
-      const response = await axios.post(API_URL, invoiceData);
-      return response.data.data;
+      // Assuming invoiceData contains all necessary fields like est_no, companyId, finalAmount
+      const response = await axios.post(`${BASE_URL}/perinvoice`, invoiceData);
+      return response.data.data; // Should return the newly created PI object
     } catch (error) {
+      // In a real app, use thunkAPI.dispatch(showError(message))
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error creating invoice"
       );
@@ -23,8 +26,8 @@ export const fetchPerformaInvoices = createAsyncThunk(
   "perinvoice/fetchAll",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(API_URL);
-      return response.data;
+      const response = await axios.get(`${BASE_URL}/perinvoice`);
+      return response.data; // Assuming response.data is the array of invoices
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error fetching invoices"
@@ -38,8 +41,8 @@ export const fetchPerformaInvoiceById = createAsyncThunk(
   "perinvoice/fetchById",
   async (id, thunkAPI) => {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
-      return response.data;
+      const response = await axios.get(`${BASE_URL}/perinvoice/${id}`);
+      return response.data; // Assuming response.data is the single invoice object
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error fetching invoice"
@@ -53,7 +56,10 @@ export const updatePerformaInvoice = createAsyncThunk(
   "perinvoice/update",
   async ({ id, updatedData }, thunkAPI) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, updatedData);
+      const response = await axios.put(
+        `${BASE_URL}/perinvoice/${id}`,
+        updatedData
+      );
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -68,7 +74,7 @@ export const deletePerformaInvoice = createAsyncThunk(
   "perinvoice/delete",
   async (id, thunkAPI) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`${BASE_URL}/perinvoice/${id}`);
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -99,10 +105,13 @@ const performaInvoiceSlice = createSlice({
       // 🔵 CREATE
       .addCase(createPerformaInvoice.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.success = false;
       })
       .addCase(createPerformaInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        // Prepend the new PI to the list for immediate visibility
         state.invoices.unshift(action.payload);
       })
       .addCase(createPerformaInvoice.rejected, (state, action) => {

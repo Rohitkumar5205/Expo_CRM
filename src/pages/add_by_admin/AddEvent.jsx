@@ -8,14 +8,10 @@ import {
   deleteEvent,
 } from "../../features/crmEvent/crmEventSlice";
 import { showError, showSuccess } from "../../utils/toastMessage";
+import { fetchCountries } from "../../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../../features/state/stateSlice";
+import { fetchCities } from "../../features/city/citySlice";
 
-// --- DUMMY DATA FOR DROPDOWNS ---
-const DUMMY_OPTIONS = {
-  countries: ["India", "USA", "Canada"],
-  states: ["Maharashtra", "Delhi", "Karnataka"],
-  cities: ["Mumbai", "New Delhi", "Bangalore"],
-};
-/** Simple Pagination component (No changes needed) */
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
   const start = Math.max(1, currentPage - 2);
@@ -120,9 +116,15 @@ const AddEvent = () => {
     loading,
     error = null,
   } = useSelector((state) => state.crmEvents || {});
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
 
   useEffect(() => {
     dispatch(fetchEvents());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -496,9 +498,9 @@ const AddEvent = () => {
                   required
                 >
                   <option value="">Select Country</option>
-                  {DUMMY_OPTIONS.countries.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                  {countries?.map((country, i) => (
+                    <option key={country._id || i} value={country.name}>
+                      {country.name}
                     </option>
                   ))}
                 </select>
@@ -517,9 +519,9 @@ const AddEvent = () => {
                   required
                 >
                   <option value="">Select State</option>
-                  {DUMMY_OPTIONS.states.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                  {states?.map((state, i) => (
+                    <option key={state._id || i} value={state?.name}>
+                      {state?.name}
                     </option>
                   ))}
                 </select>
@@ -538,9 +540,9 @@ const AddEvent = () => {
                   required
                 >
                   <option value="">Select City</option>
-                  {DUMMY_OPTIONS.cities.map((ct) => (
-                    <option key={ct} value={ct}>
-                      {ct}
+                  {cities?.data?.map((city, i) => (
+                    <option key={city?._id || i} value={city?.name}>
+                      {city?.name}
                     </option>
                   ))}
                 </select>

@@ -14,6 +14,7 @@ import crmMessageReducer from "../features/add_by_admin/crm_wat_mess/CrmWatMessa
 import authReducer from "../features/auth/authSlice";
 import crmExhibatorReviewReducer from "../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
 import estimateReducer from "../features/estimates/estimateSlice";
+import performaInvoiceReducer from "../features/performaInvoice/performaInvoiceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     auth: authReducer,
     reviews: crmExhibatorReviewReducer,
     estimates: estimateReducer,
+    perinvoice: performaInvoiceReducer,
   },
 });
 
