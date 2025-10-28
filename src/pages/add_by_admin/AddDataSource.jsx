@@ -323,6 +323,7 @@ const AddDataSource = () => {
                     ...styles.input,
                   }}
                   placeholder="Enter source name"
+                  required
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAddDataSource();

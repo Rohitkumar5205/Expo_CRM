@@ -312,6 +312,7 @@ const AddStatus = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-sm"
+                  required
                   style={{
                     ...styles.input,
                   }}

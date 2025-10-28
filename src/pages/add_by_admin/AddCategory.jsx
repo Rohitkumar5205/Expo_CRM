@@ -114,6 +114,7 @@ const AddCategory = () => {
                 onChange={handleChange}
                 placeholder="Enter category name"
                 className="w-full border border-gray-300 px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              required
               />
             </div>
 
@@ -130,7 +131,8 @@ const AddCategory = () => {
                     value="Active"
                     checked={formData.status === "Active"}
                     onChange={handleChange}
-                  />
+                 
+                 />
                   Active
                 </label>
                 <label className="flex items-center gap-2 text-gray-700">
