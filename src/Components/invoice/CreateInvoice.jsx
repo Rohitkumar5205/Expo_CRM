@@ -211,7 +211,7 @@ const CreateInvoice = () => {
   return (
     <>
       {/* Header (unchanged) */}
-      <div className="flex justify-between w-full h-6 bg-white items-center px-4 pt-4 mb-4">
+      <div className="flex justify-between w-full h-auto bg-white items-center px-4 pt-4 mb-4">
         <h1 className="font-normal text-xl text-[#333]">
           ACCOUNT SECTION | INVOICE
         </h1>
@@ -480,7 +480,7 @@ const CreateInvoice = () => {
                       {index + 1}
                     </td>
                     <td className="px-6 py-2  border border-gray-300 text-center text-xs">
-                      <button className="px-2  text-blue-500 hover:text-gray-800 text-center cursor-pointer">
+                      <button onClick={()=>navigate(`/payments/ODT/taxInvoiceDetails`)} className="px-2  text-blue-500 hover:text-gray-800 text-center cursor-pointer">
                         {invoice?.invoice_no}
                       </button>
                     </td>

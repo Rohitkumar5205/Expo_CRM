@@ -136,7 +136,7 @@ const App = () => {
             element={<CreateInvoice />}
           />
           <Route
-            path="/payments/taxInvoiceDetails"
+            path="/payments/ODT/taxInvoiceDetails"
             element={<TaxInvoiceDetails />}
           />
           <Route
@@ -144,7 +144,7 @@ const App = () => {
             element={<InvoiceNumberDetails />}
           />
           <Route
-            path="/payments/performanceInvoiceDetails"
+            path="/payments/performanceInvoiceDetails/:id"
             element={<PerformaInvoiceDetails />}
           />
           <Route
