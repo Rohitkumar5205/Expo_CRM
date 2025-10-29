@@ -88,7 +88,7 @@ export const deletePerformaInvoice = createAsyncThunk(
 const performaInvoiceSlice = createSlice({
   name: "perinvoice",
   initialState: {
-    invoices: [],
+    perInvoices: [],
     singleInvoice: null,
     loading: false,
     error: null,
@@ -112,7 +112,7 @@ const performaInvoiceSlice = createSlice({
         state.loading = false;
         state.success = true;
         // Prepend the new PI to the list for immediate visibility
-        state.invoices.unshift(action.payload);
+        state.perInvoices.unshift(action.payload);
       })
       .addCase(createPerformaInvoice.rejected, (state, action) => {
         state.loading = false;
@@ -125,7 +125,7 @@ const performaInvoiceSlice = createSlice({
       })
       .addCase(fetchPerformaInvoices.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoices = action.payload;
+        state.perInvoices = action.payload;
       })
       .addCase(fetchPerformaInvoices.rejected, (state, action) => {
         state.loading = false;
@@ -152,10 +152,10 @@ const performaInvoiceSlice = createSlice({
       .addCase(updatePerformaInvoice.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        const index = state.invoices.findIndex(
+        const index = state.perInvoices.findIndex(
           (inv) => inv._id === action.payload._id
         );
-        if (index !== -1) state.invoices[index] = action.payload;
+        if (index !== -1) state.perInvoices[index] = action.payload;
       })
       .addCase(updatePerformaInvoice.rejected, (state, action) => {
         state.loading = false;
@@ -168,7 +168,7 @@ const performaInvoiceSlice = createSlice({
       })
       .addCase(deletePerformaInvoice.fulfilled, (state, action) => {
         state.loading = false;
-        state.invoices = state.invoices.filter(
+        state.perInvoices = state.perInvoices.filter(
           (inv) => inv._id !== action.payload
         );
       })
