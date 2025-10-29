@@ -285,14 +285,14 @@ const CreateEstimate1 = () => {
   };
 
   const inputClass =
-    "p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500";
-  const labelClass = "block text-xs font-semibold text-gray-700 mb-1";
+    "w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none";
+  const labelClass = "block text-xs font-semibold text-gray-700 mb-1 ";
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* ... (JSX remains largely the same) ... */}
       <div className="w-full h-fit bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5 text-sm">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
             Account Section | Estimate
           </h1>
@@ -312,8 +312,8 @@ const CreateEstimate1 = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 m-4">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
+      <div className="bg-white shadow-lg  px-6 pt-2 pb-6 m-4">
+        <h2 className="text-lg font-normal text-gray-600 mb-2 border-b border-b-gray-200 pb-2">
           Create Estimate
         </h2>
 
@@ -512,9 +512,9 @@ const CreateEstimate1 = () => {
           {items.map((item, index) => (
             <div
               key={index}
-              className="bg-gray-50 p-4 rounded-md mb-6 border border-gray-200"
+              className=" bg-gray-50 p-4  mb-6 border border-gray-200"
             >
-              <h3 className="text-md font-semibold text-gray-700 mb-4">
+              <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
                 Item No. {index + 1}
               </h3>
 
@@ -565,7 +565,9 @@ const CreateEstimate1 = () => {
                     name="qty"
                     value={item.qty}
                     onChange={(e) => handleItemChange(index, e)}
-                    className={`w-full ${inputClass}`}
+                    className={`w-full [appearance:textfield] 
+                            [&::-webkit-inner-spin-button]:appearance-none 
+                            [&::-webkit-outer-spin-button]:appearance-none" ${inputClass}`}
                     required
                   />
                 </div>
@@ -615,7 +617,9 @@ const CreateEstimate1 = () => {
                     name="rate"
                     value={item.rate}
                     onChange={(e) => handleItemChange(index, e)}
-                    className={`w-full ${inputClass}`}
+                    className={`w-full [appearance:textfield] 
+                            [&::-webkit-inner-spin-button]:appearance-none 
+                            [&::-webkit-outer-spin-button]:appearance-none" ${inputClass}`}
                     required
                   />
                 </div>
@@ -648,7 +652,9 @@ const CreateEstimate1 = () => {
                     name="disc"
                     value={item.disc}
                     onChange={(e) => handleItemChange(index, e)}
-                    className={`w-full ${inputClass}`}
+                    className={`w-full [appearance:textfield] 
+                            [&::-webkit-inner-spin-button]:appearance-none 
+                            [&::-webkit-outer-spin-button]:appearance-none" ${inputClass}`}
                     required
                   />
                 </div>
@@ -679,11 +685,13 @@ const CreateEstimate1 = () => {
                       name="gstRate"
                       value={item.gstRate}
                       onChange={(e) => handleItemChange(index, e)}
-                      className={`w-1/3 ${inputClass} rounded-r-none border-r-0`}
+                      className={`w-1/3 [appearance:textfield] 
+                            [&::-webkit-inner-spin-button]:appearance-none 
+                            [&::-webkit-outer-spin-button]:appearance-none" ${inputClass} rounded-r-none border-r-0`}
                       placeholder="e.g. 18"
                       required
                     />
-                    <span className="bg-gray-200 p-2 border border-gray-300 text-sm text-gray-600">
+                    <span className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                       %
                     </span>
                     <input
@@ -716,7 +724,7 @@ const CreateEstimate1 = () => {
                   />
                 </div>
                 {/* 12. Any Remarks */}
-                <div className="col-span-full md:col-span-5 lg:col-span-3">
+                <div className="col-span-full md:col-span-5 lg:col-span-3 ">
                   <label
                     htmlFor={`itemRemarks-${index}`}
                     className={labelClass}
@@ -728,7 +736,7 @@ const CreateEstimate1 = () => {
                     name="remarks"
                     value={item.remarks}
                     onChange={(e) => handleItemChange(index, e)}
-                    className={`w-full ${inputClass} h-10 resize-y`}
+                    className="w-full border border-gray-300 align-middle text-sm focus:ring-blue-500 focus:border-blue-500 h-[30px] resize-y px-2 py-1"
                     placeholder="Type Here..."
                   ></textarea>
                 </div>
@@ -738,7 +746,7 @@ const CreateEstimate1 = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(index)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md transition-colors w-7 h-7 flex items-center justify-center text-lg"
+                      className="bg-red-500 hover:bg-red-600 text-white p-2  transition-colors w-7 h-7 flex items-center justify-center text-lg"
                       aria-label="Remove Item"
                     >
                       -
@@ -747,7 +755,7 @@ const CreateEstimate1 = () => {
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-md transition-colors w-7 h-7 flex items-center justify-center text-lg"
+                    className="bg-green-500 hover:bg-green-600 text-white p-2  transition-colors w-7 h-7 flex items-center justify-center text-lg"
                     aria-label="Add Item"
                   >
                     +
@@ -758,10 +766,10 @@ const CreateEstimate1 = () => {
           ))}
 
           {/* Action Buttons */}
-          <div className="mt-10 flex space-x-4">
+          <div className="mt-3 flex space-x-4">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              className="px-4 py-1.5 text-sm bg-blue-600 text-white font-medium  hover:bg-blue-700 transition-colors disabled:bg-gray-400"
               disabled={loading} // 🟢 Disable button while loading
             >
               {loading ? "ADDING..." : "ADD ESTIMATE"}{" "}
@@ -770,7 +778,7 @@ const CreateEstimate1 = () => {
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-md hover:bg-gray-400 transition-colors"
+              className="px-4 py-1.5 text-sm bg-gray-300 text-gray-800 font-medium  hover:bg-gray-400 transition-colors"
             >
               CANCEL
             </button>
