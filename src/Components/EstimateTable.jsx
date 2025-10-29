@@ -9,7 +9,7 @@ import {
 import { fetchInvoices } from "../features/invoice/invoiceSlice";
 
 const stylebutton =
-  "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
+  "w-fit text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex  items-center gap-1 px-1";
 
 const EstimateTable = ({ clientId }) => {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const EstimateTable = ({ clientId }) => {
 
   // New function to handle navigation for Print/Copy buttons
   const handlePrintCopyNavigation = (copyType) => {
-    navigate("/payments/taxInvoiceDetails", {
+    navigate("/payments/ODT/taxInvoiceDetails", {
       state: { heading: copyType },
     });
   };
@@ -108,49 +108,49 @@ const EstimateTable = ({ clientId }) => {
   };
 
   return (
-    <div className="overflow-x-auto p-2">
-      <table className="min-w-full border-collapse border border-gray-300">
+    <div className="overflow-x-auto p-4">
+      <table className="min-w-full border-collapse border border-gray-300 ">
         <thead className="border  border-gray-300">
           <tr>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               S.No.
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               Estimate Details
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               Performa Inv.
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               Invoice Details
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               Print
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border border-gray-300"
             >
               Updated Details
             </th>
             <th
               scope="col"
-              className="px-4 py-2 text-left text-xs font-medium text-black uppercase tracking-wider"
+              className="px-4 py-2 text-center text-xs font-medium text-black uppercase tracking-wider border-t border-r border-l border-t-gray-300 border-r-gray-300 border-l-gray-300"
             >
               Action
             </th>
@@ -210,12 +210,12 @@ const EstimateTable = ({ clientId }) => {
 
             return (
               <tr key={estimate._id}>
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
                   {index + 1}
                 </td>
 
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                  <Link to="/performaInvoicemain">
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
+                  <Link to="/payments/estimateDetails">
                     <button className="text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1">
                       {estimate?.est_no}
                     </button>
@@ -224,14 +224,14 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 {/* 🚀 PERFORMA INVOICE CELL LOGIC 🚀 */}
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
                   {/* Display PI Data if it exists or is being created */}
                   {isPiCreated && (
-                    <Link to={`/performaInvoice/${piDataToDisplay._id}`}>
+                    <Link to={`/payments/performanceInvoiceDetails/${piDataToDisplay._id}`}>
                       <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
                         {`${piDataToDisplay.pi_no} | ${
                           formatPiDate(piDataToDisplay.updated) || "N/A"
-                        } | ${
+                        }`} |<br /> {`${
                           piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
                         }`}
                       </button>
@@ -263,7 +263,7 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 {/* ... Invoice Details Cell ... */}
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
+                <td className="border border-gray-300 px-4 justify-items-center whitespace-nowrap text-xs text-black text-center">
                   {(() => {
                     // 1. Find the matching invoice using estimate.est_no
                     // FIX: Comparing estimate.est_no with invoice.estimate_no
@@ -305,8 +305,8 @@ const EstimateTable = ({ clientId }) => {
                         matchingInvoice.finalAmount?.toFixed(2) || "0.00";
 
                       return (
-                        <Link to={`/invoice/${matchingInvoice._id}`}>
-                          <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
+                        
+                          <button className="text-gray-700  font-medium">
                             {`${
                               matchingInvoice.invoice_no
                             } | ${formatInvoiceDate(
@@ -315,7 +315,7 @@ const EstimateTable = ({ clientId }) => {
                               piDataToDisplay?.finalAmount?.toFixed(2) || "0.00"
                             }`}
                           </button>
-                        </Link>
+                        
                       );
                     } else {
                       // 4. If no matching invoice is found, display the Create INV button
@@ -332,7 +332,7 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 {/* ... Print, Updated Details, Action cells ... */}
-                <td className="border border-gray-300 px-2 py-2 whitespace-nowrap text-xs text-black ">
+                <td className="border border-gray-300 px-2 py-2 whitespace-nowrap text-xs text-black text-center ">
                   <div className="flex justify-between gap-1">
                     <button
                       onClick={() => handlePrintCopyNavigation("Original Copy")}
@@ -359,12 +359,12 @@ const EstimateTable = ({ clientId }) => {
                   </div>
                 </td>
 
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
                   {formattedUpdatedDate} | {estimate?.added_by}
                 </td>
 
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs font-medium flex gap-2">
-                  <button className="border border-gray-300 text-red-600 hover:text-red-900 px-2 cursor-pointer">
+                <td className="border-t border-gray-300 px-7 py-2 whitespace-nowrap text-xs font-medium  items-center gap-2 text-center ">
+                  <button className="border border-gray-300 text-red-600 hover:text-white hover:bg-red-500 px-2 items-center  cursor-pointer">
                     x
                   </button>
                 </td>
