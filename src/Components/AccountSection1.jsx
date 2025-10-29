@@ -7,7 +7,7 @@ import EstimateTable from "./EstimateTable";
 const AccountSection1 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id } = useParams(); 
+  const { id } = useParams();
   const location = useLocation();
 
   // Redux state for companies (assuming this is how you manage client data)
@@ -94,12 +94,12 @@ const AccountSection1 = () => {
             >
               Payments
             </button>
-            <button
+            {/* <button
               onClick={() => navigate(`/ihweClientData2026/creditNote/${id}`)}
               className="bg-white text-black border border-gray-400 hover:bg-gray-200 px-3 py-1.5 rounded-sm text-xs font-medium"
             >
               Credit Note
-            </button>
+            </button> */}
           </div>
         </div>
         <hr />

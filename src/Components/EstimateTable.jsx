@@ -6,11 +6,12 @@ import {
   createPerformaInvoice,
   fetchPerformaInvoices,
 } from "../features/performaInvoice/performaInvoiceSlice";
+import { fetchInvoices } from "../features/invoice/invoiceSlice";
 
 const stylebutton =
   "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
 
-const EstimateTable = () => {
+const EstimateTable = ({ clientId }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -20,11 +21,14 @@ const EstimateTable = () => {
     (state) => state.estimates
   );
   // Redux state for PIs
-  const { invoices, loading: piLoading } = useSelector(
+  const { perInvoices, loading: piLoading } = useSelector(
     (state) => state.perinvoice
   );
   const [perInvoiceState, setPerInvoiceState] = useState({});
+  const { invoices } = useSelector((state) => state.invoice);
+  console.log("estimates..", estimates?.est_no);
   console.log("invoices..", invoices);
+  console.log("perInvoices..", perInvoices);
 
   useEffect(() => {
     if (estimates.length > 0 && id) {
@@ -35,6 +39,7 @@ const EstimateTable = () => {
   useEffect(() => {
     dispatch(fetchEstimates());
     dispatch(fetchPerformaInvoices());
+    dispatch(fetchInvoices());
   }, [dispatch]);
 
   // Handler for PI creation
@@ -97,6 +102,9 @@ const EstimateTable = () => {
         year: "2-digit",
       })
       .replace(/\//g, " ");
+  };
+  const handleCreateINV = () => {
+    navigate(`/payments/createInvoice/${estimates?.est_no}`);
   };
 
   return (
@@ -189,7 +197,7 @@ const EstimateTable = () => {
 
             // 2. If no local PI, check Redux state (for previously created PI)
             if (!piDataToDisplay) {
-              piDataToDisplay = invoices.find(
+              piDataToDisplay = perInvoices.find(
                 (pi) => pi.est_no === estimate.est_no
               );
             }
@@ -222,7 +230,7 @@ const EstimateTable = () => {
                     <Link to={`/performaInvoice/${piDataToDisplay._id}`}>
                       <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
                         {`${piDataToDisplay.pi_no} | ${
-                          formatPiDate(piDataToDisplay.createdAt) || "N/A"
+                          formatPiDate(piDataToDisplay.updated) || "N/A"
                         } | ${
                           piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
                         }`}
@@ -256,13 +264,71 @@ const EstimateTable = () => {
 
                 {/* ... Invoice Details Cell ... */}
                 <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black">
-                  NGW/INV/24-25/026 | 19 Feb 25 | 53100
-                  <button
-                    onClick={() => navigate("/payments/createInvoice")}
-                    className={stylebutton}
-                  >
-                    Create INV
-                  </button>
+                  {(() => {
+                    // 1. Find the matching invoice using estimate.est_no
+                    // FIX: Comparing estimate.est_no with invoice.estimate_no
+                    const matchingInvoice = invoices.find(
+                      (inv) => inv.estimate_no === estimate.est_no
+                    );
+
+                    // 💡 CONSOLE.LOG FOR MATCH CONFIRMATION
+                    if (matchingInvoice) {
+                      console.log(
+                        "✅ MATCH FOUND for Estimate:",
+                        estimate.est_no,
+                        "| Invoice:",
+                        matchingInvoice.invoice_no
+                      );
+                    } else {
+                      console.log("❌ NO MATCH for Estimate:", estimate.est_no);
+                    }
+                    // 💡 END CONSOLE.LOG
+
+                    // 2. Helper function to format the date for the Invoice
+                    const formatInvoiceDate = (dateString) => {
+                      if (!dateString) return "N/A";
+                      const dateObj = new Date(dateString);
+                      return dateObj
+                        .toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "2-digit",
+                        })
+                        .replace(/\//g, " ");
+                    };
+
+                    if (matchingInvoice) {
+                      // 3. If a matching invoice is found, display its details
+                      // Note: 'finalAmount' is missing on your sample Invoice.
+                      // Using '0.00' as placeholder for now, you should add finalAmount to your Invoice data.
+                      const displayInvAmount =
+                        matchingInvoice.finalAmount?.toFixed(2) || "0.00";
+
+                      return (
+                        <Link to={`/invoice/${matchingInvoice._id}`}>
+                          <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
+                            {`${
+                              matchingInvoice.invoice_no
+                            } | ${formatInvoiceDate(
+                              matchingInvoice.supply_date
+                            )} | ${
+                              piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
+                            }`}
+                          </button>
+                        </Link>
+                      );
+                    } else {
+                      // 4. If no matching invoice is found, display the Create INV button
+                      return (
+                        <Link
+                          to={`/payments/createInvoice/${estimate?._id}`}
+                          className={stylebutton}
+                        >
+                          Create INV
+                        </Link>
+                      );
+                    }
+                  })()}
                 </td>
 
                 {/* ... Print, Updated Details, Action cells ... */}

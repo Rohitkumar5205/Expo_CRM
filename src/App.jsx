@@ -125,10 +125,16 @@ const App = () => {
             path="/ihweClientData2026/creditNote/:id"
             element={<CreditNote />}
           />
-          <Route path="/ihweClientData2026/payments/:id" element={<Payments />} />
+          <Route
+            path="/ihweClientData2026/payments/:id"
+            element={<Payments />}
+          />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
-          <Route path="/payments/createInvoice" element={<CreateInvoice />} />
+          <Route
+            path="/payments/createInvoice/:id"
+            element={<CreateInvoice />}
+          />
           <Route
             path="/payments/taxInvoiceDetails"
             element={<TaxInvoiceDetails />}

@@ -111,7 +111,6 @@ const ClientOverview1 = () => {
     const event = events.find((e) => e._id === eventId);
     return event ? event.event_name : eventId; // अगर नाम मिला तो नाम, वरना ID ही दिखा दो।
   };
-  
 
   // ✅ Handle all input changes
   const handleChange = (e) => {
@@ -192,11 +191,8 @@ const ClientOverview1 = () => {
     });
   };
   const handleAccount = () => {
-    // navigate(`/ihweClientData2026/accountSection1/${id}`);
     if (!company) return;
-    navigate(`/ihweClientData2026/accountSection1/${company._id}`, {
-      // state: { heading: {company?.companyName} },
-    });
+    navigate(`/ihweClientData2026/accountSection1/${company._id}`, {});
   };
   // const handlePayments = () => {
   //   navigate("/ihweClientData2026/payments");
@@ -255,7 +251,7 @@ const ClientOverview1 = () => {
               </button>
             </div>
           </div>
-         <hr className="w-full opacity-10 mb-3"/>
+          <hr className="w-full opacity-10 mb-3" />
           {/* Client Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600  pb-4 mb-4">
             <div>
@@ -484,7 +480,7 @@ const ClientOverview1 = () => {
                 Status History
               </p>
             </h3>
-            <div className="space-y-0.5 p-2 "> 
+            <div className="space-y-0.5 p-2 ">
               {reviews.map((entry, index) => (
                 <div
                   key={entry?._id}

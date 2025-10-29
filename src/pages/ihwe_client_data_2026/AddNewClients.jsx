@@ -54,6 +54,8 @@ const AddNewClients = () => {
   const { events } = useSelector((state) => state.crmEvents);
   const { companies } = useSelector((state) => state.companies);
 
+ 
+
   // 🧩 Form State
   const [formData, setFormData] = useState({
     companyName: "",
@@ -304,10 +306,7 @@ const AddNewClients = () => {
       </div>
 
       {/* Form */}
-      <form
-        onSubmit={handleSave}
-        className="max-w-full bg-white shadow-lg m-4"
-      >
+      <form onSubmit={handleSave} className="max-w-full bg-white shadow-lg m-4">
         <div className="p-4">
           <h2 className="text-xl font-normal text-gray-500 mb-1 uppercase">
             {heading}
