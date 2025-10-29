@@ -18,6 +18,7 @@ const HotClientList = () => {
          { label: "Status", accessor: "Status" },
          { label: "Event", accessor: "Event.type" },
         { label: "Document No.", accessor: "Document.number" },
+       { label: "Updated No.", accessor: "Updated.number" },  
         { label: "Updated Details", accessor: "Updated.detail" },  
     ];
 
@@ -31,6 +32,7 @@ const HotClientList = () => {
     Status: "Active",
     Event: { type: "Pharma Expo 2025" },
     Document: { number: "DOC-1001" },
+    Updated:{number:"64"},
     Updated: { detail: "Updated by Neha Verma on 20 Sep 2025" },
   }
   ];

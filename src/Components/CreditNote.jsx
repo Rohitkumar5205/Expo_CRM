@@ -100,7 +100,7 @@ const CreditNote = () => {
               {index === 0 ? (
                 <div className="flex flex-col md:col-span-1">
                   
-                   <label className="text-sm text-gray-700 mb-1 font-normal block">
+                   <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Select Estimate <span className="text-red-500 font-semibold">*</span>
               </label>
                   <select
@@ -121,7 +121,7 @@ const CreditNote = () => {
               )}
 
               <div className="flex flex-col md:col-span-1">
-                <label className="text-sm text-gray-700 mb-1 font-normal">
+                <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Select Item <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <select
@@ -139,7 +139,7 @@ const CreditNote = () => {
               </div>
 
               <div className="flex flex-col md:col-span-1">
-                <label className="text-sm text-gray-700 font-normal  mb-1">
+                <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Quantity <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
@@ -154,7 +154,7 @@ const CreditNote = () => {
               </div>
 
               <div className="flex flex-col md:col-span-1">
-                <label className="text-sm text-gray-700 font-normal  mb-1">
+                <label className="text-xs font-medium text-gray-900 mb-1 block">
                   CN Amount <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
@@ -169,7 +169,7 @@ const CreditNote = () => {
               </div>
 
               <div className="flex flex-col md:col-span-2">
-                <label className="text-sm text-gray-700 font-normal  mb-1">
+                <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Credit Note Remark <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <div className="flex items-center gap-2">

@@ -55,13 +55,13 @@ const UserList = () => {
                 <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
                   Full Name
                 </th>
-                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   Designation
                 </th>
-                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   Username
                 </th>
-                <th className="px-4 py-2 text-sm font-semibold text-left border-r border-gray-300">
+                <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
                   Mobile
                 </th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border-r border-gray-300">
@@ -90,13 +90,13 @@ const UserList = () => {
                   <td className="px-4 py-1 text-sm border-r border-gray-200 text-[#337ab7] hover:text-[#1c4971] cursor-pointer hover:underline">
                     {user.user_fullname}
                   </td>
-                  <td className="px-4 py-1 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200 text-center">
                     {user.user_designation}
                   </td>
-                  <td className="px-4 py-1 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200 text-center">
                     {user.user_name}
                   </td>
-                  <td className="px-4 py-1 text-sm border-r border-gray-200">
+                  <td className="px-4 py-1 text-sm border-r border-gray-200 text-center">
                     {user.user_mobile}
                   </td>
                   <td className="px-4 py-1 text-sm text-center border-r border-gray-200">

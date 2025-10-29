@@ -18,7 +18,7 @@ const ConfirmClientList = () => {
         { label: "Source", accessor: "source.type" },
         { label: "Status", accessor: "Status.name" },
         { label: "DealBy", accessor: "deal.by" },
-        { label: "Update Details", accessor: "Update.detail" },
+        { label: "Updated Details", accessor: "Update.detail" },
         
     ];
 

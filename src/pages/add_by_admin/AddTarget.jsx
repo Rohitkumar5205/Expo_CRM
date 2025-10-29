@@ -333,8 +333,8 @@ const AddTarget = () => {
         className="w-full bg-white"
         style={{ borderBottom: "1px solid #e0e0e0" }}
       >
-        <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal" style={{ color: "#666" }}>
+        <div className="flex items-center justify-between px-6 py-1">
+          <h1 className="text-xl font-normal" style={{ color: "#666" }}>
             USER TARGET
           </h1>
         </div>
@@ -462,7 +462,7 @@ const AddTarget = () => {
                   style={{
                     backgroundColor: "#5bc0de",
                     border: "none",
-                    borderRadius: 3,
+                    
                     cursor: "pointer",
                   }}
                   title={editingTarget ? "Update Target" : "Add Target"}
@@ -480,7 +480,7 @@ const AddTarget = () => {
                     style={{
                       backgroundColor: "#e0e0e0",
                       color: "#333",
-                      borderRadius: 3,
+                      
                       border: "none",
                       cursor: "pointer",
                     }}
@@ -744,7 +744,7 @@ const AddTarget = () => {
                           style={{
                             backgroundColor:
                               item.status === "Active" ? "#337ab7" : "#d9534f",
-                            borderRadius: 3,
+                            
                           }}
                         >
                           {item.status}
@@ -855,7 +855,7 @@ const AddTarget = () => {
 const styles = {
   input: {
     border: "1px solid #d2d6de",
-    borderRadius: 3,
+    
     padding: "8px 10px",
     fontSize: 14,
     width: "100%",
@@ -871,19 +871,19 @@ const styles = {
     backgroundColor: "#f7f7f7",
     border: "1px solid #ddd",
     padding: "6px 10px",
-    borderRadius: 3,
+    
     cursor: "pointer",
     fontSize: 13,
   },
   searchInput: {
     padding: "8px 10px",
-    borderRadius: 3,
+    
     border: "1px solid #d2d6de",
     width: 280,
   },
   clearBtn: {
     padding: "8px 10px",
-    borderRadius: 3,
+    
     border: "1px solid #ddd",
     backgroundColor: "#fff",
     cursor: "pointer",
@@ -891,12 +891,12 @@ const styles = {
   },
   smallSelect: {
     padding: "6px 8px",
-    borderRadius: 3,
+    
     border: "1px solid #d2d6de",
   },
   iconBtn: {
     padding: 6,
-    borderRadius: 4,
+    
     border: "1px solid #ccc",
     backgroundColor: "white",
     cursor: "pointer",
@@ -912,7 +912,7 @@ const styles = {
     backgroundColor: "#e9f7ef",
     border: "1px solid #c7efd9",
     padding: "8px 12px",
-    borderRadius: 4,
+    
     marginBottom: 12,
     color: "#2f7a4b",
     display: "inline-block",
@@ -925,7 +925,7 @@ const styles = {
   pageBtn: {
     padding: "6px 9px",
     border: "1px solid #ddd",
-    borderRadius: 4,
+    
     cursor: "pointer",
     background: "white",
   },
@@ -980,7 +980,7 @@ const styles = {
   },
   modalBtn: {
     padding: "8px 12px",
-    borderRadius: 4,
+    
     cursor: "pointer",
     border: "none",
   },

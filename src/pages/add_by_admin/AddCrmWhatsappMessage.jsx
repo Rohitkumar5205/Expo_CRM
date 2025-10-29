@@ -196,8 +196,8 @@ const AddCrmWhatsappMessage = () => {
         className="w-full bg-white"
         style={{ borderBottom: "1px solid #e0e0e0" }}
       >
-        <div className="flex items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-normal" style={{ color: "#666" }}>
+        <div className="flex items-center justify-between px-6 py-1">
+          <h1 className="text-xl font-normal" style={{ color: "#666" }}>
             WHATSAPP MESSAGES
           </h1>
         </div>
@@ -212,7 +212,7 @@ const AddCrmWhatsappMessage = () => {
           onSubmit={handleAddMessage}
         >
           <div
-            className="px-5 py-3"
+            className="px-5 py-1"
             style={{
               backgroundColor: "#f9f9f9",
               borderBottom: "1px solid #ddd",
@@ -718,7 +718,7 @@ const styles = {
   },
   iconBtn: {
     padding: 6,
-    borderRadius: 4,
+    
     border: "1px solid #ccc",
     backgroundColor: "white",
     cursor: "pointer",
@@ -727,7 +727,7 @@ const styles = {
     backgroundColor: "#ffe0b2",
     border: "1px solid #ffcc80",
     padding: "8px 12px",
-    borderRadius: 4,
+    
     marginBottom: 12,
     color: "#e65100",
     display: "inline-block",
@@ -748,7 +748,7 @@ const styles = {
     background: "none",
     border: "1px solid #ccc",
     padding: "4px 8px",
-    borderRadius: "3px",
+    
     cursor: "pointer",
     fontSize: "14px",
   },
@@ -771,14 +771,14 @@ const styles = {
     marginTop: 16,
     padding: 16,
     border: "1px solid #3598dc",
-    borderRadius: 4,
+    
     backgroundColor: "#eaf5ff",
   },
   previewContent: {
     padding: 8,
     backgroundColor: "white",
     border: "1px solid #eee",
-    borderRadius: 4,
+    
     whiteSpace: "pre-wrap",
   },
 };
