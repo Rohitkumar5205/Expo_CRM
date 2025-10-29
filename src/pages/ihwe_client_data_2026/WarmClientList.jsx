@@ -39,13 +39,12 @@ const WarmClientList = () => {
         { label: "Contact Details", accessor: "contact.details" },
         { label: "Category", accessor: "category.main" },
         { label: "Nature Bussiness", accessor: "Nature Bussiness" },
-        { label: "Business Type", accessor: "Bussiness.type" },
         { label: "City", accessor: "location.city" },
         { label: "State", accessor: "location.state" },
         { label: "Source", accessor: "source.type" },
         { label: "Status", accessor: "Status" },
         { label: "Event", accessor: "Event.type" },
-        { label: "Update Details", accessor: "Update.detail" },
+        { label: "Updated Details", accessor: "Update.detail" },
     ];
 
      // 🧱 Prepare Rows

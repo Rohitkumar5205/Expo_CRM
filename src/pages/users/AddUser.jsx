@@ -177,6 +177,7 @@ const AddUser = () => {
                 onChange={handleChange}
                 placeholder="First Name"
                 className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
               <input
                 type="text"
@@ -185,6 +186,7 @@ const AddUser = () => {
                 onChange={handleChange}
                 placeholder="Last Name"
                 className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
@@ -235,6 +237,7 @@ const AddUser = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
@@ -254,6 +257,7 @@ const AddUser = () => {
                   isEdit ? "Leave blank to keep current password" : ""
                 }
                 className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
@@ -274,6 +278,7 @@ const AddUser = () => {
                   isEdit ? "Leave blank to keep current password" : ""
                 }
                 className="w-full px-3 py-2 text-sm  border border-gray-300"
+                required
               />
             </div>
           </div>
