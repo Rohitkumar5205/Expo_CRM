@@ -16,6 +16,7 @@ import crmExhibatorReviewReducer from "../features/crm-exhibator-reviews/crmExhi
 import estimateReducer from "../features/estimates/estimateSlice";
 import performaInvoiceReducer from "../features/performaInvoice/performaInvoiceSlice";
 import invoiceReducer from "../features/invoice/invoiceSlice";
+import creditNoteReducer from "../features/creditNote/creditNoteSlice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     estimates: estimateReducer,
     perinvoice: performaInvoiceReducer,
     invoice: invoiceReducer,
+    creditnotes: creditNoteReducer,
   },
 });
 
