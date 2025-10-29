@@ -195,12 +195,8 @@ const CreateInvoice = () => {
 
   // Styles remain defined here for reusability
   const InputStyle =
-    "px-2 py-1.5 w-full border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500";
-  const ReadOnlyInputStyle =
-    "px-2 py-1.5 w-full border border-gray-300 text-sm bg-gray-100 text-gray-600";
-  const SelectStyle =
-    "px-2 py-1.5 w-full border border-gray-300 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500";
-
+    "w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+ 
   // Hardcoded heading
   const heading = "Create Invoice";
 
@@ -210,8 +206,8 @@ const CreateInvoice = () => {
   return (
     <>
       {/* Header (unchanged) */}
-      <div className="flex justify-between w-full h-auto bg-white items-center px-4 pt-4 mb-4">
-        <h1 className="font-normal text-xl text-[#333]">
+      <div className="flex justify-between w-full h-auto bg-white items-center px-4 py-1 mb-1">
+        <h1 className="font-normal text-xl text-gray-500">
           ACCOUNT SECTION | INVOICE
         </h1>
         <div className="flex gap-2">
@@ -230,18 +226,18 @@ const CreateInvoice = () => {
           className="w-full bg-white px-4 pb-7 pt-1 shadow-md"
           onSubmit={handleCreateInvoice}
         >
-          <h1 className="font-normal text-xl text-[#333] mb-2">{heading}</h1>
+          <h1 className="font-normal text-lg text-gray-500 mb-0.5">{heading}</h1>
           <hr className="w-full mb-2 opacity-10" />
 
           {/* Form Fields - Mongoose keys used for name/value */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-xs">
             {/* Estimate No. (Read-only) */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Estimate No. <span className="text-red-500">*</span>
               </label>
               <input
-                className={ReadOnlyInputStyle}
+                className={InputStyle}
                 type="text"
                 readOnly
                 name="estimate_no"
@@ -252,11 +248,11 @@ const CreateInvoice = () => {
 
             {/* Type of Invoice */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Type of Invoice <span className="text-red-500">*</span>
               </label>
               <select
-                className={SelectStyle}
+                className={InputStyle}
                 name="type_of_invoice"
                 value={formData.type_of_invoice}
                 onChange={handleChange}
@@ -271,11 +267,11 @@ const CreateInvoice = () => {
 
             {/* GSTIN No./PAN No. (Read-only since it should come from estimate/company) */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 GSTIN No./PAN No. <span className="text-red-500">*</span>
               </label>
               <input
-                className={ReadOnlyInputStyle} // Changed to ReadOnlyStyle
+                className={InputStyle} // Changed to ReadOnlyStyle
                 type="text"
                 name="gst_no"
                 value={formData.gst_no}
@@ -287,7 +283,7 @@ const CreateInvoice = () => {
 
             {/* Supply Date */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Supply Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -302,7 +298,7 @@ const CreateInvoice = () => {
 
             {/* Consignee Name */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Consignee Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -317,7 +313,7 @@ const CreateInvoice = () => {
 
             {/* Address */}
             <div className="flex flex-col lg:col-span-2">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -332,7 +328,7 @@ const CreateInvoice = () => {
 
             {/* Country (Read-only) */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Country <span className="text-red-500">*</span>
               </label>
               <select
@@ -340,7 +336,7 @@ const CreateInvoice = () => {
                 value={formData.country}
                 // Country dropdown is disabled
                 disabled={true}
-                className={ReadOnlyInputStyle}
+                className={InputStyle}
                 required
               >
                 <option value="">Select Country</option>
@@ -355,14 +351,14 @@ const CreateInvoice = () => {
 
             {/* State (Editable Dropdown, uses Redux state) */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 State <span className="text-red-500">*</span>
               </label>
               <select
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className={SelectStyle}
+                className={InputStyle}
                 required
               >
                 <option value="">Select State</option>
@@ -377,14 +373,14 @@ const CreateInvoice = () => {
 
             {/* City (Editable Dropdown, uses Redux state) */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 City <span className="text-red-500">*</span>
               </label>
               <select
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className={SelectStyle}
+                className={InputStyle}
                 disabled={!formData.state}
                 required
               >
@@ -403,7 +399,7 @@ const CreateInvoice = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pb-3 pt-4 text-xs">
             {/* Pin Code */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Pin Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -418,7 +414,7 @@ const CreateInvoice = () => {
 
             {/* State Code */}
             <div className="flex flex-col col-span-1">
-              <label className="text-gray-700 text-xs font-medium mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 State Code
               </label>
               <input
@@ -432,16 +428,16 @@ const CreateInvoice = () => {
           </div>
 
           {/* Action Buttons (unchanged) */}
-          <div className="flex gap-2 mt-1 pt-3 border-t border-gray-100">
+          <div className="flex gap-2 mt-1 pt-3 border-t border-gray-200">
             <button
               type="submit"
-              className="bg-blue-500 text-white font-medium py-2 px-4 text-sm hover:bg-blue-600"
+              className="bg-blue-500 text-white font-normal py-1.5 px-3 text-sm hover:bg-blue-600"
             >
               CREATE INVOICE
             </button>
             <button
               type="button"
-              className="bg-gray-300 text-gray-800 font-medium py-2 px-4 text-sm hover:bg-gray-400"
+              className="bg-gray-300 text-gray-800 font-normal py-1.5 px-3 text-sm hover:bg-gray-400"
             >
               CANCEL
             </button>
@@ -453,7 +449,7 @@ const CreateInvoice = () => {
           {/* Table Structure */}
           <div className="overflow-x-auto">
             <table className="min-w-full border">
-              <thead className="bg-gray-50">
+              <thead>
                 <tr>
                   {[
                     "S.No.",
@@ -472,7 +468,7 @@ const CreateInvoice = () => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="border border-gray-300">
+              <tbody className="border border-gray-300 bg-gray-50">
                 {invoices.map((invoice, index) => (
                   <tr key={invoice._id}>
                     <td className="px-6 py-2  border border-gray-300 text-center text-xs">
