@@ -312,7 +312,7 @@ const EstimateTable = ({ clientId }) => {
                             } | ${formatInvoiceDate(
                               matchingInvoice.supply_date
                             )} | ${
-                              piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
+                              piDataToDisplay?.finalAmount?.toFixed(2) || "0.00"
                             }`}
                           </button>
                         </Link>

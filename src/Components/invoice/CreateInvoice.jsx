@@ -29,7 +29,6 @@ const CreateInvoice = () => {
   console.log("companies...", companies);
   console.log("events...", events);
   // console.log(" cities...", cities);
-  console.log("id", id);
 
   // 1. Initial state to match Mongoose schema keys
   const initialFormData = {
@@ -48,10 +47,10 @@ const CreateInvoice = () => {
 
   // Define a single state object for all form fields
   const [formData, setFormData] = useState(initialFormData);
-
   // New state to hold the event name found from estimate/company
   const [foundEventName, setFoundEventName] = useState("");
   const [companyIdForSubmission, setCompanyIdForSubmission] = useState("");
+  console.log("companyIdForSubmission", companyIdForSubmission);
   useEffect(() => {
     dispatch(fetchEstimates());
     dispatch(fetchCompanies());
@@ -310,7 +309,7 @@ const CreateInvoice = () => {
                 className={InputStyle}
                 type="text"
                 name="consignee_name"
-                value={formData.consignee_name}
+                value={formData?.consignee_name}
                 onChange={handleChange}
                 required
               />
@@ -496,7 +495,9 @@ const CreateInvoice = () => {
                     <td className="px-6 py-2  border border-gray-300 text-center text-xs">
                       <button
                         onClick={() =>
-                          navigate(`/ihweClientData2026/creditNote/${id}`)
+                          navigate(
+                            `/ihweClientData2026/creditNote/${companyIdForSubmission}`
+                          )
                         }
                         className="px-2  border border-blue-500 text-blue-500 hover:bg-gray-100 text-center cursor-pointer"
                       >
