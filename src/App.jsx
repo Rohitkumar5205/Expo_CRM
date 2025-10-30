@@ -148,7 +148,7 @@ const App = () => {
             element={<PerformaInvoiceDetails />}
           />
           <Route
-            path="/payments/estimateDetails/:id"
+            path="/payments/estimateDetails"
             element={<EstimateDetails />}
           />
 

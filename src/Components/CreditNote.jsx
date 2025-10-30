@@ -211,11 +211,11 @@ const CreditNote = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-md p-3 m-4 rounded-md">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">
+      <div className="bg-white shadow-md px-5 pt-3 pb-10 m-4 ">
+        <h2 className="text-lg font-medium text-gray-600 ">
           Add Credit Note
         </h2>
-
+        <hr className="w-full opacity-10 pb-4" />
         {/* Display the matched est_no for confirmation */}
         {/* {matchedEstNo && (
           <div className="text-sm font-medium text-green-700 mb-4 p-2 bg-green-100 border border-green-300 rounded">
@@ -364,11 +364,11 @@ const CreditNote = () => {
             </div>
           ))}
 
-          <div className="flex justify-start gap-4 mt-6">
+          <div className="flex justify-start gap-1 mt-6">
             <button
               type="submit"
               disabled={cnLoading}
-              className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`px-3.5 py-1.5 text-sm font-normal transition-colors ${
                 cnLoading
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-[#337ab7] hover:bg-[#286ca7] text-white"
@@ -379,15 +379,15 @@ const CreditNote = () => {
             <button
               type="button"
               onClick={handleCancle}
-              className="bg-[#d9534f] hover:bg-[#bd3a35] text-white px-4 py-1.5 text-sm font-medium transition-colors"
+              className="bg-[#d9534f] hover:bg-[#bd3a35] text-white px-3.5 py-1.5 text-sm font-normal transition-colors"
             >
               CANCEL
             </button>
           </div>
         </form>
-
-        <div className="mt-8">
-          <h3 className="text-base font-bold mb-3 text-gray-700 border-b pb-1">
+      </div>
+       <div className="mt-6 bg-white mx-4 py-3 px-4">
+          <h3 className="text-xl font-normal mb-3 text-gray-500 border-b pb-1">
             Credit Note Details
           </h3>
           <div className="overflow-x-auto">
@@ -448,7 +448,6 @@ const CreditNote = () => {
             </table>
           </div>
         </div>
-      </div>
     </div>
   );
 };

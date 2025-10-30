@@ -727,7 +727,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={addContact}
-                        className="bg-green-500 hover:bg-green-600 text-white w-6 h-6-full flex items-center justify-center text-xs"
+                        className="bg-green-500 hover:bg-green-600 text-white w-6 h-auto flex items-center justify-center text-xs"
                       >
                         +
                       </button>
@@ -735,7 +735,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={() => removeContact(index)}
-                        className="bg-red-500 hover:bg-red-600 text-white w-6 h-6-full flex items-center justify-center text-xs"
+                        className="bg-red-500 hover:bg-red-600 text-white w-6 h-auto flex items-center justify-center text-xs"
                       >
                         -
                       </button>
