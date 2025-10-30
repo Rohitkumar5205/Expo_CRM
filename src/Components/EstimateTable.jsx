@@ -215,7 +215,7 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
-                  <Link to="/payments/estimateDetails">
+                  <Link to={`/payments/estimateDetails/${id}`}>
                     <button className="text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1">
                       {estimate?.est_no}
                     </button>
@@ -227,13 +227,15 @@ const EstimateTable = ({ clientId }) => {
                 <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
                   {/* Display PI Data if it exists or is being created */}
                   {isPiCreated && (
-                    <Link to={`/payments/performanceInvoiceDetails/${piDataToDisplay._id}`}>
+                    <Link
+                      to={`/payments/performanceInvoiceDetails/${piDataToDisplay._id}`}
+                    >
                       <button className="text-[#3598dc] cursor-pointer hover:text-blue-900 font-medium">
                         {`${piDataToDisplay.pi_no} | ${
                           formatPiDate(piDataToDisplay.updated) || "N/A"
-                        }`} |<br /> {`${
-                          piDataToDisplay.finalAmount?.toFixed(2) || "0.00"
-                        }`}
+                        }`}{" "}
+                        |<br />{" "}
+                        {`${piDataToDisplay.finalAmount?.toFixed(2) || "0.00"}`}
                       </button>
                     </Link>
                   )}
@@ -305,17 +307,13 @@ const EstimateTable = ({ clientId }) => {
                         matchingInvoice.finalAmount?.toFixed(2) || "0.00";
 
                       return (
-                        
-                          <button className="text-gray-700  font-medium">
-                            {`${
-                              matchingInvoice.invoice_no
-                            } | ${formatInvoiceDate(
-                              matchingInvoice.supply_date
-                            )} | ${
-                              piDataToDisplay?.finalAmount?.toFixed(2) || "0.00"
-                            }`}
-                          </button>
-                        
+                        <button className="text-gray-700  font-medium">
+                          {`${matchingInvoice.invoice_no} | ${formatInvoiceDate(
+                            matchingInvoice.supply_date
+                          )} | ${
+                            piDataToDisplay?.finalAmount?.toFixed(2) || "0.00"
+                          }`}
+                        </button>
                       );
                     } else {
                       // 4. If no matching invoice is found, display the Create INV button

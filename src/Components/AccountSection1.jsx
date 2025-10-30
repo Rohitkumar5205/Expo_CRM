@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchCompanies } from "../features/company/companySlice";
 import EstimateTable from "./EstimateTable";
 
+
 const AccountSection1 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -105,9 +106,8 @@ const AccountSection1 = () => {
         <hr className="opacity-10 " />
 
         {/* Estimate Table - Pass company ID for data fetching */}
-        
-          <EstimateTable clientId={id} />
-        
+
+        <EstimateTable clientId={id} />
       </div>
     </div>
   );

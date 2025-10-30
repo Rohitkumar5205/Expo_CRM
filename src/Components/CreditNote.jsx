@@ -3,38 +3,62 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchEstimates } from "../features/estimates/estimateSlice";
-import { createCreditNote, fetchCreditNotes } from "../features/creditNote/creditNoteSlice";
+import {
+  createCreditNote,
+  fetchCreditNotes,
+  clearCreditNoteState, // State clear करने के लिए import
+} from "../features/creditNote/creditNoteSlice";
+import { showSuccess, showError } from "../utils/toastMessage"; // showError भी import करें
+
+// ✅ HELPER: Date Formatting Function
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Date(dateString).toLocaleDateString("en-IN", options);
+};
+
+// ✅ HELPER: Calculate Total Credit Amount (Sum of all cn_amount in items array)// यदि आपको (Quantity * Amount) का योग चाहिए
+const calculateTotalCNAmount = (items) => {
+  if (!items || items.length === 0) return 0;
+
+  return items
+    .reduce(
+      (total, item) =>
+        total + (Number(item.quantity) || 0) * (Number(item.cn_amount) || 0),
+      0
+    )
+    .toFixed(2);
+};
 
 const CreditNote = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // URL से ID प्राप्त करना (यह ID Company ID या Estimate ID हो सकती है,
-  // आपके useEffect के अनुसार यह Company ID की तरह लग रही है)
   const { id } = useParams();
 
-  console.log("prams id (Company ID assumed):", id);
-
   const { estimates } = useSelector((state) => state.estimates);
-  const {creditNotes} = useSelector((state) => state.creditnotes);
-  console.log("creditNotes..",creditNotes);
-  // console.log("Estimates Data:", estimates); 
+  const {
+    creditNotes,
+    loading: cnLoading,
+    error: cnError,
+    success: cnSuccess,
+  } = useSelector((state) => state.creditnotes); // Credit Note Redux State
 
   const [matchedEstNo, setMatchedEstNo] = useState("");
+  console.log("creditNotes..", creditNotes);
 
   const [rows, setRows] = useState([
     { estimate: "", item: "", qty: "", amount: "", remark: "" },
   ]);
 
-  const Datas = [
-    {
-      creditno: "1",
-      creditamount: "435",
-      CreditDate: "12/03/2025",
-      updated: "29/03/2025",
-      UpdatedBy: "admin",
-    },
-  ];
+  // Datas array को Redux data से बदल दिया गया है (Credit Note Details table के लिए)
+  // const Datas = [ ... ];
 
   const userName = localStorage.getItem("user_name") || "unknown_user";
 
@@ -43,13 +67,27 @@ const CreditNote = () => {
     dispatch(fetchCreditNotes());
   }, [dispatch]);
 
-  // --- 💡 NEW LOGIC: Collect unique item descriptions ---
+  // --- 💡 success/error/loading Handling useEffect ---
+  useEffect(() => {
+    if (cnSuccess) {
+      showSuccess("✅ Credit Note Created Successfully!");
+      dispatch(fetchCreditNotes()); // New data fetch करें
+      resetForm();
+      dispatch(clearCreditNoteState());
+    }
+    if (cnError) {
+      showError(
+        `❌ Error: ${cnError.message || "Could not create Credit Note"}`
+      );
+      dispatch(clearCreditNoteState());
+    }
+  }, [cnSuccess, cnError, dispatch]);
+
+  // --- Collect unique item descriptions ---
   const uniqueItemDescriptions = useMemo(() => {
     if (!estimates || estimates.length === 0) return [];
 
     const descriptions = new Set();
-
-    // केवल उस कंपनी के estimates के items collect करें जो URL ID से मैच करते हैं
     const companyEstimates = estimates.filter((est) => est.companyId === id);
 
     companyEstimates.forEach((estimate) => {
@@ -59,27 +97,19 @@ const CreditNote = () => {
         }
       });
     });
-
     return Array.from(descriptions);
   }, [estimates, id]);
   // ----------------------------------------------------
 
-  // --- ✅ CORRECTED MATCHING LOGIC (Assuming 'id' is CompanyId) ---
+  // --- CORRECTED MATCHING LOGIC (Assuming 'id' is CompanyId) ---
   useEffect(() => {
     if (id && estimates && estimates.length > 0) {
-      // Logic: Company ID से मैच होने वाला पहला Estimate खोजें (केवल est_no दिखाने के लिए)
       const matchedEstimate = estimates.find((est) => est.companyId === id);
 
       if (matchedEstimate) {
         setMatchedEstNo(matchedEstimate.est_no);
-        console.log(
-          "✅ Matched Estimate Object (by Company ID):",
-          matchedEstimate
-        );
-        console.log("✅ Matched Estimate No.:", matchedEstimate.est_no);
       } else {
         setMatchedEstNo("");
-        console.log("❌ No matching estimate found for Company ID:", id);
       }
     }
   }, [id, estimates]);
@@ -121,28 +151,41 @@ const CreditNote = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const selectedEstimate = rows.length > 0 ? rows[0].estimate : "";
+    const selectedEstimateId = rows.length > 0 ? rows[0].estimate : "";
+
+    const selectedEstimate = estimates.find(
+      (est) => est._id === selectedEstimateId
+    );
+    const estNoToSend = selectedEstimate ? selectedEstimate.est_no : "";
+
+    // Validation
+    if (
+      !estNoToSend ||
+      !rows[0].item ||
+      !rows[0].qty ||
+      !rows[0].amount ||
+      !rows[0].remark
+    ) {
+      showError("Please fill out all required fields.");
+      return;
+    }
 
     const items = rows.map(({ estimate, ...rest }) => ({
       item: rest.item,
-      companyId: id,
-      added_by: userName,
-      qty: rest.qty,
-      amount: rest.amount,
-      remark: rest.remark,
+      quantity: Number(rest.qty),
+      cn_amount: Number(rest.amount),
+      cedit_note_remark: rest.remark,
     }));
 
     const dataToSend = {
-      Select_Estimate: selectedEstimate,
+      est_no: estNoToSend,
       added_by: userName,
-      CompanyId: id,
-      line_items: items,
-      matched_est_no: matchedEstNo,
+      companyId: id,
+      items: items,
     };
 
     console.log("Form Submitted Data Structure:", dataToSend);
-    alert("Form Submitted Successfully!");
-    resetForm();
+    dispatch(createCreditNote(dataToSend));
   };
 
   const handleCancle = () => {
@@ -151,6 +194,7 @@ const CreditNote = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-100 font-sans">
+      {/* ... (Header Section) ... */}
       <div className="max-w-full mx-auto bg-white shadow-lg">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
@@ -186,7 +230,7 @@ const CreditNote = () => {
               key={index}
               className="grid grid-cols-5 md:grid-cols-6 gap-3 mb-4 items-end"
             >
-              {/* Only show 'Select Estimate' on the first row */}
+              {/* Select Estimate */}
               {index === 0 ? (
                 <div className="flex flex-col md:col-span-1">
                   <label className="text-xs font-medium text-gray-900 mb-1 block">
@@ -202,7 +246,6 @@ const CreditNote = () => {
                     className="border border-gray-300 px-2 text-xs h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none font-medium"
                   >
                     <option value="">Select Here</option>
-                    {/* Estimates को Dynamically Render करें - केवल current company के लिए फ़िल्टर करना बेहतर होगा */}
                     {estimates
                       .filter((est) => est.companyId === id)
                       .map((est) => (
@@ -213,10 +256,10 @@ const CreditNote = () => {
                   </select>
                 </div>
               ) : (
-                // Add an empty div for alignment on subsequent rows
                 <div className="md:col-span-1 h-8" />
               )}
 
+              {/* Select Item */}
               <div className="flex flex-col md:col-span-1">
                 <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Select Item{" "}
@@ -231,13 +274,11 @@ const CreditNote = () => {
                   className="border border-gray-300 px-2 text-xs h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none font-medium"
                 >
                   <option value="">Select Here</option>
-                  {/* ✅ UPDATED: Items को Dynamically Map किया गया है */}
                   {uniqueItemDescriptions.map((description, descIndex) => (
                     <option key={descIndex} value={description}>
                       {description}
                     </option>
                   ))}
-                  {/* यदि कोई आइटम नहीं है */}
                   {uniqueItemDescriptions.length === 0 && (
                     <option value="" disabled>
                       No items found for this Company
@@ -246,6 +287,7 @@ const CreditNote = () => {
                 </select>
               </div>
 
+              {/* Quantity */}
               <div className="flex flex-col md:col-span-1">
                 <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Quantity <span className="text-red-500 font-semibold">*</span>
@@ -261,6 +303,7 @@ const CreditNote = () => {
                 />
               </div>
 
+              {/* CN Amount */}
               <div className="flex flex-col md:col-span-1">
                 <label className="text-xs font-medium text-gray-900 mb-1 block">
                   CN Amount{" "}
@@ -277,6 +320,7 @@ const CreditNote = () => {
                 />
               </div>
 
+              {/* Credit Note Remark */}
               <div className="flex flex-col md:col-span-2">
                 <label className="text-xs font-medium text-gray-900 mb-1 block">
                   Credit Note Remark{" "}
@@ -293,7 +337,7 @@ const CreditNote = () => {
                   ></textarea>
 
                   <div className="flex gap-1.5 h-8">
-                    {/* Show minus button on all but the first row */}
+                    {/* Add/Remove Buttons */}
                     {index > 0 && (
                       <button
                         type="button"
@@ -304,7 +348,6 @@ const CreditNote = () => {
                         <FaMinus size={12} />
                       </button>
                     )}
-                    {/* Show plus button only on the last row */}
                     {index === rows.length - 1 && (
                       <button
                         type="button"
@@ -324,9 +367,14 @@ const CreditNote = () => {
           <div className="flex justify-start gap-4 mt-6">
             <button
               type="submit"
-              className="bg-[#337ab7] hover:bg-[#286ca7] text-white px-4 py-1.5 text-sm font-medium transition-colors"
+              disabled={cnLoading}
+              className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+                cnLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#337ab7] hover:bg-[#286ca7] text-white"
+              }`}
             >
-              SAVE
+              {cnLoading ? "SAVING..." : "SAVE"}
             </button>
             <button
               type="button"
@@ -358,7 +406,8 @@ const CreditNote = () => {
                 </tr>
               </thead>
               <tbody>
-                {Datas.length === 0 ? (
+                {/* ✅ Credit Notes Data Mapping */}
+                {creditNotes.length === 0 ? (
                   <tr>
                     <td
                       className="border border-gray-300 px-2 py-3 text-center text-gray-500"
@@ -368,22 +417,29 @@ const CreditNote = () => {
                     </td>
                   </tr>
                 ) : (
-                  Datas.map((v, i) => (
-                    <tr key={i}>
+                  creditNotes.map((creditNote, i) => (
+                    <tr key={creditNote._id || i}>
                       <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {v.creditno}
+                        {creditNote?.create_note_no}
+                      </td>
+                      {/* ✅ Improvement 2: Total Credit Amount Calculation */}
+                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                        {/* सुनिश्चित करें कि क्रेडिट नोट ऑब्जेक्ट और आइटम्स एरे मौजूद हों */}
+                        ₹{" "}
+                        {creditNote?.items
+                          ? calculateTotalCNAmount(creditNote.items)
+                          : "0.00"}
+                      </td>
+                      {/* ✅ Improvement 1: Date Formatting (Created Date) */}
+                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                        {formatDate(creditNote?.created_at)}
+                      </td>
+                      {/* ✅ Improvement 1: Date Formatting (Updated Date) */}
+                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                        {formatDate(creditNote?.updated_date)}
                       </td>
                       <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {v.creditamount}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {v.CreditDate}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {v.updated}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {v.UpdatedBy}
+                        {creditNote?.added_by}
                       </td>
                     </tr>
                   ))
