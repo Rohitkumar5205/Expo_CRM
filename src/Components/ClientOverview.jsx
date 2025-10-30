@@ -8,7 +8,8 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCompanies } from "../features/company/companySlice";
 import { useNavigate } from "react-router-dom";
-import Payments from "./Payments";
+// import Payments from "./Payments";
+import Payment from "./payments/Payment";
 
 const ClientOverview = ({ client, onBack }) => {
   const navigate = useNavigate();
@@ -215,10 +216,7 @@ const ClientOverview = ({ client, onBack }) => {
   }
   if (showPayments) {
     return (
-      <Payments
-        client={clientData}
-        onBack={() => setShowPayments(false)}
-      />
+      <Payment client={clientData} onBack={() => setShowPayments(false)} />
     );
   }
 

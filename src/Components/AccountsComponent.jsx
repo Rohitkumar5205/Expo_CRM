@@ -3,7 +3,7 @@ import CreateEstimate from "./CreateEstimate";
 // import AddCreditNote from "./AddCreditNote";
 import { useNavigate } from "react-router-dom";
 import EstimateTable from "./EstimateTable";
-import Payments from "./Payments";
+import Payment from "./payments/Payment";
 
 const stylebutton =
   "text-[#3598dc] cursor-pointer border border-[#3598dc] hover:bg-[#3598dc] hover:text-white font-medium flex items-center gap-1 px-1";
@@ -39,7 +39,7 @@ const AccountsComponent = ({ onBackToOverview, client }) => {
       return <CreateEstimate onCancel={handleCancel} />;
     } else if (currentView === "payments") {
       return (
-        <Payments
+        <Payment
           onBackToOverview={onBackToOverview}
           client={client}
           onBackToAccounts={handleCancel}
