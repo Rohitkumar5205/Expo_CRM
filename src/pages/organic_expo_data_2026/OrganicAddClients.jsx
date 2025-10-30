@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
 const OrganicAddClients = () => {
@@ -442,13 +443,10 @@ const OrganicAddClients = () => {
     },
   };
 
-  const [come, setcome] = useState("");
-  const [come1, setcome1] = useState("");
-  const [countryName, setcountryName] = useState("");
-  const [stateName, setstateName] = useState("");
-  const [cityName, setcityName] = useState("");
+  
+ 
   const [add, setadd] = useState([{ id: uuidv4() }]);
-
+ 
   const addnewgrid = () => {
     setadd([...add, { id: uuidv4() }]);
   };
@@ -458,58 +456,153 @@ const OrganicAddClients = () => {
       prev.length > 1 ? prev.filter((item) => item.id !== id) : prev
     );
   };
+  // state for form 
+  const [companyname,setcompanyname] = useState()
+  const [category,setcategory] = useState("")
+  const [natureOfBussiness,setnatureOfBussiness] = useState("")
+  const [address,setaddress] = useState("")
+  const [countryName, setcountryName] = useState("");
+  const [stateName, setstateName] = useState("");
+  const [cityName, setcityName] = useState("");
+  const [digits,setdigits] = useState("")
+  const [website,setwebsite] = useState("")
+  const [landline,setlandline] = useState("")
+  const [email,setemail] = useState("")
+  const [datasource,setdatasource] = useState("")
+  const [eventname,seteventname] = useState("")
+  const [reminderdate,setreminderdate] = useState("")
+  const [forword,setforword] = useState("")
+  const [title,settitle] = useState("")
+  const [fullname,setfullname] = useState("")
+  const [surname,setsurname] = useState("")
+  const [desination,setdesination] = useState("")
+  const [emailr,setemailr] = useState("")
+  const [numberdigit,setnumberdigit] = useState("");
+  const [Altnumberdigit,setAltnumberdigit] = useState("");
+
+
+  // logic for form data saving
+
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    const formData = {
+      companyname,
+      category,
+      natureOfBussiness,
+      address,
+      countryName,
+      stateName,
+      cityName,
+      digits,
+      website,
+      landline,
+      email,
+      datasource,
+      eventname,
+      reminderdate,
+      forword,
+      title,
+      fullname,
+      surname,
+      desination,
+      emailr,
+      numberdigit,
+      Altnumberdigit,
+    };
+    console.log("form has been successfully submitted:", formData);
+    toast.success("form has been successfully submitted");
+  };
+  
+  // Logic for reset the data
+const handleReset = () => {
+  [
+    setcompanyname,
+    setcategory,
+    setnatureOfBussiness,
+    setaddress,
+    setcountryName,
+    setstateName,
+    setcityName,
+    setdigits,
+    setwebsite,
+    setlandline,
+    setemail,
+    setdatasource,
+    seteventname,
+    setreminderdate,
+    setforword,
+    settitle,
+    setfullname,
+    setsurname,
+    setdesination,
+    setemailr,
+    setnumberdigit,
+    setAltnumberdigit,
+  ].forEach(fn => fn("")); // reset all string states to empty
+
+  console.log("Form reset successful!");
+  toast.dismiss("Form reset successful!");
+};
+
+
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
       {/* Heading Section */}
-      <div className="w-full bg-white shadow-md border-b">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-          <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
+      <div className="w-full bg-white shadow-md">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-5 py-1">
+          <h1 className="text-xl font-normal text-gray-600 mb-2 lg:mb-0">
             COMPANY DETAILS
           </h1>
           <div className="flex flex-wrap gap-2">
-            <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+            {/*<button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#216aaa] text-white  transition-colors duration-200">
               Upload Exhibitor
-            </button>
-            <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+            </button> */}
+            <button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#216aaa] text-white  transition-colors duration-200">
               Master List
             </button>
-            <button className="px-3 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200">
+            <button className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#216aaa] text-white  transition-colors duration-200">
               Exhibitor List
-            </button>
+            </button> 
           </div>
         </div>
       </div>
 
       {/* Main Form Section */}
-      <div className="max-w-full mx-auto bg-white shadow-lg m-4 rounded-lg">
+      <>
+      <form action="" onSubmit={handleSubmit}>
+      <div className="max-w-full  bg-white shadow-lg m-4 ">
         <div className="p-4">
-          <h2 className="text-base font-medium text-gray-700 mb-3">
+          <h2 className="text-xl font-normal text-gray-600 mb-1">
             Add New Company
           </h2>
-          <hr className="mb-4" />
+          <hr className=" w-full opacity-10 mb-4" />
 
           {/* Company Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Company Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={companyname}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter company name"
+                onChange={(e)=>setcompanyname(e.target.value)}
+                required
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Category <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => setcome(e.target.value)}
-                value={come}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                onChange={(e) => setcategory(e.target.value)}
+                value={category}
+                required
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 {Options.map((option, index) => (
                   <option key={index} value={option}>
@@ -520,13 +613,14 @@ const OrganicAddClients = () => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Nature of Business <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => setcome1(e.target.value)}
-                value={come1}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                onChange={(e) => setnatureOfBussiness(e.target.value)}
+                value={natureOfBussiness}
+                required
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 {Options1.map((option, index) => (
                   <option key={index} value={option}>
@@ -537,28 +631,32 @@ const OrganicAddClients = () => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Address <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={address}
+                onChange={(e)=>setaddress(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter address"
+                required
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Country <span className="text-red-500">*</span>
               </label>
               <select
                 value={countryName}
+                required
                 onChange={(e) => {
                   setcountryName(e.target.value);
                   setstateName("");
                   setcityName("");
                 }}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Country Here</option>
                 {Object.keys(countryStateCityData).map((country) => (
@@ -573,7 +671,7 @@ const OrganicAddClients = () => {
           {/* Additional Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-4">
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 State <span className="text-red-500">*</span>
               </label>
               <select
@@ -583,7 +681,8 @@ const OrganicAddClients = () => {
                 }}
                 value={stateName}
                 disabled={!countryName}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                required
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 <option value="">Select State Here</option>
                 {countryName &&
@@ -598,14 +697,15 @@ const OrganicAddClients = () => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 City <span className="text-red-500">*</span>
               </label>
               <select
                 onChange={(e) => setcityName(e.target.value)}
                 disabled={!stateName}
                 value={cityName}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                required
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 <option value="">Select City Here</option>
                 {countryName &&
@@ -619,46 +719,67 @@ const OrganicAddClients = () => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Pin Code <span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                type="number"
+                value={digits}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1
+                 focus:ring-blue-500 focus:border-transparent focus:outline-none
+                 [appearance:textfield] 
+                            [&::-webkit-inner-spin-button]:appearance-none 
+                            [&::-webkit-outer-spin-button]:appearance-none"
                 placeholder="Enter pin code"
+                required
+                onChange={(e)=>{
+                  const value = e.target.value;
+
+                  if (!isNaN(value) && value.length<=6) {
+                    setdigits(value);
+                  }
+                }}
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Website <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={website}
+                onChange={(e)=>setwebsite(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter website URL"
+                required
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 LandLine No.
               </label>
               <input
                 type="text"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={landline}
+                 onChange={(e)=>setlandline(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter landline number"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Email Id <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={email}
+                 onChange={(e)=>setemail(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter email address"
+                required
               />
             </div>
           </div>
@@ -666,10 +787,14 @@ const OrganicAddClients = () => {
           {/* Event Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Data Source <span className="text-red-500">*</span>
               </label>
-              <select className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent">
+              <select 
+              required 
+              value={datasource}
+               onChange={(e)=>setdatasource(e.target.value)}
+              className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Online">Online</option>
                 <option value="Offline">Offline</option>
@@ -677,30 +802,40 @@ const OrganicAddClients = () => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Event Name <span className="text-red-500">*</span>
               </label>
-              <select className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent">
+              <select
+               required  
+               value={eventname}
+                onChange={(e)=>seteventname(e.target.value)}
+              className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Organic Expo 2026">Organic Expo 2026</option>
               </select>
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Reminder Date & Time
               </label>
               <input
                 type="datetime-local"
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                value={reminderdate}
+                 onChange={(e)=>setreminderdate(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="text-xs font-medium text-gray-900 mb-1 block">
                 Forward To <span className="text-red-500">*</span>
               </label>
-              <select className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent">
+              <select
+               required 
+               value={forword}
+                onChange={(e)=>setforword(e.target.value)}
+              className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Admin">Admin</option>
                 <option value="User">User</option>
@@ -709,19 +844,23 @@ const OrganicAddClients = () => {
           </div>
 
           {/* Contact Details Section */}
-          <h3 className="text-base font-medium text-gray-700 mb-3 mt-6">
+          <h3 className="text-sm font-medium text-gray-800 mb-1 mt-6">
             Contact Details-1
           </h3>
-          <hr className="mb-4" />
+          <hr className=" w-full opacity-10 mb-1" />
 
           {add.map((addItem, index) => (
-            <div key={addItem.id} className="mb-4 p-3 bg-gray-50 rounded">
+            <div key={addItem.id} className=" p-3 bg-gray-50 ">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Title <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent">
+                  <select 
+                  required 
+                  value={title}
+                   onChange={(e)=>settitle(e.target.value)}
+                  className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                     <option value="Select Here">Select Here</option>
                     <option value="Mr.">Mr.</option>
                     <option value="Ms.">Ms.</option>
@@ -731,70 +870,90 @@ const OrganicAddClients = () => {
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     First Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={fullname}
+                     onChange={(e)=>setfullname(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter first name"
+                    required
                   />
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Surname <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={surname}
+                     onChange={(e)=>setsurname(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter surname"
+                    required
                   />
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Designation <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={desination}
+                     onChange={(e)=>setdesination(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter designation"
+                    required
                   />
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={emailr}
+                     onChange={(e)=>setemailr(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter email address"
+                    required
                   />
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="text-xs font-medium text-gray-900 mb-1 block">
                     Mobile No. <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={numberdigit}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter mobile number"
+                    required
+                    onChange={(e)=>{
+                    const value = e.target.value;
+                    if (!isNaN(value) && value.length<=10) {
+                      setnumberdigit(value);
+                    }
+                    }}
                   />
                 </div>
 
                 <div className="col-span-1">
                   <div className="flex items-center gap-1 mb-1">
-                    <label className="text-xs font-normal text-gray-700">
+                    <label className="text-xs font-medium text-gray-900 mb-1 block">
                       Alternate No.
                     </label>
                     {index === 0 ? (
                       <button
                         type="button"
                         onClick={addnewgrid}
-                        className="bg-green-500 hover:bg-green-600 text-white w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-200"
+                        className="bg-green-500 hover:bg-green-600 text-white w-4 h-4 -full flex items-center justify-center text-xs font-bold transition-colors duration-200"
                       >
                         +
                       </button>
@@ -802,7 +961,7 @@ const OrganicAddClients = () => {
                       <button
                         type="button"
                         onClick={() => removegrid(addItem.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-200"
+                        className="bg-red-500 hover:bg-red-600 text-white w-4 h-4 -full flex items-center justify-center text-xs font-bold transition-colors duration-200"
                       >
                         -
                       </button>
@@ -810,15 +969,25 @@ const OrganicAddClients = () => {
                   </div>
                   <input
                     type="tel"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    value={Altnumberdigit}
+                    className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter alternate number"
+                    onChange={(e)=>{
+                  const value = e.target.value;
+
+                  if (!isNaN(value)&& value.length<=10) {
+                    setAltnumberdigit(value);
+                  }
+                    }}
                   />
                 </div>
+            
               </div>
+              
             </div>
           ))}
-
-          <hr className="my-4" />
+    
+          <hr className=" w-full opacity-10 my-2" />
 
           {/* Footer Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3">
@@ -826,16 +995,18 @@ const OrganicAddClients = () => {
               <span className="text-red-500 text-sm">*</span> Required Fields
             </p>
             <div className="flex gap-2">
-              <button className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200 flex items-center gap-1">
+              <button className="px-4 py-1.5 text-xs bg-[#3598dc] hover:bg-[#216aaa] text-white  transition-colors duration-200 flex items-center gap-1">
                 Save <IoIosArrowDroprightCircle />
               </button>
-              <button className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200">
+              <button onClick={handleReset} className="px-4 py-1.5 text-xs bg-red-500 hover:bg-red-700 text-white  transition-colors duration-200">
                 Reset
               </button>
             </div>
           </div>
         </div>
       </div>
+        </form>
+</>
     </div>
   );
 };

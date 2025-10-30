@@ -207,10 +207,10 @@ const ClientOverview1 = () => {
           <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Back to List
           </button>
-          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
+          <button onClick={()=>navigate("/ihweClientData2026/addNewClients")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Add Client
           </button>
-          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
+          <button onClick={()=>navigate("/ihweClientData2026/masterData")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Master List
           </button>
         </div>
@@ -226,13 +226,13 @@ const ClientOverview1 = () => {
             <div className="flex gap-2">
               <button
                 onClick={handleSendWhatsapp}
-                className="bg-white text-black px-2 py-0.5  text-xs  cursor-pointer border border-gray-400 hover:bg-gray-100 transition-colors"
+                className="bg-white text-gray-600 px-2 py-0.5  text-xs  cursor-pointer border border-gray-400 hover:bg-gray-100 transition-colors"
               >
                 Send Whatsapp
               </button>
               <button
                 onClick={handleAccount}
-                className="bg-white text-black px-2 py-0.5  text-xs  cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
+                className="bg-white text-gray-600 px-2 py-0.5  text-xs  cursor-pointer border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 Account
               </button>

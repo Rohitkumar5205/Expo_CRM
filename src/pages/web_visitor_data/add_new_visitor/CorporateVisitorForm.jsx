@@ -67,7 +67,8 @@ const CorporateVisitorForm = ({
   };
 
   return (
-    <div className="visitor-form">
+    <>
+    <form className="visitor-form">
       <h3 className="text-sm text-gray-900 font-semibold mb-3">
         Corporate Visitor Registration
       </h3>
@@ -132,17 +133,19 @@ const CorporateVisitorForm = ({
           },
         ].map(({ label, key, type, placeholder, options, required }) => (
           <div key={key}>
-            <label className="block font-medium text-gray-900 mb-1">
+            <label className="text-xs font-medium text-gray-900 mb-1 block">
               {label} {required && <span className="text-red-500">*</span>}
             </label>
             {type === "select" ? (
               <select
                 value={corporateData[key]}
+                required
                 onChange={(e) =>
                   setCorporateData({ ...corporateData, [key]: e.target.value })
                 }
                 className="block w-full"
               >
+                
                 {options.map((option, index) => (
                   <option key={index} value={option}>
                     {option}
@@ -157,7 +160,8 @@ const CorporateVisitorForm = ({
                   setCorporateData({ ...corporateData, [key]: e.target.value })
                 }
                 placeholder={placeholder}
-                className="block w-full"
+                required
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             )}
           </div>
@@ -396,12 +400,13 @@ const CorporateVisitorForm = ({
       <div className="flex justify-start">
         <button
           onClick={handleSubmit}
-          className="bg-[#3598dc] hover:bg-[#2980b9] text-white rounded uppercase"
+          className="bg-[#3598dc] hover:bg-[#2980b9] text-white  uppercase"
         >
           Submit Registration
         </button>
       </div>
-    </div>
+    </form>
+    </>
   );
 };
 

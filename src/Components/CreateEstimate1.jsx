@@ -385,7 +385,7 @@ const CreateEstimate1 = () => {
                 name="supply_date"
                 value={estimateData.supply_date}
                 onChange={handleEstimateChange}
-                className={`w-full ${inputClass}`}
+                className={`w-full bg-gray-100 ${inputClass}`}
                 required
               />
             </div>
@@ -514,9 +514,11 @@ const CreateEstimate1 = () => {
               key={index}
               className=" bg-gray-50 p-4  mb-6 border border-gray-200"
             >
-              <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
-                Item No. {index + 1}
+             {index>0 &&(
+               <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
+                 item No.{index+1}
               </h3>
+             )}
 
               <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-x-4 gap-y-3 items-end">
                 {/* ... (Item fields: Description, HSN, Qty, Size, Unit, Rate, Amount) ... */}
@@ -685,13 +687,13 @@ const CreateEstimate1 = () => {
                       name="gstRate"
                       value={item.gstRate}
                       onChange={(e) => handleItemChange(index, e)}
-                      className={`w-1/3 [appearance:textfield] 
+                      className={`w-1/3  [appearance:textfield] 
                             [&::-webkit-inner-spin-button]:appearance-none 
                             [&::-webkit-outer-spin-button]:appearance-none" ${inputClass} rounded-r-none border-r-0`}
                       placeholder="e.g. 18"
                       required
                     />
-                    <span className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
+                    <span className="w-full bg-gray-100 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                       %
                     </span>
                     <input
@@ -746,7 +748,7 @@ const CreateEstimate1 = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(index)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2  transition-colors w-7 h-7 flex items-center justify-center text-lg"
+                      className="bg-red-600 hover:bg-red-700 text-white px-3.5 py-0.5   transition-colors  flex items-center justify-center text-base font-bold"
                       aria-label="Remove Item"
                     >
                       -
@@ -755,7 +757,7 @@ const CreateEstimate1 = () => {
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="bg-green-500 hover:bg-green-600 text-white p-2  transition-colors w-7 h-7 flex items-center justify-center text-lg"
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-0.5  transition-colors  flex items-center justify-center text-base font-bold"
                     aria-label="Add Item"
                   >
                     +
