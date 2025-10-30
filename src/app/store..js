@@ -17,6 +17,7 @@ import estimateReducer from "../features/estimates/estimateSlice";
 import performaInvoiceReducer from "../features/performaInvoice/performaInvoiceSlice";
 import invoiceReducer from "../features/invoice/invoiceSlice";
 import creditNoteReducer from "../features/creditNote/creditNoteSlice";
+import paymentReducer from "../features/payment/paymentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,6 +39,7 @@ export const store = configureStore({
     perinvoice: performaInvoiceReducer,
     invoice: invoiceReducer,
     creditnotes: creditNoteReducer,
+    payment: paymentReducer,
   },
 });
 
