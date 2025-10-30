@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import mainpic from "../../assets/images/header.png";
+import { fetchEstimates } from "../../features/estimates/estimateSlice";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+
 const EstimateFormDetail = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  // redux logic
+  const { estimates } = useSelector((state) => state.estimates);
+  console.log("estimates details", estimates);
+
+  useEffect(() => {
+    dispatch(fetchEstimates());
+  }, [dispatch]);
+
   return (
     <div className="bg-gray-100 p-6 min-h-screen ">
       <div className="max-w-6xl mx-auto bg-white  px-6 py-1">
@@ -35,7 +50,10 @@ const EstimateFormDetail = () => {
               <td className="border px-1 py-1 text-[11px]">NGW/25-26/PI/116</td>
             </tr>
             <tr>
-              <td rowSpan="2" className="border px-1 py-1 text-[11px] font-semibold">
+              <td
+                rowSpan="2"
+                className="border px-1 py-1 text-[11px] font-semibold"
+              >
                 Client Address
               </td>
               <td className="border px-1 py-1 text-[11px]" rowSpan="2">
@@ -52,7 +70,6 @@ const EstimateFormDetail = () => {
               <td className="border px-1 py-1 text-[11px]">06 Sep 25</td>
             </tr>
             <tr>
-             
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Email Id
               </td>
@@ -251,44 +268,60 @@ const EstimateFormDetail = () => {
           </tbody>
         </table>
 
- {/* Bank Details and Signatures Section */}
-                <table className="w-full border-collapse border">
-                    <thead>
-                    </thead>
-                    <thead className="bg-[#818481]">
-                        <tr>
-                            <th colSpan="2" className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[40%]">Namo Gange Wellness Pvt. Ltd. Bank Details</th>
-                            <th className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[30%]">Client Signature</th>
-                            <th className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[30%]">For Namo Gange Wellness Pvt. Ltd.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td className=" pl-2  text-[11px] ">Bank Name</td>
-                            <td className=" px-2  text-[11px]">: Kotak Mahindra Bank</td>
-                            <td rowSpan="4" className=" border px-2 text-[11px] text-center align-bottom" style={{height: '80px',width:'30%'}}>
-                                <div >Auth.Signatory</div>
-                            </td>
-                            <td rowSpan="4" className=" border px-2 text-[11px] text-center align-bottom" style={{height: '80px',width:'30%'}}>
-                                <div >Auth.Signatory</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className=" pl-2   text-[11px] ">Account No.</td>
-                            <td className=" px-2  text-[11px]">: 6812013962</td>
-                        </tr>
-                        <tr>
-                            <td className=" pl-2  text-[11px] ">IFSC Code</td>
-                            <td className=" px-2  text-[11px]">: KKBK0004584</td>
-                        </tr>
-                        <tr>
-                            <td className=" pl-2  text-[11px] ">Branch Name</td>
-                            <td className=" px-2  text-[11px]">: Jagriti Enclave, Anand Vihar, Delhi, India</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-
+        {/* Bank Details and Signatures Section */}
+        <table className="w-full border-collapse border">
+          <thead></thead>
+          <thead className="bg-[#818481]">
+            <tr>
+              <th
+                colSpan="2"
+                className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[40%]"
+              >
+                Namo Gange Wellness Pvt. Ltd. Bank Details
+              </th>
+              <th className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[30%]">
+                Client Signature
+              </th>
+              <th className="border px-2 py-0.5 text-[11px] text-[#1D2129]  text-center w-[30%]">
+                For Namo Gange Wellness Pvt. Ltd.
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className=" pl-2  text-[11px] ">Bank Name</td>
+              <td className=" px-2  text-[11px]">: Kotak Mahindra Bank</td>
+              <td
+                rowSpan="4"
+                className=" border px-2 text-[11px] text-center align-bottom"
+                style={{ height: "80px", width: "30%" }}
+              >
+                <div>Auth.Signatory</div>
+              </td>
+              <td
+                rowSpan="4"
+                className=" border px-2 text-[11px] text-center align-bottom"
+                style={{ height: "80px", width: "30%" }}
+              >
+                <div>Auth.Signatory</div>
+              </td>
+            </tr>
+            <tr>
+              <td className=" pl-2   text-[11px] ">Account No.</td>
+              <td className=" px-2  text-[11px]">: 6812013962</td>
+            </tr>
+            <tr>
+              <td className=" pl-2  text-[11px] ">IFSC Code</td>
+              <td className=" px-2  text-[11px]">: KKBK0004584</td>
+            </tr>
+            <tr>
+              <td className=" pl-2  text-[11px] ">Branch Name</td>
+              <td className=" px-2  text-[11px]">
+                : Jagriti Enclave, Anand Vihar, Delhi, India
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <div className="flex justify-center text-[11px] pt-2 pb-5 text-gray-900">
           Registered Address : First Floor, E-1, Opposite KFC, Kalkaji Main
