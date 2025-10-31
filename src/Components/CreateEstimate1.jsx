@@ -738,7 +738,7 @@ const CreateEstimate1 = () => {
                     name="remarks"
                     value={item.remarks}
                     onChange={(e) => handleItemChange(index, e)}
-                    className="w-full border border-gray-300 align-middle text-sm focus:ring-blue-500 focus:border-blue-500 h-[30px] resize-y px-2 py-1"
+                    className={`w-full border border-gray-300 align-middle text-sm  h-[30px] resize-y px-2 py-1 ${inputClass}`}
                     placeholder="Type Here..."
                   ></textarea>
                 </div>
@@ -771,7 +771,7 @@ const CreateEstimate1 = () => {
           <div className="mt-3 flex space-x-4">
             <button
               type="submit"
-              className="px-4 py-1.5 text-sm bg-blue-600 text-white font-medium  hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              className="px-4 py-1.5 text-sm bg-[#3598dc] text-white font-medium  hover:bg-[#2a87c5] transition-colors disabled:bg-gray-400"
               disabled={loading} // 🟢 Disable button while loading
             >
               {loading ? "ADDING..." : "ADD ESTIMATE"}{" "}

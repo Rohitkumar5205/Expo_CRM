@@ -52,7 +52,7 @@ const AccountSection1 = () => {
   return (
     <div className="w-full h-auto bg-[#eef1f5] min-h-screen">
       {/* Header Section */}
-      <div className="w-full bg-white shadow-md flex flex-col sm:flex-row justify-between items-center px-4 py-1">
+      <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1">
         <h1 className="text-xl font-normal text-gray-500 mb-2 sm:mb-0">
           ACCOUNT SECTION | ESTIMATE
         </h1>
@@ -60,14 +60,14 @@ const AccountSection1 = () => {
         <div className="flex flex-wrap gap-2 justify-center">
           <button
             onClick={() => navigate("/ihweClientData2026/addNewClients")}
-            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-3 py-1  text-xs font-medium"
+            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
           >
             Add Client
           </button>
 
           <button
             onClick={() => navigate("/ihweClientData2026/masterData")}
-            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-3 py-1  text-xs font-medium"
+            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
           >
             Master List
           </button>
@@ -75,8 +75,8 @@ const AccountSection1 = () => {
       </div>
 
       {/* Company Info & Action Buttons */}
-      <div className="bg-white shadow-md rounded-md  m-4 ">
-        <div className="flex flex-col sm:flex-row justify-between items-center  p-2">
+      <div className="bg-white  m-5 pb-5">
+        <div className="flex flex-col sm:flex-row justify-between items-center px-4 pt-1 pb-1">
           {/* Display the dynamically retrieved company name */}
           <h2 className="text-lg text-gray-700 mb-2 sm:mb-0">
             {companyName}. Information
@@ -86,13 +86,13 @@ const AccountSection1 = () => {
               onClick={() =>
                 navigate(`/ihweClientData2026/createEstimate1/${company._id}`)
               }
-              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-3 py-1  text-xs font-medium"
+              className="bg-gray-200 text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
             >
               Create Estimate
             </button>
             <button
               onClick={() => navigate(`/ihweClientData2026/payments/${id}`)}
-              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-3 py-1  text-xs font-medium"
+              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
             >
               Payments
             </button>
