@@ -217,9 +217,9 @@ const ClientOverview1 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col m-4 gap-4">
+      <div className="flex flex-col m-[22px] gap-4">
         <div className="bg-white shadow-md px-5 pb-4 pt-2 w-full">
-          <div className="flex justify-between items-center mb-1.5">
+          <div className="flex justify-between items-center mb-1 ">
             <h2 className="text-lg font-normal text-gray-600">
               {company.companyName} | Details
             </h2>
@@ -253,7 +253,7 @@ const ClientOverview1 = () => {
           </div>
           <hr className="w-full opacity-10 mb-3" />
           {/* Client Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600  pb-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600 px-2 py-3 mb-4">
             <div className="flex gap-11">
               <p className="font-semibold text-gray-800">Company <br /> Details</p>
               <p>

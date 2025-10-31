@@ -2,7 +2,7 @@ import React from "react";
 
 const HeaderComponent = ({ title, buttons }) => {
   return (
-    <div className="w-full bg-white shadow-md border-b flex flex-col sm:flex-row justify-between items-center px-4 py-3">
+    <div className="w-full bg-white shadow-md border-b flex flex-col sm:flex-row justify-between items-center px-4 py-3 fixed">
       <h1 className="text-xl font-semibold text-gray-700 mb-2 sm:mb-0">{title}</h1>
       <div className="flex flex-wrap gap-2 justify-center">
         {buttons &&

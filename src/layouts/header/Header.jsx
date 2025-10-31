@@ -55,7 +55,7 @@ const Header = () => {
   }, []);
 
   return (
-    <nav className="h-10 w-full bg-[#4f5a67] flex justify-between items-center px-3 md:px-5 shadow-md z-50">
+    <nav className="h-auto py-0.5 w-full bg-[#4f5a67] flex justify-between items-center px-3 md:px-5 shadow-md z-50 ">
       {/* Left Section: Logo and Search Input */}
       <div className="flex items-center gap-2 md:gap-x-8">
         <h1 className="font-bold text-2xl md:text-3xl text-[#337AB7] font-sans tracking-wide">

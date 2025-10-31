@@ -54,7 +54,7 @@ import AddEvent from "./pages/add_by_admin/AddEvent";
 import AccountSection1 from "./Components/AccountSection1";
 import CreateEstimate1 from "./Components/CreateEstimate1";
 import CreditNote from "./Components/CreditNote";
-import Payments from "./Components/Payments/Payment";
+import Payments from "./Components/payments/Payment";
 const App = () => {
   return (
     <>
@@ -146,9 +146,9 @@ const App = () => {
           <Route
             path="/payments/performanceInvoiceDetails/:id"
             element={<PerformaInvoiceDetails />}
-          />
+          />    
           <Route
-            path="/payments/estimateDetails"
+            path="/payments/estimateDetails/:id"
             element={<EstimateDetails />}
           />
 
