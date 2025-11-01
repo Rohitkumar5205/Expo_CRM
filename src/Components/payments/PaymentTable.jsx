@@ -1,10 +1,32 @@
 import React from "react";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
-const PaymentTable = ({ client, payments, handleEditDetails }) => {
+const PaymentTable = ({
+  client,
+  payments,
+  handleEditDetails,
+  handleDeletePayment,
+}) => {
+  const navigate = useNavigate();
   const clientName = client?.company?.name || "Loading Company...";
   console.log("payments table", payments);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    // Date object create karein
+    const date = new Date(dateString);
+
+    // Components extract karein (zero padding ke liye padStart ka use)
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
+    const year = date.getFullYear();
+
+    // DD-MM-YYYY format mein return karein
+    return `${day}-${month}-${year}`;
+  };
 
   return (
     <div className="bg-white shadow-md p-4 m-4 rounded">
@@ -29,44 +51,57 @@ const PaymentTable = ({ client, payments, handleEditDetails }) => {
           <tbody>
             {payments && payments.length > 0 ? (
               payments.map((item, index) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={item._id} className="hover:bg-gray-50">
                   <td className="border px-2 py-2">{index + 1}</td>
                   <td className="border px-2 py-2">
                     {/* {item.documentDetails} */}
-                    NGW/25-26/PI/091 INR. 340902/-
+                    {item?.invoice_id} INR. {item?.f_amount}/-
                   </td>
                   <td className="border px-2 py-2 text-right">
-                    {/* {item.received.toFixed(2) || 0} */}0.00
+                    {/* {item?.amount_text.toFixed(2) || 0} */}
+                    {parseFloat(item?.amount_text || 0).toFixed(2)}
                   </td>
                   <td className="border px-2 py-2 text-right">
-                    {/* {item.debitNote.toFixed(2)} */}0.00
+                    {/* {item.debitNote.toFixed(2)} */}
+                    {item?.debit_note_no}/{item?.debit_note_ammount}/-
+                    {formatDate(item?.debit_note_date)}/
+                    {parseFloat(item?.amount_text || 0).toFixed(2)}
                   </td>
                   <td className="border px-2 py-2 text-right">
-                    {/* {item.tds.toFixed(2)} */}0.00
+                    {item?.tds_text}
                   </td>
                   <td className="border px-2 py-2 text-right font-medium">
-                    {/* {item.balance.toFixed(2)} */}0.00
+                    {/* Calculate the balance and format to 2 decimal places */}
+                    {(
+                      parseFloat(item?.f_amount || 0) -
+                      parseFloat(item?.amount_text || 0)
+                    ).toFixed(2)}
                   </td>
                   <td className="border px-2 py-2">
-                    {/* {item.paymentDetails} */}Running PYMT recd. through
-                    NEFT/RTGS in Kotak Bank on 24 Jun 25. Txn id:
-                    NEFTINW1251253692 against NGW/25-26/PI/091
+                    {item?.status_short} recd. through {item?.payment_mode} in{" "}
+                    {""}
+                    {item?.bankId} on {item?.payment_date}. Txn id:{" "}
+                    {item?.payment_mode} {""}
+                    against {item?.invoice_id}
                   </td>
                   <td className="border px-2 py-2 text-center">
-                    {/* {item.updatedDetails} */}
-                    30 Jun 25 | Accounts
+                    {formatDate(item?.updated)} | {item?.added_by}
                   </td>
                   <td className="border px-2 py-2 text-center">
                     <div className="flex justify-center items-center space-x-2">
                       <button
-                        onClick={() => handleEditDetails(item)}
+                        onClick={() =>
+                          navigate(
+                            `/ihweClientData2026/paymentEdit/${item._id}`
+                          )
+                        }
                         className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-100 transition-colors"
                         title="Edit Details"
                       >
                         <MdOutlineEdit size={20} />
                       </button>
                       <button
-                        onClick={() => handleDeletePayment(item.id)}
+                        onClick={() => handleDeletePayment(item._id)}
                         className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-100 transition-colors"
                         title="Delete Entry"
                       >

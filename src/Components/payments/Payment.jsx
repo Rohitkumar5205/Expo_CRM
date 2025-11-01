@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-
 import { fetchEstimates } from "../../features/estimates/estimateSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,46 +8,59 @@ import BankNameModal from "./BankNameModal";
 import {
   fetchPayments,
   createPayment,
-  updatePayment,
+  deletePayment,
 } from "../../features/payment/paymentSlice";
 import { fetchInvoices } from "../../features/invoice/invoiceSlice";
 import { fetchPerformaInvoices } from "../../features/performaInvoice/performaInvoiceSlice";
+import { fetchUsers } from "../../features/auth/userSlice";
+import {
+  fetchReviews,
+  createReview,
+} from "../../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
 
-const emptyFormData = {
-  pymtAgainst: "",
-  invoice_id: "",
-  f_amount: "",
-  amount_text: "",
-  tds_text: "",
-  payment_date: new Date().toISOString().split("T")[0],
-  debit_note_no: "",
-  debit_note_ammount: "",
-  debit_note_date: "",
-  pymnt_type: "",
-  payment_mode: "",
-  forwardTo: "",
-  reminderDateTime: "",
-  card_type: "",
-  card_name: "",
-  card_transaction_no: "",
-  card_last_digit: "",
-  card_bank: "",
-  wallet_name: "",
-  wallet_transaction_no: "",
-  wallet_mobile: "",
-  neft_bank: "",
-  utr_no: "",
-  transactionDetailsUpi: "",
-  bankId: "",
-};
-
-// --- Payments Component ---
 const Payments = ({ client, onBack }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
+  const added_By = localStorage.getItem("user_name");
+  const emptyFormData = {
+    pymtAgainst: "",
+    invoice_id: "",
+    f_amount: "",
+    amount_text: "",
+    tds_text: "",
+    status_short: "",
+    payment_date: new Date().toISOString().split("T")[0],
+    debit_note_no: "",
+    debit_note_ammount: "",
+    debit_note_date: "",
+    payment_mode: "",
+    card_type: "",
+    card_name: "",
+    card_transaction_no: "",
+    card_last_digit: "",
+    card_bank: "",
+    wallet_name: "",
+    wallet_transaction_no: "",
+    wallet_mobile: "",
+    neft_bank: "",
+    utr_no: "",
+    transactionDetailsUpi: "",
+    bankId: "",
+  };
+
+  const emptyReviewData = {
+    cmpny_id: id,
+    evnt_id: "",
+    status_short: "",
+    reminder_dt: "",
+    forward_to: "",
+    re_msg: "",
+    updated_by: added_By,
+  };
   const clientName = client?.company?.name || "Loading Company...";
   const [formData, setFormData] = useState(emptyFormData);
+  const [reviewData, setReviewData] = useState(emptyReviewData);
   const [documentOptions, setDocumentOptions] = useState([]);
 
   // redux logic
@@ -62,16 +74,10 @@ const Payments = ({ client, onBack }) => {
   const { perInvoices, loading: piLoading } = useSelector(
     (state) => state.perinvoice
   );
-
-  console.log("payments", allPayments);
-  console.log("estimates", estimates);
-  console.log("id,,", id);
-  console.log("invoices data", invoices);
-  console.log("perInvoices data", perInvoices);
-
-  const added_By = localStorage.getItem("user_name");
+  const { users } = useSelector((state) => state.users);
+  const { reviews } = useSelector((state) => state.reviews);
+  const [firstMatchingEventId, setFirstMatchingEventId] = useState("");
   const [payments, setPayments] = useState(allPayments);
-  const [editingItem, setEditingItem] = useState(null);
   const [showAdvanceFields, setShowAdvanceFields] = useState(false);
   const [showCardFields, setShowCardFields] = useState(false);
   const [showEwalletFields, setShowEwalletFields] = useState(false);
@@ -84,7 +90,36 @@ const Payments = ({ client, onBack }) => {
     dispatch(fetchPayments());
     dispatch(fetchInvoices());
     dispatch(fetchPerformaInvoices());
+    dispatch(fetchUsers());
+    dispatch(fetchReviews());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (reviews && reviews.length > 0 && id) {
+      // Array.find() ka use karke pehla (first) matching review dhundo
+      const firstMatchingReview = reviews.find(
+        (review) => review.cmpny_id === id
+      );
+
+      if (firstMatchingReview) {
+        const eventId = firstMatchingReview.evnt_id;
+        setFirstMatchingEventId(eventId);
+        console.log("First Matching Event ID:", eventId);
+
+        // **reviewData state ko bhi update kiya gaya hai**
+        setReviewData((prev) => ({
+          ...prev,
+          evnt_id: eventId, // <-- Yahan evnt_id set ho raha hai
+        }));
+      } else {
+        setFirstMatchingEventId("");
+        setReviewData((prev) => ({
+          ...prev,
+          evnt_id: "",
+        }));
+      }
+    }
+  }, [reviews, id]);
 
   useEffect(() => {
     setPayments(allPayments);
@@ -101,11 +136,10 @@ const Payments = ({ client, onBack }) => {
   // Function to update conditional field visibility based on form data
   const updateConditionalFields = (data) => {
     resetConditionalFields();
-
     // Set visibility based on payment type
     if (
-      data.pymnt_type === "Advance PYMT" ||
-      data.pymnt_type === "Running PYMT"
+      data.status_short === "Advance PYMT" ||
+      data.status_short === "Running PYMT"
     ) {
       setShowAdvanceFields(true);
     }
@@ -126,6 +160,11 @@ const Payments = ({ client, onBack }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  // Naya handler: ReviewData fields ko update karega
+  const handleReviewInputChange = (e) => {
+    const { name, value } = e.target;
+    setReviewData((prev) => ({ ...prev, [name]: value }));
   };
   const handlePymtAgainstChange = (e) => {
     const { name, value } = e.target;
@@ -192,102 +231,86 @@ const Payments = ({ client, onBack }) => {
     }));
   };
   const handlePaymentTypeChange = (event) => {
-    handleInputChange(event);
+    const { value, name } = event.target;
+    setReviewData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
     updateConditionalFields({
-      ...formData,
-      pymnt_type: event.target.value,
-      payment_mode: formData.payment_mode,
+      status_short: value, // Updated value from reviewData
+      payment_mode: formData.payment_mode, // from formData
     });
   };
 
   const handlePaymentModeChange = (event) => {
     handleInputChange(event);
     updateConditionalFields({
-      ...formData,
       payment_mode: event.target.value,
-      pymnt_type: formData.pymnt_type,
+      status_short: reviewData.status_short, // from reviewData
     });
   };
-  // --- EDIT HANDLER ---
-  const handleEditDetails = (paymentItem) => {
-    // Set the editingItem state to the selected payment item
-    setEditingItem(paymentItem);
 
-    // Create a new form data object by merging the empty form data with the payment item
-    const formReadyData = {
-      ...emptyFormData,
-      ...paymentItem,
-    };
-
-    // Update the form data state with the new form data object
-    setFormData({
-      ...emptyFormData,
-      ...paymentItem,
-    });
-
-    updateConditionalFields(formReadyData);
-
-    window.scrollTo(0, 0);
-  };
-  // --- SUBMIT / SAVE LOGIC ---
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Always open the modal on submit, which will then call handleSaveBank
     setIsModalOpen(true);
   };
 
   const handleSaveBank = async (bankName) => {
     const finalFormData = {
       ...formData,
+      ...reviewData,
       bankId: bankName || "N/A (Cash/UPI/e-Wallet)",
       companyId: id,
       added_by: added_By,
+      status_short: reviewData.status_short,
     };
 
     try {
-      if (editingItem) {
-        // ** EDIT LOGIC: Dispatch update action **
-        await dispatch(
-          updatePayment({ id: editingItem._id, paymentData: finalFormData })
-        ).unwrap();
-        showSuccess("Payment updated successfully.");
-      } else {
-        // ** ADD LOGIC: Dispatch create action **
-        await dispatch(createPayment(finalFormData)).unwrap();
-        showSuccess("New payment added successfully.");
+      await dispatch(createPayment(finalFormData)).unwrap();
+      showSuccess("New payment added successfully.");
+      if (
+        reviewData.status_short === "Advance PYMT" ||
+        reviewData.status_short === "Running PYMT"
+      ) {
+        const finalReviewData = {
+          ...reviewData,
+          re_msg: "Payment/Follow-up review generated automatically.", // Aap koi default message set kar sakte hain
+        };
+
+        // Dispatch the createReview action
+        await dispatch(createReview(finalReviewData)).unwrap();
+        showSuccess("Follow-up Review added successfully.");
       }
 
       // Common Reset Steps on success
-      setEditingItem(null);
       setIsModalOpen(false); // Close Modal
       setFormData(emptyFormData); // Reset Form Data
+      setReviewData(emptyReviewData);
       resetConditionalFields(); // Reset conditional field visibility
     } catch (error) {
       console.error("Failed to save payment:", error);
       showError(error.message || "An error occurred while saving the payment.");
     }
   };
-
-  // --- DELETE HANDLER ---
-  const handleDeletePayment = (paymentId) => {
-    if (window.confirm("Are you sure you want to delete this payment entry?")) {
-      const updatedPayments = payments.filter((item) => item.id !== paymentId);
-      setPayments(updatedPayments);
-      showSuccess(`Payment with ID ${paymentId} deleted.`);
-      console.log("Deleted item with ID:", paymentId);
+  const handleDeletePayment = async (paymentId) => {
+    try {
+      await dispatch(deletePayment(paymentId)).unwrap();
+      showSuccess(`Payment deleted successfully.`);
+      dispatch(fetchPayments());
+    } catch (error) {
+      console.error("Failed to delete payment:", error);
+      showError(
+        error.message || "An error occurred while deleting the payment."
+      );
     }
   };
 
-  // --- NAVIGATION ---
   const buttonStyle =
     "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors";
   const handleMasterList = () => navigate("/ihweClientData2026/masterData");
   const handleAddClient = () => navigate("/ihweClientData2026/addNewClients");
-
-  // Function to switch back to Add mode (e.g., for a 'Cancel Edit' button)
   const handleCancelEdit = () => {
-    setEditingItem(null);
+    // setEditingItem(null);
     setFormData(emptyFormData);
     resetConditionalFields();
   };
@@ -314,17 +337,7 @@ const Payments = ({ client, onBack }) => {
       {/* 2. Add/Edit Payments Form */}
       <div className="bg-white shadow-md p-4 m-4 rounded">
         <div className="flex justify-between items-center mb-1">
-          <h2 className="text-xl font-normal text-gray-600">
-            {editingItem ? "Edit Payment" : "Add Payments"}
-          </h2>
-          {editingItem && (
-            <button
-              onClick={handleCancelEdit}
-              className="text-red-500 text-sm hover:text-red-700 font-medium bg-white border border-gray-400 hover:bg-gray-200 px-3 py-1 "
-            >
-              Cancel Edit
-            </button>
-          )}
+          <h2 className="text-xl font-normal text-gray-600">Add Payments</h2>
         </div>
         <hr className="w-full opacity-10 mb-6" />
         <form onSubmit={handleSubmit}>
@@ -347,7 +360,6 @@ const Payments = ({ client, onBack }) => {
                 <option value="Invoice">Invoice</option>
               </select>
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Document No. *
@@ -371,7 +383,6 @@ const Payments = ({ client, onBack }) => {
                 )}{" "}
               </select>
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Final Amount
@@ -397,7 +408,6 @@ const Payments = ({ client, onBack }) => {
                 inputMode="decimal"
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Recieved Amount *
@@ -422,7 +432,6 @@ const Payments = ({ client, onBack }) => {
                 required
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 TDS Amount
@@ -446,7 +455,6 @@ const Payments = ({ client, onBack }) => {
                 inputMode="decimal"
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Recieved Date *
@@ -460,7 +468,6 @@ const Payments = ({ client, onBack }) => {
                 required
               />
             </div>
-
             {/* Row 2 Fields */}
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
@@ -474,7 +481,6 @@ const Payments = ({ client, onBack }) => {
                 className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Debit Note Amount
@@ -498,7 +504,6 @@ const Payments = ({ client, onBack }) => {
                 inputMode="decimal"
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Debit Note Date
@@ -511,14 +516,13 @@ const Payments = ({ client, onBack }) => {
                 className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Type of Payment *
               </label>
               <select
-                name="pymnt_type"
-                value={formData.pymnt_type}
+                name="status_short"
+                value={reviewData.status_short}
                 onChange={handlePaymentTypeChange}
                 className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 required
@@ -530,7 +534,6 @@ const Payments = ({ client, onBack }) => {
                 <option value="ADJMT PYMT">ADJMT PYMT</option>
               </select>
             </div>
-
             <div className="flex flex-col md:col-span-1">
               <label className="text-[13px] text-gray-900 font-medium mb-1">
                 Payment Mode *
@@ -562,16 +565,18 @@ const Payments = ({ client, onBack }) => {
                   Forward To *
                 </label>
                 <select
-                  name="forwardTo"
-                  value={formData.forwardTo}
-                  onChange={handleInputChange}
+                  name="forward_to"
+                  value={reviewData.forward_to}
+                  onChange={handleReviewInputChange}
                   className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                   required
                 >
                   <option value="">Select Here</option>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="Vijay Sharma">Vijay Sharma</option>
-                  <option value="Rohit">Rohit</option>
+                  {users.map((user, index) => (
+                    <option key={index} value={user?.user_fullname}>
+                      {user?.user_fullname}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex flex-col md:col-span-2">
@@ -580,16 +585,15 @@ const Payments = ({ client, onBack }) => {
                 </label>
                 <input
                   type="datetime-local"
-                  name="reminderDateTime"
-                  value={formData.reminderDateTime}
-                  onChange={handleInputChange}
+                  name="reminder_dt"
+                  value={reviewData.reminder_dt}
+                  onChange={handleReviewInputChange}
                   className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   required
                 />
               </div>
             </div>
           )}
-
           {showCardFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-1">
@@ -682,7 +686,6 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
-
           {showEwalletFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
@@ -737,7 +740,6 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
-
           {showNeftFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-2">
@@ -785,7 +787,6 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
-
           {showUpiFields && (
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
               <div className="flex flex-col md:col-span-3">
@@ -802,7 +803,6 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
-
           <div className="flex justify-between">
             <div>
               <p className="text-red-500 text-xs mt-2">* Required Fields</p>
@@ -812,25 +812,21 @@ const Payments = ({ client, onBack }) => {
                 type="submit"
                 className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700"
               >
-                {editingItem ? "SAVE CHANGES" : "ADD PAYMENT"}
+                ADD PAYMENT
               </button>
             </div>
           </div>
         </form>
       </div>
-
-      {/* 3. Payment Details Table (History) - Only show when NOT editing */}
-      {!editingItem && (
-        <PaymentTable
-          payments={payments}
-          handleEditDetails={handleEditDetails}
-        />
-      )}
+      {/* 3. Payment Details Table (History) */}
+      <PaymentTable
+        payments={payments}
+        handleDeletePayment={handleDeletePayment}
+      />
       <BankNameModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         onSave={handleSaveBank}
-        // handleSave={handleSave}
       />
     </div>
   );

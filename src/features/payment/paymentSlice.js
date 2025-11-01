@@ -79,8 +79,9 @@ export const deletePayment = createAsyncThunk(
   }
 );
 
-// ⚙️ SLICE
 
+// ⚙️ SLICE
+// ========================
 const paymentSlice = createSlice({
   name: "payment",
   initialState: {

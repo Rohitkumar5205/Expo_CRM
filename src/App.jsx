@@ -55,6 +55,7 @@ import AccountSection1 from "./Components/AccountSection1";
 import CreateEstimate1 from "./Components/CreateEstimate1";
 import CreditNote from "./Components/CreditNote";
 import Payments from "./Components/Payments/Payment";
+import PaymentEdit from "./Components/payments/PaymentEdit";
 const App = () => {
   return (
     <>
@@ -129,6 +130,7 @@ const App = () => {
             path="/ihweClientData2026/payments/:id"
             element={<Payments />}
           />
+          <Route path="/ihweClientData2026/paymentEdit/:id" element={<PaymentEdit />} />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
           <Route
@@ -151,7 +153,6 @@ const App = () => {
             path="/payments/estimateDetails"
             element={<EstimateDetails />}
           />
-
           {/* Old Visitor Data */}
           <Route
             path="/OLDVisitorData/oldVisitorList"
