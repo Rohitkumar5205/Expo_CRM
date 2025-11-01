@@ -60,14 +60,14 @@ const AccountSection1 = () => {
         <div className="flex flex-wrap gap-2 justify-center">
           <button
             onClick={() => navigate("/ihweClientData2026/addNewClients")}
-            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
+            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal cursor-pointer"
           >
             Add Client
           </button>
 
           <button
             onClick={() => navigate("/ihweClientData2026/masterData")}
-            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
+            className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal cursor-pointer"
           >
             Master List
           </button>
@@ -86,13 +86,13 @@ const AccountSection1 = () => {
               onClick={() =>
                 navigate(`/ihweClientData2026/createEstimate1/${company._id}`)
               }
-              className="bg-gray-200 text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
+              className="bg-gray-200 text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal cursor-pointer"
             >
               Create Estimate
             </button>
             <button
               onClick={() => navigate(`/ihweClientData2026/payments/${id}`)}
-              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal"
+              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-2 py-0.5  text-xs font-normal cursor-pointer"
             >
               Payments
             </button>

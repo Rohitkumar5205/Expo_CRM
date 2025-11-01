@@ -244,7 +244,7 @@ const ClientOverview1 = () => {
               </button> */}
               <button
                 onClick={handleEdit}
-                className="flex items-center justify-center w-6 h-6  text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-center w-6 h-6  text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors cursor-pointer"
                 aria-label="Edit"
               >
                 <FaPencilAlt className="w-3 h-3" />
