@@ -281,7 +281,7 @@ const Payments = ({ client, onBack }) => {
 
   // --- NAVIGATION ---
   const buttonStyle =
-    "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors";
+    "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors cursor-pointer";
   const handleMasterList = () => navigate("/ihweClientData2026/masterData");
   const handleAddClient = () => navigate("/ihweClientData2026/addNewClients");
 
@@ -810,7 +810,7 @@ const Payments = ({ client, onBack }) => {
             <div className="">
               <button
                 type="submit"
-                className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700"
+                className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700 cursor-pointer"
               >
                 {editingItem ? "SAVE CHANGES" : "ADD PAYMENT"}
               </button>
