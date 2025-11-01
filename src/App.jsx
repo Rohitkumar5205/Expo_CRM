@@ -148,9 +148,9 @@ const App = () => {
           <Route
             path="/payments/performanceInvoiceDetails/:id"
             element={<PerformaInvoiceDetails />}
-          />
+          />    
           <Route
-            path="/payments/estimateDetails"
+            path="/payments/estimateDetails/:id"
             element={<EstimateDetails />}
           />
           {/* Old Visitor Data */}

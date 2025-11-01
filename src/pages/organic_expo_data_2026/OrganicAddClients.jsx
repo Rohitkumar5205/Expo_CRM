@@ -457,88 +457,78 @@ const OrganicAddClients = () => {
     );
   };
   // state for form 
-  const [companyname,setcompanyname] = useState()
-  const [category,setcategory] = useState("")
-  const [natureOfBussiness,setnatureOfBussiness] = useState("")
-  const [address,setaddress] = useState("")
-  const [countryName, setcountryName] = useState("");
-  const [stateName, setstateName] = useState("");
-  const [cityName, setcityName] = useState("");
-  const [digits,setdigits] = useState("")
-  const [website,setwebsite] = useState("")
-  const [landline,setlandline] = useState("")
-  const [email,setemail] = useState("")
-  const [datasource,setdatasource] = useState("")
-  const [eventname,seteventname] = useState("")
-  const [reminderdate,setreminderdate] = useState("")
-  const [forword,setforword] = useState("")
-  const [title,settitle] = useState("")
-  const [fullname,setfullname] = useState("")
-  const [surname,setsurname] = useState("")
-  const [desination,setdesination] = useState("")
-  const [emailr,setemailr] = useState("")
-  const [numberdigit,setnumberdigit] = useState("");
-  const [Altnumberdigit,setAltnumberdigit] = useState("");
+  const [formdata,setformdata] = useState({
+      companyname:"",
+      category:"",
+      natureOfBussiness:"",
+      address:"",
+      countryName:"",
+      stateName:"",
+      cityName:"",
+      digits:"",
+      website:"",
+      landline:"",
+      email:"",
+      datasource:"",
+      eventname:"",
+      reminderdate:"",
+      forword:"",
+      title:"",
+      fullname:"",
+      surname:"",
+      desination:"",
+      emailr:"",
+      numberdigit:"",
+      Altnumberdigit:"",
+
+  });
+
+  const [countryName,setcountryName] = useState("");
+  const [stateName,setstateName] = useState("");
+  const [cityName,setcityName] = useState("");
+  
+  // handle input change dynamically
+const handleChange=(e)=>{
+  const {name,value} = e.target;
+    setformdata((prev)=>({...prev,[name]:value}))
+};
 
 
   // logic for form data saving
 
   const handleSubmit=(e)=>{
     e.preventDefault();
-    const formData = {
-      companyname,
-      category,
-      natureOfBussiness,
-      address,
-      countryName,
-      stateName,
-      cityName,
-      digits,
-      website,
-      landline,
-      email,
-      datasource,
-      eventname,
-      reminderdate,
-      forword,
-      title,
-      fullname,
-      surname,
-      desination,
-      emailr,
-      numberdigit,
-      Altnumberdigit,
-    };
     console.log("form has been successfully submitted:", formData);
     toast.success("form has been successfully submitted");
   };
   
   // Logic for reset the data
 const handleReset = () => {
-  [
-    setcompanyname,
-    setcategory,
-    setnatureOfBussiness,
-    setaddress,
-    setcountryName,
-    setstateName,
-    setcityName,
-    setdigits,
-    setwebsite,
-    setlandline,
-    setemail,
-    setdatasource,
-    seteventname,
-    setreminderdate,
-    setforword,
-    settitle,
-    setfullname,
-    setsurname,
-    setdesination,
-    setemailr,
-    setnumberdigit,
-    setAltnumberdigit,
-  ].forEach(fn => fn("")); // reset all string states to empty
+  ({
+    companyname:"",
+      category:"",
+      natureOfBussiness:"",
+      address:"",
+      countryName:"",
+      stateName:"",
+      cityName:"",
+      digits:"",
+      website:"",
+      landline:"",
+      email:"",
+      datasource:"",
+      eventname:"",
+      reminderdate:"",
+      forword:"",
+      title:"",
+      fullname:"",
+      surname:"",
+      desination:"",
+      emailr:"",
+      numberdigit:"",
+      Altnumberdigit:"",
+
+ }) // reset all string states to empty
 
   console.log("Form reset successful!");
   toast.dismiss("Form reset successful!");
@@ -586,10 +576,10 @@ const handleReset = () => {
               </label>
               <input
                 type="text"
-                value={companyname}
+                value={formdata.companyname}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter company name"
-                onChange={(e)=>setcompanyname(e.target.value)}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -599,8 +589,8 @@ const handleReset = () => {
                 Category <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => setcategory(e.target.value)}
-                value={category}
+                onChange={handleChange}
+                value={formdata.category}
                 required
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
@@ -617,8 +607,8 @@ const handleReset = () => {
                 Nature of Business <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => setnatureOfBussiness(e.target.value)}
-                value={natureOfBussiness}
+                onChange={handleChange}
+                value={formdata.natureOfBussiness}
                 required
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
@@ -636,8 +626,8 @@ const handleReset = () => {
               </label>
               <input
                 type="text"
-                value={address}
-                onChange={(e)=>setaddress(e.target.value)}
+                value={formdata.address}
+                onChange={handleChange}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter address"
                 required
@@ -649,10 +639,11 @@ const handleReset = () => {
                 Country <span className="text-red-500">*</span>
               </label>
               <select
-                value={countryName}
+                value={formdata.countryName}
                 required
-                onChange={(e) => {
-                  setcountryName(e.target.value);
+                onChange={() => {
+                  handleChange;
+                  setcountryName("");
                   setstateName("");
                   setcityName("");
                 }}
@@ -675,12 +666,13 @@ const handleReset = () => {
                 State <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => {
-                  setstateName(e.target.value);
+                onChange={() => {
+                  handleChange;
+                  setstateName("");
                   setcityName("");
                 }}
-                value={stateName}
-                disabled={!countryName}
+                value={formdata.stateName}
+                disabled={!formdata.countryName}
                 required
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
@@ -701,9 +693,12 @@ const handleReset = () => {
                 City <span className="text-red-500">*</span>
               </label>
               <select
-                onChange={(e) => setcityName(e.target.value)}
-                disabled={!stateName}
-                value={cityName}
+                onChange={()=>{
+                  handleChange;
+                  setcityName();
+                }}
+                disabled={!formdata.stateName}
+                value={formdata.cityName}
                 required
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
@@ -724,7 +719,7 @@ const handleReset = () => {
               </label>
               <input
                 type="number"
-                value={digits}
+                value={formdata.digits}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1
                  focus:ring-blue-500 focus:border-transparent focus:outline-none
                  [appearance:textfield] 
@@ -736,7 +731,7 @@ const handleReset = () => {
                   const value = e.target.value;
 
                   if (!isNaN(value) && value.length<=6) {
-                    setdigits(value);
+                    setformdata(value);
                   }
                 }}
               />
@@ -748,8 +743,8 @@ const handleReset = () => {
               </label>
               <input
                 type="text"
-                value={website}
-                onChange={(e)=>setwebsite(e.target.value)}
+                value={formdata.website}
+                onChange={handleChange}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter website URL"
                 required
@@ -762,8 +757,8 @@ const handleReset = () => {
               </label>
               <input
                 type="text"
-                value={landline}
-                 onChange={(e)=>setlandline(e.target.value)}
+                value={formdata.landline}
+                 onChange={handleChange}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter landline number"
               />
@@ -775,8 +770,8 @@ const handleReset = () => {
               </label>
               <input
                 type="email"
-                value={email}
-                 onChange={(e)=>setemail(e.target.value)}
+                value={formdata.email}
+                 onChange={handleChange}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 placeholder="Enter email address"
                 required
@@ -792,8 +787,8 @@ const handleReset = () => {
               </label>
               <select 
               required 
-              value={datasource}
-               onChange={(e)=>setdatasource(e.target.value)}
+              value={formdata.datasource}
+               onChange={handleChange}
               className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Online">Online</option>
@@ -807,8 +802,8 @@ const handleReset = () => {
               </label>
               <select
                required  
-               value={eventname}
-                onChange={(e)=>seteventname(e.target.value)}
+               value={formdata.eventname}
+                onChange={handleChange}
               className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Organic Expo 2026">Organic Expo 2026</option>
@@ -821,8 +816,8 @@ const handleReset = () => {
               </label>
               <input
                 type="datetime-local"
-                value={reminderdate}
-                 onChange={(e)=>setreminderdate(e.target.value)}
+                value={formdata.reminderdate}
+                 onChange={handleChange}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
@@ -833,8 +828,8 @@ const handleReset = () => {
               </label>
               <select
                required 
-               value={forword}
-                onChange={(e)=>setforword(e.target.value)}
+               value={formdata.forword}
+                onChange={handleChange}
               className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                 <option value="">Select Here</option>
                 <option value="Admin">Admin</option>
@@ -858,8 +853,8 @@ const handleReset = () => {
                   </label>
                   <select 
                   required 
-                  value={title}
-                   onChange={(e)=>settitle(e.target.value)}
+                  value={formdata.title}
+                   onChange={handleChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                     <option value="Select Here">Select Here</option>
                     <option value="Mr.">Mr.</option>
@@ -875,8 +870,8 @@ const handleReset = () => {
                   </label>
                   <input
                     type="text"
-                    value={fullname}
-                     onChange={(e)=>setfullname(e.target.value)}
+                    value={formdata.fullname}
+                     onChange={handleChange}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter first name"
                     required
@@ -889,8 +884,8 @@ const handleReset = () => {
                   </label>
                   <input
                     type="text"
-                    value={surname}
-                     onChange={(e)=>setsurname(e.target.value)}
+                    value={formdata.surname}
+                     onChange={handleChange}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter surname"
                     required
@@ -903,8 +898,8 @@ const handleReset = () => {
                   </label>
                   <input
                     type="text"
-                    value={desination}
-                     onChange={(e)=>setdesination(e.target.value)}
+                    value={formdata.desination}
+                     onChange={handleChange}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter designation"
                     required
@@ -917,8 +912,8 @@ const handleReset = () => {
                   </label>
                   <input
                     type="email"
-                    value={emailr}
-                     onChange={(e)=>setemailr(e.target.value)}
+                    value={formdata.emailr}
+                     onChange={handleChange}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter email address"
                     required
@@ -931,7 +926,7 @@ const handleReset = () => {
                   </label>
                   <input
                     type="tel"
-                    value={numberdigit}
+                    value={formdata.numberdigit}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter mobile number"
                     required
@@ -969,7 +964,7 @@ const handleReset = () => {
                   </div>
                   <input
                     type="tel"
-                    value={Altnumberdigit}
+                    value={formdata.Altnumberdigit}
                     className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     placeholder="Enter alternate number"
                     onChange={(e)=>{

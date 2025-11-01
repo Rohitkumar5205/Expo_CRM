@@ -146,7 +146,7 @@ const AddNewClients = () => {
     }
   }, [id, companies]);
 
-  const heading = id ? "Edit Company Details" : "Add New Company";
+  const heading = id ? "Edit Client Details" : "Add New Company";
 
   // 🧠 Update any input value dynamically
   const handleChange = (field, value) => {
@@ -278,26 +278,26 @@ const AddNewClients = () => {
     <div className="w-full min-h-screen bg-gray-100">
       {/* Heading and Navigation Buttons */}
       <div className="w-full h-fit bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-5 py-1.5">
           <h1 className="text-xl text-gray-600 mb-2 lg:mb-0">
             COMPANY DETAILS
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
             <button
               onClick={handleUploadExhibitor}
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+              className="px-2 py-1.5 text-xs font-medium bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
             >
               Upload Exhibitor
             </button>
             <button
               onClick={handleMasterList}
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+              className="px-2 py-1.5 text-xs font-medium bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
             >
               Master List
             </button>
             <button
               onClick={handleConformList}
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+              className="px-2 py-1.5 text-xs font-medium bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
             >
               Exhibitor List
             </button>
@@ -307,7 +307,7 @@ const AddNewClients = () => {
 
       {/* Form */}
       <form onSubmit={handleSave} className="max-w-full bg-white shadow-lg m-4">
-        <div className="p-4">
+        <div className="px-4 pb-4 pt-2">
           <h2 className="text-xl font-normal text-gray-500 mb-1 uppercase">
             {heading}
           </h2>
@@ -595,13 +595,13 @@ const AddNewClients = () => {
           </div>
 
           {/* --- Contact Details --- */}
-          <h3 className="text-base font-medium text-gray-700 mb-1 mt-6">
-            Contact Details
+          <h3 className="text-sm font-medium text-gray-800 mb-1 mt-6">
+            Contact Details-1
           </h3>
           <hr className="mb-0.5 opacity-10" />
 
           {formData.contacts.map((contact, index) => (
-            <div key={index} className=" p-3 bg-gray-50 mb-0.5">
+            <div key={index} className=" pb-3 pt-1 bg-gray-50 mb-0.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {/* Title */}
                 <div>

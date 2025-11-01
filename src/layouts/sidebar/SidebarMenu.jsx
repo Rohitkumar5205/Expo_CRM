@@ -24,7 +24,7 @@ const SidebarMenu = () => {
   return (
     <>
       {/* Hamburger Menu for Mobile */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-[#4f5a67] text-white p-4 flex items-center justify-between z-50">
+      <div className="md:hidden fixed top-0 left-0 w-full bg-[#4f5a67] text-white p-4 flex items-center justify-between z-50 ">
         <button
           onClick={handleSidebarToggle}
           aria-label="Toggle sidebar"
@@ -36,11 +36,12 @@ const SidebarMenu = () => {
       </div>
 
       {/* Sidebar */}
+      
       <div
-        className={`fixed top-0 left-0 h-full z-40 bg-[#4f5a67] text-gray-200 font-lato transition-transform duration-300 ease-in-out overflow-y-auto
+        className={`fixed top-0 left-0 h-full z-40 bg-[#4f5a67] text-gray-200 font-lato transition-transform duration-300 ease-in-out 
                 ${
                   sidebarOpen ? "translate-x-0" : "-translate-x-full"
-                } md:translate-x-0 md:static `}
+                } md:translate-x-0 md:static overflow-y-auto `}
       >
         {/* Close Button for Mobile */}
         <div className="md:hidden flex justify-end p-4">
@@ -52,8 +53,9 @@ const SidebarMenu = () => {
             ×
           </button>
         </div>
-
+      
         {/* Dashboard Link */}
+         <div className="overflow-y-auto max-h-screen">
         <div className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
           <AiOutlineHome size={18} className="text-gray-400" />
           <Link to="/dashboard">
@@ -885,6 +887,7 @@ const SidebarMenu = () => {
           onClick={handleSidebarToggle}
         ></div>
       )}
+      </div>
     </>
   );
 };
