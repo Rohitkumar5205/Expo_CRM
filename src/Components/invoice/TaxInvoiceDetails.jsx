@@ -3,12 +3,14 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { FaPrint } from "react-icons/fa";
 import { useReactToPrint } from "react-to-print";
 
-import { Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import InvoiceNumberDetails from "./InvoiceNumberDetails";
 
 const TaxInvoiceDetails = () => {
   const sameRef = useRef();
-
+  const navigate = useNavigate();
+  const {id} = useParams();
+  console.log(id)
   // print function
 
   const handleprint = useReactToPrint({
@@ -21,11 +23,14 @@ const TaxInvoiceDetails = () => {
       <div className="w-full h-10  flex justify-between bg-white px-3 py-2 ">
         <h1 className="text-xl text-gray-600">INVOICE</h1>
         <div className="flex gap-2">
-          <Link to="/invoiceNumberDetails" state={{ heading: "Update Invoice" }}>
-            <button className="w-fit h-fit border border-[#3598dc] text-[#3598dc] text-[12px] hover:text-white hover:bg-[#3598dc] px-2 py-1  cursor-pointer">
+          
+            <button onClick={()=> navigate("/payments/createInvoice", {
+          state: { id, heading: "Update Invoice" },
+        })} 
+        className="w-fit h-fit border border-[#3598dc] text-[#3598dc] text-[12px] hover:text-white hover:bg-[#3598dc] px-2 py-1  cursor-pointer">
               <MdOutlineModeEdit />
             </button>
-          </Link>
+          
           <button
             onClick={handleprint}
             className="w-fit h-fit border border-gray-300 px-2 py-1 text-xs cursor-pointer"

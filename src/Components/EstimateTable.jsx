@@ -225,7 +225,7 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 {/* 🚀 PERFORMA INVOICE CELL LOGIC 🚀 */}
-                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
+                <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center justify-items-center">
                   {/* Display PI Data if it exists or is being created */}
                   {isPiCreated && (
                     <Link

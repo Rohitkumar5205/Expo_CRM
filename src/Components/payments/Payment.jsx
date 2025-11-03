@@ -306,7 +306,7 @@ const Payments = ({ client, onBack }) => {
   };
 
   const buttonStyle =
-    "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors cursor-pointer";
+    "hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer";
   const handleMasterList = () => navigate("/ihweClientData2026/masterData");
   const handleAddClient = () => navigate("/ihweClientData2026/addNewClients");
   const handleCancelEdit = () => {
@@ -335,7 +335,7 @@ const Payments = ({ client, onBack }) => {
       </div>
 
       {/* 2. Add/Edit Payments Form */}
-      <div className="bg-white shadow-md p-4 m-4 rounded">
+      <div className="bg-white  p-4 m-5 mb-7 ">
         <div className="flex justify-between items-center mb-1">
           <h2 className="text-xl font-normal text-gray-600">Add Payments</h2>
         </div>
@@ -404,7 +404,7 @@ const Payments = ({ client, onBack }) => {
                     f_amount: value,
                   }));
                 }}
-                className="border border-gray-300 px-2 text-xs h-8  focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+                className="border border-gray-300 px-2 text-xs h-8 bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 inputMode="decimal"
               />
             </div>
@@ -464,7 +464,7 @@ const Payments = ({ client, onBack }) => {
                 name="payment_date"
                 value={formData.payment_date}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs bg-gray-100 h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               />
             </div>
@@ -513,7 +513,7 @@ const Payments = ({ client, onBack }) => {
                 name="debit_note_date"
                 value={formData.debit_note_date}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs bg-gray-100 h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
             <div className="flex flex-col md:col-span-1">
@@ -803,6 +803,7 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
+        <hr className="w-full opacity-10 pb-1 pt-2" />
           <div className="flex justify-between">
             <div>
               <p className="text-red-500 text-xs mt-2">* Required Fields</p>
@@ -810,7 +811,7 @@ const Payments = ({ client, onBack }) => {
             <div className="">
               <button
                 type="submit"
-                className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700 cursor-pointer"
+                className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white "
               >
                 ADD PAYMENT
               </button>

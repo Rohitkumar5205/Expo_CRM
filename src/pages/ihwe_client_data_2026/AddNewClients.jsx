@@ -147,6 +147,8 @@ const AddNewClients = () => {
   }, [id, companies]);
 
   const heading = id ? "Edit Client Details" : "Add New Company";
+  //for button
+  const buttonName = id?"Update":"Save";
 
   // 🧠 Update any input value dynamically
   const handleChange = (field, value) => {
@@ -278,8 +280,8 @@ const AddNewClients = () => {
     <div className="w-full min-h-screen bg-gray-100">
       {/* Heading and Navigation Buttons */}
       <div className="w-full h-fit bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-5 py-1.5">
-          <h1 className="text-xl text-gray-600 mb-2 lg:mb-0">
+        <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1">
+          <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
             COMPANY DETAILS
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
@@ -308,7 +310,7 @@ const AddNewClients = () => {
       {/* Form */}
       <form onSubmit={handleSave} className="max-w-full bg-white shadow-lg m-4">
         <div className="px-4 pb-4 pt-2">
-          <h2 className="text-xl font-normal text-gray-500 mb-1 uppercase">
+          <h2 className="text-xl font-normal text-gray-500 mb-1 ">
             {heading}
           </h2>
           <hr className="mb-3 opacity-10" />
@@ -727,7 +729,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={addContact}
-                        className="bg-green-500 hover:bg-green-600 text-white w-6 h-auto flex items-center justify-center text-xs"
+                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 flex items-center justify-center text-sm font-bold" 
                       >
                         +
                       </button>
@@ -735,7 +737,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={() => removeContact(index)}
-                        className="bg-red-500 hover:bg-red-600 text-white w-6 h-auto flex items-center justify-center text-xs"
+                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-0.5 flex items-center justify-center text-sm font-bold"
                       >
                         -
                       </button>
@@ -764,12 +766,12 @@ const AddNewClients = () => {
             <p className="text-xs text-gray-600 mb-3 sm:mb-0">
               <span className="text-red-500 text-sm">*</span> Required Fields
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <button
                 type="submit"
                 className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white  flex items-center gap-1"
               >
-                Save <IoIosArrowDroprightCircle />
+                {buttonName} <IoIosArrowDroprightCircle />
               </button>
               <button
                 type="button"

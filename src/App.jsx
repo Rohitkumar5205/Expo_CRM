@@ -54,7 +54,7 @@ import AddEvent from "./pages/add_by_admin/AddEvent";
 import AccountSection1 from "./Components/AccountSection1";
 import CreateEstimate1 from "./Components/CreateEstimate1";
 import CreditNote from "./Components/CreditNote";
-import Payments from "./Components/Payments/Payment";
+import Payments from "./Components/payments/Payment";
 import PaymentEdit from "./Components/payments/PaymentEdit";
 const App = () => {
   return (
@@ -138,7 +138,11 @@ const App = () => {
             element={<CreateInvoice />}
           />
           <Route
-            path="/payments/ODT/taxInvoiceDetails"
+            path="/payments/createInvoice"
+            element={<CreateInvoice />}
+          />
+          <Route
+            path="/payments/ODT/taxInvoiceDetails/:id"
             element={<TaxInvoiceDetails />}
           />
           <Route

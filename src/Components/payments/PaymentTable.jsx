@@ -29,65 +29,65 @@ const PaymentTable = ({
   };
 
   return (
-    <div className="bg-white shadow-md p-4 m-4 rounded">
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">
+    <div className="bg-white shadow-md p-4 m-5 pb-10 mb-10">
+      <h2 className="text-lg font-semibold text-gray-500 mb-4">
         Payment History - {clientName}
       </h2>
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-200 text-xs">
-          <thead className="bg-gray-100">
+          <thead>
             <tr>
-              <th className="border px-2 py-1 text-left">S.NO.</th>
-              <th className="border px-2 py-1 text-left">DOCUMENT DETAILS</th>
-              <th className="border px-2 py-1 text-left">RECEIVED</th>
-              <th className="border px-2 py-1 text-left">DEBIT NOTE</th>
-              <th className="border px-2 py-1 text-left">TDS</th>
-              <th className="border px-2 py-1 text-left">BALANCE</th>
-              <th className="border px-2 py-1 text-left">PAYMENT DETAILS</th>
-              <th className="border px-2 py-1 text-left">UPDATED DETAILS</th>
-              <th className="border px-2 py-1 text-left">ACTION</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">S.No</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Document Details</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Received</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Debit Note</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">TDS</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Balance</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Payment Details</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Updated Details</th>
+              <th className="border border-gray-300 px-2 py-1 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             {payments && payments.length > 0 ? (
               payments.map((item, index) => (
-                <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="border px-2 py-2">{index + 1}</td>
-                  <td className="border px-2 py-2">
+                <tr key={item._id} className="hover:bg-gray-100 bg-gray-50">
+                  <td className="border border-gray-300 px-2 py-2 text-center">{index + 1}</td>
+                  <td className="border border-gray-300 px-2 py-2">
                     {/* {item.documentDetails} */}
                     {item?.invoice_id} INR. {item?.f_amount}/-
                   </td>
-                  <td className="border px-2 py-2 text-right">
+                  <td className="border border-gray-300 px-2 py-2 text-center">
                     {/* {item?.amount_text.toFixed(2) || 0} */}
                     {parseFloat(item?.amount_text || 0).toFixed(2)}
                   </td>
-                  <td className="border px-2 py-2 text-right">
+                  <td className="border border-gray-300 px-2 py-2 text-center">
                     {/* {item.debitNote.toFixed(2)} */}
                     {item?.debit_note_no}/{item?.debit_note_ammount}/-
                     {formatDate(item?.debit_note_date)}/
                     {parseFloat(item?.amount_text || 0).toFixed(2)}
                   </td>
-                  <td className="border px-2 py-2 text-right">
+                  <td className="border border-gray-300 px-2 py-2 text-center">
                     {item?.tds_text}
                   </td>
-                  <td className="border px-2 py-2 text-right font-medium">
+                  <td className="border border-gray-300 px-2 py-2 text-center font-medium">
                     {/* Calculate the balance and format to 2 decimal places */}
                     {(
                       parseFloat(item?.f_amount || 0) -
                       parseFloat(item?.amount_text || 0)
                     ).toFixed(2)}
                   </td>
-                  <td className="border px-2 py-2">
+                  <td className="border border-gray-300 px-2 py-2">
                     {item?.status_short} recd. through {item?.payment_mode} in{" "}
                     {""}
                     {item?.bankId} on {item?.payment_date}. Txn id:{" "}
                     {item?.payment_mode} {""}
                     against {item?.invoice_id}
                   </td>
-                  <td className="border px-2 py-2 text-center">
+                  <td className="border border-gray-300 px-2 py-2 text-center">
                     {formatDate(item?.updated)} | {item?.added_by}
                   </td>
-                  <td className="border px-2 py-2 text-center">
+                  <td className="border border-gray-300 px-2 py-2 text-center">
                     <div className="flex justify-center items-center space-x-2">
                       <button
                         onClick={() =>
