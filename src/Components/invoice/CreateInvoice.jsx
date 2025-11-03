@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { showError, showSuccess } from "../../utils/toastMessage";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchEstimates } from "../../features/estimates/estimateSlice";
 import {
@@ -197,12 +197,15 @@ const CreateInvoice = () => {
   const InputStyle =
     "w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
  
-  // Hardcoded heading
-  const heading = "Create Invoice";
+  // heading logic 
+ const location = useLocation();
+  const { Id, heading } = location.state || {};
+
+  const pageHeading = heading || (Id ? "Update Invoice" : "Create Invoice");
+  const buttonName = heading || (Id?"Update Invoice":"Create Invoice");
 
   const stateOptions = states?.data || states || [];
   const cityOptions = cities?.data || cities || [];
-
   return (
     <>
       {/* Header (unchanged) */}
@@ -211,10 +214,10 @@ const CreateInvoice = () => {
           ACCOUNT SECTION | INVOICE
         </h1>
         <div className="flex gap-2">
-          <button className="text-[#333] border border-[#333] text-xs px-2 py-1 hover:bg-gray-100">
+          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Add Client
           </button>
-          <button className="text-[#333] border border-[#333] text-xs px-2 py-1 hover:bg-gray-100">
+          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Master List
           </button>
         </div>
@@ -226,7 +229,7 @@ const CreateInvoice = () => {
           className="w-full bg-white px-4 pb-7 pt-1 shadow-md"
           onSubmit={handleCreateInvoice}
         >
-          <h1 className="font-normal text-lg text-gray-500 mb-0.5">{heading}</h1>
+          <h1 className="font-normal text-lg text-gray-500 mb-0.5">{pageHeading}</h1>
           <hr className="w-full mb-2 opacity-10" />
 
           {/* Form Fields - Mongoose keys used for name/value */}
@@ -431,13 +434,13 @@ const CreateInvoice = () => {
           <div className="flex gap-2 mt-1 pt-3 border-t border-gray-200">
             <button
               type="submit"
-              className="bg-blue-500 text-white font-normal py-1.5 px-3 text-sm hover:bg-blue-600"
+              className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white cursor-pointer "
             >
-              CREATE INVOICE
+              {buttonName}
             </button>
             <button
               type="button"
-              className="bg-gray-300 text-gray-800 font-normal py-1.5 px-3 text-sm hover:bg-gray-400"
+              className="bg-gray-300 text-gray-800  px-4 py-1.5 text-xs hover:bg-gray-400 cursor-pointer"
             >
               CANCEL
             </button>
@@ -475,7 +478,7 @@ const CreateInvoice = () => {
                       {index + 1}
                     </td>
                     <td className="px-6 py-2  border border-gray-300 text-center text-xs">
-                      <button onClick={()=>navigate(`/payments/ODT/taxInvoiceDetails`)} className="px-2  text-blue-500 hover:text-gray-800 text-center cursor-pointer">
+                      <button onClick={()=>navigate(`/payments/ODT/taxInvoiceDetails/${invoice._id}`)} className="px-2  text-blue-500 hover:text-gray-800 text-center cursor-pointer">
                         {invoice?.invoice_no}
                       </button>
                     </td>

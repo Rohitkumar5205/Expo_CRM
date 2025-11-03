@@ -22,7 +22,9 @@ const unitOptions = [
   "%",
   "L.S.",
   "Rft.",
+  "Nos.",
   "Rmt.",
+  "Sqft.",
   "Pcs.",
   "Sqmtr.",
   "Roll",
@@ -32,6 +34,13 @@ const unitOptions = [
   "RFT",
   "RMT",
   "l.s.",
+  "%",
+  "meter",
+  "sqft",
+  "feet",
+  "inch",
+  "nos",
+  "inch",
 ];
 
 const CreateEstimate1 = () => {
@@ -291,21 +300,21 @@ const CreateEstimate1 = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* ... (JSX remains largely the same) ... */}
-      <div className="w-full h-fit bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1.5 text-sm">
+      <div className="w-full h-fit bg-white ">
+        <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
             Account Section | Estimate
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
             <button
               onClick={handleAddClient}
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+              className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer"
             >
               Add Client
             </button>
             <button
               onClick={handleMasterList}
-              className="px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors"
+              className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer"
             >
               Master List
             </button>
@@ -319,7 +328,7 @@ const CreateEstimate1 = () => {
 
         <form onSubmit={handleSubmit}>
           {/* Main Estimate Details Section (Unchanged) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-4 mb-4">
             {/* Estimate Types */}
             <div>
               <label htmlFor="est_type" className={labelClass}>
@@ -512,7 +521,7 @@ const CreateEstimate1 = () => {
           {items.map((item, index) => (
             <div
               key={index}
-              className=" bg-gray-50 p-4  mb-6 border border-gray-200"
+              className=" bg-gray-50 p-4  mb-4 border border-gray-200"
             >
              {index>0 &&(
                <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
@@ -693,7 +702,7 @@ const CreateEstimate1 = () => {
                       placeholder="e.g. 18"
                       required
                     />
-                    <span className="w-full bg-gray-100 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
+                    <span className="w-fit bg-gray-100 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
                       %
                     </span>
                     <input
@@ -748,7 +757,7 @@ const CreateEstimate1 = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(index)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3.5 py-0.5   transition-colors  flex items-center justify-center text-base font-bold"
+                      className="bg-red-600 hover:bg-red-700 text-white px-3.5 py-0.5   transition-colors  flex items-center justify-center text-base font-bold cursor-pointer"
                       aria-label="Remove Item"
                     >
                       -
@@ -757,7 +766,7 @@ const CreateEstimate1 = () => {
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-0.5  transition-colors  flex items-center justify-center text-base font-bold"
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-0.5  transition-colors  flex items-center justify-center text-base font-bold cursor-pointer"
                     aria-label="Add Item"
                   >
                     +
@@ -771,7 +780,7 @@ const CreateEstimate1 = () => {
           <div className="mt-3 flex space-x-4">
             <button
               type="submit"
-              className="px-4 py-1.5 text-sm bg-[#3598dc] text-white font-medium  hover:bg-[#2a87c5] transition-colors disabled:bg-gray-400"
+              className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white transition-colors disabled:bg-gray-400 cursor-pointer"
               disabled={loading} // 🟢 Disable button while loading
             >
               {loading ? "ADDING..." : "ADD ESTIMATE"}{" "}
@@ -780,7 +789,7 @@ const CreateEstimate1 = () => {
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-1.5 text-sm bg-gray-300 text-gray-800 font-medium  hover:bg-gray-400 transition-colors"
+              className="px-4 py-1.5 text-xs bg-gray-300 text-gray-800   hover:bg-gray-400 transition-colors cursor-pointer"
             >
               CANCEL
             </button>

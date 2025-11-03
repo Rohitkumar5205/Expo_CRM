@@ -259,7 +259,7 @@ const PaymentEdit = () => {
   };
 
   const buttonStyle =
-    "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors";
+    "hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer";
   const handleMasterList = () => navigate("/ihweClientData2026/masterData");
   const handleAddClient = () => navigate("/ihweClientData2026/addNewClients");
   return (
@@ -735,14 +735,14 @@ const PaymentEdit = () => {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="bg-gray-500 text-white px-4 py-2 text-sm font-medium hover:bg-gray-600"
+                className="bg-gray-500 text-white px-4 py-1.5 text-xs hover:bg-gray-600"
               >
                 CANCEL
               </button>
 
               <button
                 type="submit"
-                className="bg-[#337ab7] text-white px-4 py-2 text-sm  font-medium hover:bg-blue-700"
+                className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white"
               >
                 {/* ADD PAYMENT */}
                 UPDATE PAYMENT

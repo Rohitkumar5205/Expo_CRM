@@ -201,8 +201,8 @@ const ClientOverview1 = () => {
   return (
     <div className="w-full h-auto bg-[#eef1f5]">
       {/* Header */}
-      <div className="flex justify-between items-center bg-white  px-5 py-0.5 ">
-        <h2 className="text-xl font-normal text-gray-600">CLIENT OVERVIEW</h2>
+      <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 ">
+        <h2 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">CLIENT OVERVIEW</h2>
         <div className="flex gap-2">
           <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Back to List

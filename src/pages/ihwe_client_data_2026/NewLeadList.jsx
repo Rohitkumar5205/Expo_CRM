@@ -73,9 +73,9 @@ const NewLeadList = () => {
   return (
     <div className="w-full h-auto bg-[#eef1f5]">
       {/* 🔹 Header */}
-      <div className="w-full bg-white shadow-md">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-2 mb-3">
-          <h1 className="text-xl text-gray-500 font-normal">
+      <div className="w-full bg-white mb-6">
+        <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 mb-3">
+          <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
             CLIENT DATA 2023
           </h1>
         </div>
