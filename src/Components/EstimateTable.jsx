@@ -26,9 +26,9 @@ const EstimateTable = ({ clientId }) => {
   );
   const [perInvoiceState, setPerInvoiceState] = useState({});
   const { invoices } = useSelector((state) => state.invoice);
-  console.log("estimates..", estimates?.est_no);
-  console.log("invoices..", invoices);
-  console.log("perInvoices..", perInvoices);
+  console.log("estimates..", estimates);
+  // console.log("invoices..", invoices);
+  // console.log("perInvoices..", perInvoices);
 
   useEffect(() => {
     if (estimates.length > 0 && id) {
@@ -215,7 +215,8 @@ const EstimateTable = ({ clientId }) => {
                 </td>
 
                 <td className="border border-gray-300 px-4 py-2 whitespace-nowrap text-xs text-black text-center">
-                  <Link to={`/payments/estimateDetails/${id}`}>
+                  {/* <Link to={`/payments/estimateDetails/${estimate?.est_no}`}> */}
+                  <Link to={`/payments/estimateDetails/${estimate?._id}`}>
                     <button className="text-[#3598dc] cursor-pointer hover:text-[#566e7d] font-medium flex items-center gap-1 px-1">
                       {estimate?.est_no}
                     </button>
@@ -275,14 +276,14 @@ const EstimateTable = ({ clientId }) => {
 
                     // 💡 CONSOLE.LOG FOR MATCH CONFIRMATION
                     if (matchingInvoice) {
-                      console.log(
-                        "✅ MATCH FOUND for Estimate:",
-                        estimate.est_no,
-                        "| Invoice:",
-                        matchingInvoice.invoice_no
-                      );
+                      // console.log(
+                      //   "✅ MATCH FOUND for Estimate:",
+                      //   estimate.est_no,
+                      //   "| Invoice:",
+                      //   matchingInvoice.invoice_no
+                      // );
                     } else {
-                      console.log("❌ NO MATCH for Estimate:", estimate.est_no);
+                      // console.log("❌ NO MATCH for Estimate:", estimate.est_no);
                     }
                     // 💡 END CONSOLE.LOG
 

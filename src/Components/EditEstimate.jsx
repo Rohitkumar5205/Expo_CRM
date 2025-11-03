@@ -1,177 +1,241 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  fetchEstimates,
+  updateEstimate,
+  clearEstimateState,
+} from "../features/estimates/estimateSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEvents } from "../features/crmEvent/crmEventSlice";
+import { fetchCountries } from "../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../features/state/stateSlice";
+import { fetchCities } from "../features/city/citySlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { showError, showSuccess } from "../utils/toastMessage";
 
-const EditEstimate = ({ onEstimateCreated, onCancel }) => {
+const EditEstimate = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { estimates, loading, error, success } = useSelector(
+    (state) => state.estimates
+  );
+  const { events } = useSelector((state) => state.crmEvents);
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
+
   const [formData, setFormData] = useState({
-    estimateType: "",
-    estimateNo: "NGW/25-26/EST/114",
-    gstNo: "",
-    supplyDate: "",
-    consigneeName: "Organic Expo 2026",
-    address: "Hall No.-12, Ground Floor, ITPO, Pragati Maidan",
-    country: "India",
+    est_type: "",
+    est_no: "",
+    gst_no: "",
+    supply_date: "",
+    consignee_name: "",
+    consignee_addr: "",
+    country: "",
     state: "",
     city: "",
-    pinCode: "110001",
+    pincode: "",
+    remarks: "",
+    // finalAmount: "0.00",
   });
 
   const [items, setItems] = useState([
     {
-      id: Date.now(),
-      itemDesc: "",
+      description: "",
       hsn: "",
       qty: "",
       size: "",
       unit: "",
       rate: "",
-      amount: 0,
-      disc: 0,
-      taxable: 0,
-      gstRate: 0,
-      finalAmount: 0,
+      amount: "0.00",
+      disc: "0",
+      tax: "0.00",
+      gstRate: "",
+      finalAmount: "0.00",
       remarks: "",
     },
+  ]);
+  const unitOptions = [
+    "Inch",
+    "Feet",
+    "Sqft",
+    "Meter",
+    "Nos",
+    "%",
+    "L.S.",
+    "Rft.",
+    "Rmt.",
+    "Pcs.",
+    "Sqmtr.",
+    "Roll",
+    "Pkt",
+    "Mtr",
+    "Q.FT",
+    "RFT",
+    "RMT",
+    "l.s.",
+  ];
+
+  useEffect(() => {
+    dispatch(fetchEstimates());
+    dispatch(fetchEvents());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
+  }, [dispatch]);
+
+  // Effect to populate form when estimate data is available
+  useEffect(() => {
+    if (estimates.length > 0 && id) {
+      const estimateToEdit = estimates.find((est) => est._id === id);
+      if (estimateToEdit) {
+        setFormData({
+          est_type: estimateToEdit.est_type || "",
+          est_no: estimateToEdit.est_no || "",
+          gst_no: estimateToEdit.gst_no || "",
+          supply_date: estimateToEdit.supply_date
+            ? estimateToEdit.supply_date.split("T")[0]
+            : "",
+          consignee_name: estimateToEdit.consignee_name || "",
+          consignee_addr: estimateToEdit.consignee_addr || "",
+          country: estimateToEdit.country || "",
+          state: estimateToEdit.state || "",
+          city: estimateToEdit.city || "",
+          pincode: estimateToEdit.pincode || "",
+          remarks: estimateToEdit.remarks || "",
+        });
+        setItems(estimateToEdit.items || []);
+      }
+    }
+  }, [id, estimates]);
+
+  // Effect for API feedback
+  useEffect(() => {
+    if (success) {
+      showSuccess("Estimate updated successfully!");
+      dispatch(clearEstimateState());
+      navigate(-1); // Go back to the previous page
+    }
+    if (error) {
+      showError(error.message || "Failed to update estimate.");
+      dispatch(clearEstimateState());
+    }
+  }, [success, error, dispatch, navigate]);
+
+  // Effect to recalculate amounts when item properties change
+  useEffect(() => {
+    const newItems = items.map((item) => {
+      const qty = parseFloat(item.qty) || 0;
+      const rate = parseFloat(item.rate) || 0;
+      const disc = parseFloat(item.disc) || 0;
+      const gstRate = parseFloat(item.gstRate) || 0;
+
+      const amount = qty * rate;
+      const taxableValue = amount - (amount * disc) / 100;
+      const gstAmount = (taxableValue * gstRate) / 100;
+      const finalAmount = taxableValue + gstAmount;
+
+      return {
+        ...item,
+        amount: amount.toFixed(2),
+        tax: taxableValue.toFixed(2),
+        finalAmount: finalAmount.toFixed(2),
+      };
+    });
+    setItems(newItems);
+
+    const totalFinalAmount = newItems.reduce(
+      (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
+      0
+    );
+    setFormData((prev) => ({
+      ...prev,
+      finalAmount: totalFinalAmount.toFixed(2),
+    }));
+  }, [
+    // This effect runs when any of these core values change in any item
+    ...items.flatMap((item) => [item.qty, item.rate, item.disc, item.gstRate]),
   ]);
 
   const handleBasicChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleItemChange = (id, field, value) => {
-    setItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, [field]: value };
-
-          const qty = Number(updatedItem.qty) || 0;
-          const rate = Number(updatedItem.rate) || 0;
-          const disc = Number(updatedItem.disc) || 0;
-          const gstRate = Number(updatedItem.gstRate) || 0;
-
-          const newAmount = qty * rate;
-          const newTaxable = newAmount - newAmount * (disc / 100);
-          const newFinalAmount = newTaxable + newTaxable * (gstRate / 100);
-
-          return {
-            ...updatedItem,
-            amount: newAmount.toFixed(2),
-            taxable: newTaxable.toFixed(2),
-            finalAmount: newFinalAmount.toFixed(2),
-          };
-        }
-        return item;
-      })
-    );
+  const handleItemChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedItems = [...items];
+    updatedItems[index] = { ...updatedItems[index], [name]: value };
+    setItems(updatedItems);
   };
 
   const addItemRow = () => {
-    const newItem = {
-      id: Date.now(),
-      itemDesc: "",
-      hsn: "",
-      qty: "",
-      size: "",
-      unit: "",
-      rate: "",
-      amount: 0,
-      disc: 0,
-      taxable: 0,
-      gstRate: 0,
-      finalAmount: 0,
-      remarks: "",
-    };
-    setItems([...items, newItem]);
+    setItems([
+      ...items,
+      {
+        description: "",
+        hsn: "",
+        qty: "",
+        size: "",
+        unit: "",
+        rate: "",
+        amount: "0.00",
+        disc: "0",
+        tax: "0.00",
+        gstRate: "",
+        finalAmount: "0.00",
+        remarks: "",
+      },
+    ]);
   };
 
-  const removeItemRow = (id) => {
+  const removeItemRow = (index) => {
     if (items.length > 1) {
-      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      const updatedItems = items.filter((_, i) => i !== index);
+      setItems(updatedItems);
     }
   };
 
-  const validateForm = () => {
-    if (!formData.estimateType) return "Please select estimate type";
-    if (!formData.gstNo) return "Please enter GST/PAN number";
-    if (!formData.supplyDate) return "Please select supply date";
-    if (!formData.state) return "Please select state";
-    if (!formData.city) return "Please select city";
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    for (let item of items) {
-      if (!item.itemDesc) return "Please enter item description";
-      if (!item.hsn) return "Please enter HSN number";
-      if (!item.qty) return "Please enter quantity";
-      if (!item.unit) return "Please select unit";
-      if (!item.rate) return "Please enter rate";
-    }
+    const isIntrastate = formData.est_type === "Intrastate";
 
-    return null;
-  };
+    const transformedItems = items.map((item) => {
+      const taxableValue = parseFloat(item.tax) || 0;
+      const totalGstRate = parseFloat(item.gstRate) || 0;
+      const gstAmount = (taxableValue * totalGstRate) / 100;
 
-  const handleSave = () => {
-    const validationError = validateForm();
-    if (validationError) {
-      alert(validationError);
-      return;
-    }
+      return {
+        ...item,
+        cgst: isIntrastate ? (gstAmount / 2).toFixed(2) : gstAmount.toFixed(2),
+        cgst_per: isIntrastate ? (totalGstRate / 2).toFixed(0) : "0",
+        igst_per: isIntrastate ? "0" : totalGstRate.toFixed(0),
+      };
+    });
 
-    // Calculate totals
-    const totalAmount = items.reduce(
-      (sum, item) => sum + parseFloat(item.finalAmount || 0),
-      0
-    );
-    const totalTaxable = items.reduce(
-      (sum, item) => sum + parseFloat(item.taxable || 0),
-      0
-    );
-
-    const estimateData = {
-      id: Date.now(),
+    const updatedData = {
       ...formData,
-      items: items,
-      totalAmount: totalAmount.toFixed(2),
-      totalTaxable: totalTaxable.toFixed(2),
-      createdDate: new Date().toLocaleDateString(),
-      status: "Active",
+      items: transformedItems,
     };
 
-    // Show success message
-    alert(
-      `✅ Estimate saved successfully!\n\nEstimate No: ${
-        formData.estimateNo
-      }\nTotal Amount: ₹${totalAmount.toFixed(2)}\nItems: ${items.length}`
-    );
-
-    // Pass data to parent component
-    if (onEstimateCreated) {
-      onEstimateCreated(estimateData);
-    }
+    dispatch(updateEstimate({ id, updatedData }));
   };
 
-  const handleAddEstimate = () => {
-    handleSave();
+  const handleCancel = () => {
+    navigate(-1); // Go back to the previous page
   };
-
-  const ArrowIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="currentColor"
-      viewBox="0 0 16 16"
-    >
-      <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-    </svg>
-  );
 
   return (
     <>
       {/* Heading Section */}
       <div className="w-full h-auto bg-white  px-5 py-1  ">
-        <h2 className="text-xl font-normal text-gray-500 ">
-          ESTIMATE | EDIT
-        </h2>
+        <h2 className="text-xl font-normal text-gray-500 ">ESTIMATE | EDIT</h2>
       </div>
 
-      <div className="w-full min-h-screen bg-gray-100 font-sans mx-1 pt-2 ">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full min-h-screen bg-gray-100 font-sans mx-1 pt-2 "
+      >
         {/* Main Form Section */}
         <div className="max-w-full  bg-white  m-4 ">
           <div className="p-3 mx-2">
@@ -186,14 +250,15 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                   Estimate Types <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="estimateType"
-                  value={formData.estimateType}
+                  name="est_type"
+                  value={formData.est_type}
                   onChange={handleBasicChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select Here</option>
-                  <option value="proforma">Proforma</option>
-                  <option value="quotation">Quotation</option>
+                  <option value="Intrastate">Intrastate</option>
+                  <option value="Interstate Sale">Interstate Sale</option>
+                  <option value="Foreign Sale">Foreign Sale</option>
                 </select>
               </div>
 
@@ -203,8 +268,8 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="text"
-                  name="estimateNo"
-                  value={formData.estimateNo}
+                  name="est_no"
+                  value={formData.est_no}
                   readOnly
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
@@ -216,8 +281,8 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="text"
-                  name="gstNo"
-                  value={formData.gstNo}
+                  name="gst_no"
+                  value={formData.gst_no}
                   onChange={handleBasicChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
@@ -229,8 +294,8 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="date"
-                  name="supplyDate"
-                  value={formData.supplyDate}
+                  name="supply_date"
+                  value={formData.supply_date}
                   onChange={handleBasicChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
@@ -242,11 +307,17 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="text"
-                  name="consigneeName"
-                  value={formData.consigneeName}
-                  onChange={handleBasicChange}
+                  name="consignee_name"
+                  value={formData.consignee_name}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
+                >
+                  {/* <option value="">Select Here</option>
+                  {events.map((event, i) => (
+                    <option key={i} value={event?.event_name}>
+                      {event?.event_name}
+                    </option>
+                  ))} */}
+                </input>
               </div>
             </div>
 
@@ -258,8 +329,8 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="text"
-                  name="address"
-                  value={formData.address}
+                  name="consignee_addr"
+                  value={formData.consignee_addr}
                   onChange={handleBasicChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
@@ -275,7 +346,13 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                   value={formData.country}
                   readOnly
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
+                  onChange={handleBasicChange}
+                >
+                  {/* <option value="">Select Country</option>
+                  {countries.map((country, i) => (
+                    <option key={i}>{country?.name}</option>
+                  ))} */}
+                </input>
               </div>
 
               <div className="col-span-1">
@@ -289,9 +366,10 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select State</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="UP">Uttar Pradesh</option>
-                  <option value="HR">Haryana</option>
+                  {formData.country &&
+                    states.map((state, i) => (
+                      <option key={i}>{state?.name}</option>
+                    ))}
                 </select>
               </div>
 
@@ -306,9 +384,11 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 >
                   <option value="">Select Here</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Noida">Noida</option>
-                  <option value="Gurgaon">Gurgaon</option>
+                  {formData.country &&
+                    formData.state &&
+                    cities?.data?.map((city, i) => (
+                      <option key={i}>{city?.name}</option>
+                    ))}
                 </select>
               </div>
               <div className="col-span-1">
@@ -317,31 +397,25 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                 </label>
                 <input
                   type="text"
-                  name="pinCode"
-                  value={formData.pinCode}
+                  name="pincode"
+                  value={formData.pincode}
                   onChange={handleBasicChange}
                   className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
               </div>
-            
             </div>
 
             {/* Pin Code Row */}
-            
-              
 
             {/* Items Section */}
             {items.map((item, index) => (
-              <div key={item.id} className="mb-1  bg-gray-50 ">
+              <div key={index} className="mb-1  bg-gray-50 ">
                 {/* Item Header */}
 
                 <div className="flex justify-between items-center mb-2">
-                 
-                   <h4 className="w-full bg-gray-500 text-center text-sm font-semibold text-black">
+                  <h4 className="w-full bg-gray-500 text-center text-sm font-semibold text-black">
                     Item No. {index + 1}
                   </h4>
-                 
-                
                 </div>
 
                 {/* Item Fields Row 1 */}
@@ -352,10 +426,9 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="text"
-                      value={item.itemDesc}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "itemDesc", e.target.value)
-                      }
+                      name="description"
+                      value={item.description}
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                       placeholder="Type here..."
                     />
@@ -366,10 +439,9 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="text"
+                      name="hsn"
                       value={item.hsn}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "hsn", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     />
                   </div>
@@ -379,10 +451,9 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="number"
+                      name="qty"
                       value={item.qty}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "qty", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none 
                             [appearance:textfield] 
                             [&::-webkit-inner-spin-button]:appearance-none 
@@ -395,10 +466,9 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="text"
+                      name="size"
                       value={item.size}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "size", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     />
                   </div>
@@ -407,16 +477,17 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                       Unit <span className="text-red-500">*</span>
                     </label>
                     <select
+                      name="unit"
                       value={item.unit}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "unit", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     >
                       <option value="">Select Unit</option>
-                      <option value="kg">Kg</option>
-                      <option value="pcs">Pcs</option>
-                      <option value="ltr">Ltr</option>
+                      {unitOptions.map((unit) => (
+                        <option key={unit} value={unit}>
+                          {unit}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -425,10 +496,9 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="number"
+                      name="rate"
                       value={item.rate}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "rate", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none
                       [appearance:textfield] 
                             [&::-webkit-inner-spin-button]:appearance-none 
@@ -441,6 +511,7 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="number"
+                      name="amount"
                       value={item.amount}
                       readOnly
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
@@ -452,34 +523,32 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="number"
+                      name="disc"
                       value={item.disc}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "disc", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none
                       [appearance:textfield] 
                             [&::-webkit-inner-spin-button]:appearance-none 
                             [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
-                  
                 </div>
 
                 {/* Item Fields Row 2 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-3">
-                  
                   <div>
                     <label className=" block text-xs font-semibold text-gray-700 mb-1">
                       Taxable Value <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
-                      value={item.taxable}
+                      name="tax"
+                      value={item.tax}
                       readOnly
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                     />
                   </div>
-                  
+
                   <div className="col-span-1">
                     <label className="block text-xs font-semibold text-gray-700 mb-1">
                       GST Rate <span className="text-red-500">*</span>
@@ -487,28 +556,27 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     <div className="flex items-center">
                       <input
                         type="number"
+                        name="gstRate"
                         value={item.gstRate}
-                        onChange={(e) =>
-                          handleItemChange(item.id, "gstRate", e.target.value)
-                        }
+                        onChange={(e) => handleItemChange(index, e)}
                         className="w-1/3 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none
                         [appearance:textfield] 
                             [&::-webkit-inner-spin-button]:appearance-none 
                             [&::-webkit-outer-spin-button]:appearance-none"
                       />
-                       <span className=" w-auto bg-gray-100 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
-                      %
-                    </span>
-                    <input
-                      type="text"
-                      value={(
-                        (parseFloat(item.tax) || 0) *
-                        ((parseFloat(item.gstRate) || 0) / 100)
-                      ).toFixed(2)}
-                      required
-                      readOnly
-                      className="w-1/3 bg-gray-100 cursor-not-allowed rounded-l-none border-l-0  px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                    />
+                      <span className=" w-auto bg-gray-100 px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none">
+                        %
+                      </span>
+                      <input
+                        type="text"
+                        value={(
+                          (parseFloat(item.tax) || 0) *
+                          ((parseFloat(item.gstRate) || 0) / 100)
+                        ).toFixed(2)}
+                        required
+                        readOnly
+                        className="w-1/3 bg-gray-100 cursor-not-allowed rounded-l-none border-l-0  px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                      />
                     </div>
                   </div>
 
@@ -518,6 +586,7 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="number"
+                      name="finalAmount"
                       value={item.finalAmount}
                       readOnly
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
@@ -530,37 +599,33 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
                     </label>
                     <input
                       type="text"
+                      name="remarks"
                       value={item.remarks}
-                      onChange={(e) =>
-                        handleItemChange(item.id, "remarks", e.target.value)
-                      }
+                      onChange={(e) => handleItemChange(index, e)}
                       className="w-[250px] px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                       placeholder="Type here..."
                     />
                   </div>
-                    <div className="flex justify-end gap-2 mt-5">
-                  <button
-                    type="button"
-                    onClick={() => removeItemRow(item.id)}
-                    disabled={items.length === 1}
-                    className=" h-8 px-4 py-1.5 text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    -
-                  </button>
-                  {index === items.length - 1 && (
+                  <div className="flex justify-end gap-2 mt-5">
                     <button
                       type="button"
-                      onClick={addItemRow}
-                      className="h-8 px-3.5 py-1.5 text-sm font-semibold bg-green-500 hover:bg-green-600 text-white  transition-colors duration-200"
+                      onClick={() => removeItemRow(index)}
+                      disabled={items.length === 1}
+                      className=" h-8 px-4 py-1.5 text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      +
+                      -
                     </button>
-                  )}
+                    {index === items.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={addItemRow}
+                        className="h-8 px-3.5 py-1.5 text-sm font-semibold bg-green-500 hover:bg-green-600 text-white  transition-colors duration-200"
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
                 </div>
-                </div>
-
-                {/* Add/Remove buttons for this item */}
-              
               </div>
             ))}
 
@@ -569,14 +634,16 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
             <div className="flex flex-col sm:flex-row  items-start sm:items-center mx-1">
               <div className="flex gap-2">
                 <button
-                  onClick={handleAddEstimate}
-                  className="px-4 py-1.5 text-xs bg-[#3598dc] hover:bg-[#447db0] text-white transition-colors duration-200 flex items-center gap-1"
+                  type="submit"
+                  className="px-4 py-1.5 text-sm bg-[#3598dc] text-white font-medium  hover:bg-[#2a87c5] transition-colors disabled:bg-gray-400"
+                  disabled={loading}
                 >
-                  SAVE ESTIMATE 
+                  {loading ? "UPDATING..." : "UPDATE ESTIMATE"}
                 </button>
                 <button
-                  onClick={onCancel}
-                  className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white transition-colors duration-200"
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-4 py-1.5 text-sm bg-gray-300 text-gray-800 font-medium  hover:bg-gray-400 transition-colors"
                 >
                   CANCEL
                 </button>
@@ -584,7 +651,7 @@ const EditEstimate = ({ onEstimateCreated, onCancel }) => {
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </>
   );
 };

@@ -1,20 +1,62 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import mainpic from "../../assets/images/header.png";
 import { fetchEstimates } from "../../features/estimates/estimateSlice";
+import { fetchCompanies } from "../../features/company/companySlice";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 const EstimateFormDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // this will be your est_no
   const dispatch = useDispatch();
+  const [matchedEstimate, setMatchedEstimate] = useState(null);
+  const [company, setCompany] = useState(null);
 
-  // redux logic
-  const { estimates } = useSelector((state) => state.estimates);
-  console.log("estimates details", estimates);
+  // Redux data
+  const { estimates, loading } = useSelector((state) => state.estimates);
+  const { companies } = useSelector((state) => state.companies);
+
+  console.log("companies...", companies);
 
   useEffect(() => {
     dispatch(fetchEstimates());
+    dispatch(fetchCompanies());
   }, [dispatch]);
+
+  // Calculate the total amount from all items
+  const totalAmount =
+    matchedEstimate?.items?.reduce(
+      (sum, item) => sum + (parseFloat(item.amount) || 0),
+      0
+    ) || 0;
+
+  // Calculate the grand total from all items
+  const grandTotal =
+    matchedEstimate?.items?.reduce(
+      (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
+      0
+    ) || 0;
+
+  useEffect(() => {
+    // Match estimate using est_no (since your route uses est_no like "NGW/25-26/EST/009")
+    if (estimates && estimates.length > 0) {
+      const match = estimates.find((e) => e._id === id);
+      setMatchedEstimate(match || null);
+    }
+  }, [id, estimates]);
+
+  useEffect(() => {
+    if (matchedEstimate && companies.length > 0) {
+      // Match company using the companyId from the matched estimate
+      const matchedCompany = companies.find(
+        (c) => c._id === matchedEstimate.companyId
+      );
+      setCompany(matchedCompany || null);
+    }
+  }, [matchedEstimate, companies]);
+
+  // Debug logs
+  console.log("matchedEstimate:", matchedEstimate);
+  console.log("company:", company);
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen ">
@@ -39,13 +81,24 @@ const EstimateFormDetail = () => {
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Client Name
               </td>
-              <td className="border px-1 py-1 text-[11px]">The-Pahari-Life</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {company?.companyName}
+              </td>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Contact Person
               </td>
-              <td className="border px-1 py-1 text-[11px]">Amit Joshi</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {[
+                  company?.contacts?.[0]?.title,
+                  company?.contacts?.[0]?.firstName,
+                  company?.contacts?.[0]?.surname,
+                ]
+                  .filter(Boolean) // removes empty or undefined values
+                  .join(" ")}
+              </td>
+
               <td className="border px-1 py-1 text-[11px] font-semibold">
-                PF Invoice No.
+                Estimate No.
               </td>
               <td className="border px-1 py-1 text-[11px]">NGW/25-26/PI/116</td>
             </tr>
@@ -57,43 +110,64 @@ const EstimateFormDetail = () => {
                 Client Address
               </td>
               <td className="border px-1 py-1 text-[11px]" rowSpan="2">
-                Naukuchiatal - Bhimtal Road, Bhimtal, Nainital-263136,
-                Uttarakhand, India
+                {[
+                  company?.landline,
+                  company?.address,
+                  company?.city,
+                  company?.state,
+                  company?.country,
+                  company?.pincode,
+                ]
+                  .filter(Boolean) // remove empty or undefined values
+                  .join(", ")}
               </td>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Designation
               </td>
-              <td className="border px-1 py-1 text-[11px]">Founder</td>
-              <td className="border px-1 py-1 text-[11px] font-semibold">
-                PF Invoice Date
+              <td className="border px-1 py-1 text-[11px]">
+                {company?.contacts?.[0]?.designation}
               </td>
-              <td className="border px-1 py-1 text-[11px]">06 Sep 25</td>
+              <td className="border px-1 py-1 text-[11px] font-semibold">
+                Estimate Date
+              </td>
+              <td className="border px-1 py-1 text-[11px]">
+                {matchedEstimate?.supply_date}
+              </td>
             </tr>
             <tr>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Email Id
               </td>
               <td className="border px-1 py-1 text-[11px]">
-                joanjoshi999@gmail.com
+                {company?.contacts?.[0]?.email}
               </td>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Place of Supply
               </td>
-              <td className="border px-1 py-1 text-[11px]">Nainital</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {matchedEstimate?.city}
+              </td>
             </tr>
             <tr>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 GSTIN/ PAN No.
               </td>
-              <td className="border px-1 py-1 text-[11px]">05AGCPJ7208D1ZW</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {matchedEstimate?.gst_no}
+              </td>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Contact No.
               </td>
-              <td className="border px-1 py-1 text-[11px]">9868082880</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {" "}
+                {company?.contacts?.[0]?.mobile}
+              </td>
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 State of Supply
               </td>
-              <td className="border px-1 py-1 text-[11px]">Uttarakhand</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {matchedEstimate?.state}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -132,29 +206,44 @@ const EstimateFormDetail = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border  px-2 py-1 text-[11px] text-center">1</td>
-              <td className="border  px-2 py-1 text-[11px]">
-                Organic Expo 2026
-                <br />
-                Stall Number 106 Booked
-              </td>
-              <td className="border  px-2 py-1 text-[11px] text-center">
-                998596
-              </td>
-              <td className="border  px-2 py-1 text-[11px] text-center">1</td>
-              <td className="border  px-2 py-1 text-[11px] text-center">6</td>
-              <td className="border  px-2 py-1 text-[11px] text-center">L.S</td>
-              <td className="border  px-2 py-1 text-[11px] text-center">
-                11700
-              </td>
-              <td className="border  px-2 py-1 text-[11px] text-center">14%</td>
-              <td className="border  px-2 py-1 text-[11px] text-center">
-                59999
-              </td>
-            </tr>
+            {matchedEstimate &&
+              matchedEstimate.items.map((item, index) => (
+                <tr>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {index + 1}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px]">
+                    {matchedEstimate?.consignee_name}
+                    <br />
+                    {item?.remarks}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.hsn}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.qty}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.size}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.unit}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.rate}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {" "}
+                    {item?.disc}
+                  </td>
+                  <td className="border  px-2 py-1 text-[11px] text-center">
+                    {item?.amount}
+                  </td>
+                </tr>
+              ))}
+
             {/* Empty rows for spacing */}
-            {[...Array(18)].map((_, i) => (
+            {[...Array(16)].map((_, i) => (
               <tr key={i} style={{ height: "30px" }}>
                 <td className="border-t border-b border-l border-r border-t-gray-200 border-b-gray-200  border-l-black border-r-black  px-2 py-1 text-[11px]"></td>
                 <td className="border-t border-b border-l border-r border-t-gray-200 border-b-gray-200  border-l-black border-r-black  px-2 py-1 text-[11px]"></td>
@@ -167,9 +256,7 @@ const EstimateFormDetail = () => {
                 <td className="border-t border-b border-l border-r border-t-gray-200 border-b-gray-200  border-l-black border-r-black px-2 py-1 text-[11px]"></td>
               </tr>
             ))}
-            <tr>
-              <td></td>
-            </tr>
+            <tr></tr>
             <tr>
               <td
                 colSpan="8"
@@ -178,7 +265,7 @@ const EstimateFormDetail = () => {
                 Total Taxable Value
               </td>
               <td className="border  px-2 py-1 text-[11px] text-center font-semibold">
-                59999
+                {totalAmount.toFixed(2)}
               </td>
             </tr>
           </tbody>
@@ -212,23 +299,32 @@ const EstimateFormDetail = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border px-2 py-1 text-[11px] text-center">1</td>
-              <td className="border px-2 py-1 text-[11px] text-center">
-                998596
-              </td>
-              <td className="border px-2 py-1 text-[11px] text-center">1</td>
-              <td className="border px-2 py-1 text-[11px] text-center">
-                59999
-              </td>
-              <td className="border px-2 py-1 text-[11px] text-center">18%</td>
-              <td className="border px-2 py-1 text-[11px] text-center">
-                10799
-              </td>
-              <td className="border px-2 py-1 text-[11px] text-center">
-                70798
-              </td>
-            </tr>
+            {matchedEstimate &&
+              matchedEstimate.items.map((item, index) => (
+                <tr>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {index + 1}
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.hsn}
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.qty}
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.tax}
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.gstRate}%
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.cgst}
+                  </td>
+                  <td className="border px-2 py-1 text-[11px] text-center">
+                    {item?.finalAmount.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
             <tr>
               <td
                 colSpan="1"
@@ -243,7 +339,7 @@ const EstimateFormDetail = () => {
                 Grand Total
               </td>
               <td className="border text-center align-middle text-[11px] font-semibold">
-                70799
+                {grandTotal.toFixed(2)}
               </td>
             </tr>
             <tr>
