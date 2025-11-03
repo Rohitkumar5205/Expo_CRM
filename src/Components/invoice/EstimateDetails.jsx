@@ -4,12 +4,11 @@ import { FaPrint } from "react-icons/fa";
 import { useReactToPrint } from "react-to-print";
 // import InvoiceForm from '../InvoiceForm';
 import EstimateFormDetail from "./EstimateFormDetail";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const EstimateDetails = () => {
+  const { id } = useParams();
   const sameRef = useRef();
-
-  // print function
 
   const handleprint = useReactToPrint({
     contentRef: sameRef,
@@ -27,7 +26,7 @@ const EstimateDetails = () => {
           <button className="w-auto h-auto text-xs text-center text-white border border-[#3598dc] bg-[#3598dc] px-2  hover:bg-[#2678ae] cursor-pointer">
             CLIENTS LIST
           </button>
-          <Link to="/editestimate">
+          <Link to={`/payments/estimateEdit/${id}`}>
             <button className="w-fit h-fit border border-[#3598dc] text-[#3598dc] text-[12px] hover:text-white hover:bg-[#3598dc] px-2 py-1  cursor-pointer">
               <MdOutlineModeEdit />
             </button>

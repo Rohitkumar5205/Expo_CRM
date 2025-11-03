@@ -4,8 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchCompanies } from "../features/company/companySlice";
 import EstimateTable from "./EstimateTable";
 
-
-
 const AccountSection1 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

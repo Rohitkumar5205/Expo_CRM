@@ -153,6 +153,7 @@ const App = () => {
             path="/payments/estimateDetails/:id"
             element={<EstimateDetails />}
           />
+          <Route path="/payments/estimateEdit/:id" element={<EditEstimate />} />
           {/* Old Visitor Data */}
           <Route
             path="/OLDVisitorData/oldVisitorList"
@@ -231,8 +232,6 @@ const App = () => {
           <Route path="/addByAdmin/event" element={<AddEvent />} />
 
           {/* Invoice / Utility */}
-
-          <Route path="/editestimate" element={<EditEstimate />} />
         </Route>
       </Routes>
     </>
