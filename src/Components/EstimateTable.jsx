@@ -85,8 +85,8 @@ const EstimateTable = ({ clientId }) => {
   );
 
   // New function to handle navigation for Print/Copy buttons
-  const handlePrintCopyNavigation = (copyType) => {
-    navigate(`/payments/ODT/taxInvoiceDetails/${id}`, {
+  const handlePrintCopyNavigation = (copyType, invId) => {
+    navigate(`/payments/ODT/taxInvoiceDetails/${invId}`, {
       state: { heading: copyType },
     });
   };
@@ -303,7 +303,7 @@ const EstimateTable = ({ clientId }) => {
                       // 3. If a matching invoice is found, display its details
                       const displayInvAmount =
                         matchingInvoice.finalAmount?.toFixed(2) || "0.00";
-
+                      const invId = matchingInvoice._id;
                       return (
                         <button className="text-gray-700  font-medium">
                           {`${matchingInvoice.invoice_no} | ${formatInvoiceDate(
@@ -331,7 +331,9 @@ const EstimateTable = ({ clientId }) => {
                 <td className="border border-gray-300 px-2 py-2 whitespace-nowrap text-xs text-black text-center ">
                   <div className="flex justify-between gap-1">
                     <button
-                      onClick={() => handlePrintCopyNavigation("Original Copy")}
+                      onClick={() =>
+                        handlePrintCopyNavigation("Original Copy", {invId})
+                      }
                       className={stylebutton}
                     >
                       O
