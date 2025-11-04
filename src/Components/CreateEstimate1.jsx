@@ -213,18 +213,23 @@ const CreateEstimate1 = () => {
     const transformedItems = items.map((item) => {
       const taxableValue = parseFloat(item.tax) || 0;
       const totalGstRate = parseFloat(item.gstRate) || 0;
-
+      const totalGstAmount = (taxableValue * (totalGstRate / 100));
       let cgstPer = "0";
       let cgstAmount = "0.00";
       let igstPer = "0";
 
       if (isIntrastate) {
-        cgstPer = (totalGstRate / 2).toFixed(0);
-        cgstAmount = (taxableValue * (parseFloat(cgstPer) / 100)).toFixed(2);
+        // Intrastate Sale: Fill FULL rate and amount into CGST fields (as per your request)
+        cgstPer = totalGstRate.toFixed(0);
+        cgstAmount = totalGstAmount.toFixed(2);
+        igstPer = "0"; // Ensure IGST is 0
       } else if (isInterstate) {
+        // Interstate Sale: Fill FULL rate into IGST rate, and full amount into CGST amount field (as per your existing schema structure)
         igstPer = totalGstRate.toFixed(0);
-        cgstAmount = (taxableValue * (totalGstRate / 100)).toFixed(2); // Using cgst field for IGST amount as per your schema structure
+        cgstAmount = totalGstAmount.toFixed(2);
+        cgstPer = "0"; // Ensure CGST rate is 0
       } else if (isForeignSale) {
+        // Foreign Sale: Tax is 0
         cgstPer = "0";
         cgstAmount = "0.00";
         igstPer = "0";
@@ -523,11 +528,11 @@ const CreateEstimate1 = () => {
               key={index}
               className=" bg-gray-50 p-4  mb-4 border border-gray-200"
             >
-             {index>0 &&(
-               <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
-                 item No.{index+1}
-              </h3>
-             )}
+              {index > 0 && (
+                <h3 className="w-full bg-gray-500 text-sm text-center font-semibold text-gray-900 mb-4 py-0.5">
+                  item No.{index + 1}
+                </h3>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-x-4 gap-y-3 items-end">
                 {/* ... (Item fields: Description, HSN, Qty, Size, Unit, Rate, Amount) ... */}

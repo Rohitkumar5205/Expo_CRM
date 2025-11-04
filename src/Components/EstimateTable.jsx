@@ -26,9 +26,9 @@ const EstimateTable = ({ clientId }) => {
   );
   const [perInvoiceState, setPerInvoiceState] = useState({});
   const { invoices } = useSelector((state) => state.invoice);
-  console.log("estimates..", estimates);
+  // console.log("estimates..", estimates);
   // console.log("invoices..", invoices);
-  // console.log("perInvoices..", perInvoices);
+  console.log("perInvoices..", perInvoices);
 
   useEffect(() => {
     if (estimates.length > 0 && id) {
@@ -103,9 +103,9 @@ const EstimateTable = ({ clientId }) => {
       })
       .replace(/\//g, " ");
   };
-  const handleCreateINV = () => {
-    navigate(`/payments/createInvoice/${estimates?.est_no}`);
-  };
+  // const handleCreateINV = () => {
+  //   navigate(`/payments/createInvoice/${estimates?.est_no}`);
+  // };
 
   return (
     <div className="overflow-x-auto p-4">
@@ -275,17 +275,16 @@ const EstimateTable = ({ clientId }) => {
                     );
 
                     // 💡 CONSOLE.LOG FOR MATCH CONFIRMATION
-                    if (matchingInvoice) {
-                      // console.log(
-                      //   "✅ MATCH FOUND for Estimate:",
-                      //   estimate.est_no,
-                      //   "| Invoice:",
-                      //   matchingInvoice.invoice_no
-                      // );
-                    } else {
-                      // console.log("❌ NO MATCH for Estimate:", estimate.est_no);
-                    }
-                    // 💡 END CONSOLE.LOG
+                    // if (matchingInvoice) {
+                    //   console.log(
+                    //     "✅ MATCH FOUND for Estimate:",
+                    //     estimate.est_no,
+                    //     "| Invoice:",
+                    //     matchingInvoice.invoice_no
+                    //   );
+                    // } else {
+                    //   console.log("❌ NO MATCH for Estimate:", estimate.est_no);
+                    // }
 
                     // 2. Helper function to format the date for the Invoice
                     const formatInvoiceDate = (dateString) => {
@@ -302,8 +301,6 @@ const EstimateTable = ({ clientId }) => {
 
                     if (matchingInvoice) {
                       // 3. If a matching invoice is found, display its details
-                      // Note: 'finalAmount' is missing on your sample Invoice.
-                      // Using '0.00' as placeholder for now, you should add finalAmount to your Invoice data.
                       const displayInvAmount =
                         matchingInvoice.finalAmount?.toFixed(2) || "0.00";
 

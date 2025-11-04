@@ -15,7 +15,7 @@ const EstimateFormDetail = () => {
   const { estimates, loading } = useSelector((state) => state.estimates);
   const { companies } = useSelector((state) => state.companies);
 
-  console.log("companies...", companies);
+  // console.log("companies...", companies);
 
   useEffect(() => {
     dispatch(fetchEstimates());
@@ -25,7 +25,7 @@ const EstimateFormDetail = () => {
   // Calculate the total amount from all items
   const totalAmount =
     matchedEstimate?.items?.reduce(
-      (sum, item) => sum + (parseFloat(item.amount) || 0),
+      (sum, item) => sum + (parseFloat(item?.tax) || 0),
       0
     ) || 0;
 
@@ -55,8 +55,8 @@ const EstimateFormDetail = () => {
   }, [matchedEstimate, companies]);
 
   // Debug logs
-  console.log("matchedEstimate:", matchedEstimate);
-  console.log("company:", company);
+  // console.log("matchedEstimate:", matchedEstimate);
+  // console.log("company:", company);
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen ">
@@ -100,7 +100,9 @@ const EstimateFormDetail = () => {
               <td className="border px-1 py-1 text-[11px] font-semibold">
                 Estimate No.
               </td>
-              <td className="border px-1 py-1 text-[11px]">NGW/25-26/PI/116</td>
+              <td className="border px-1 py-1 text-[11px]">
+                {matchedEstimate?.est_no}
+              </td>
             </tr>
             <tr>
               <td
@@ -131,7 +133,16 @@ const EstimateFormDetail = () => {
                 Estimate Date
               </td>
               <td className="border px-1 py-1 text-[11px]">
-                {matchedEstimate?.supply_date}
+                {matchedEstimate?.supply_date
+                  ? new Date(matchedEstimate.supply_date).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )
+                  : ""}
               </td>
             </tr>
             <tr>
@@ -208,7 +219,7 @@ const EstimateFormDetail = () => {
           <tbody>
             {matchedEstimate &&
               matchedEstimate.items.map((item, index) => (
-                <tr>
+                <tr key={index}>
                   <td className="border  px-2 py-1 text-[11px] text-center">
                     {index + 1}
                   </td>
@@ -237,7 +248,7 @@ const EstimateFormDetail = () => {
                     {item?.disc}
                   </td>
                   <td className="border  px-2 py-1 text-[11px] text-center">
-                    {item?.amount}
+                    {item?.tax}
                   </td>
                 </tr>
               ))}
@@ -265,7 +276,7 @@ const EstimateFormDetail = () => {
                 Total Taxable Value
               </td>
               <td className="border  px-2 py-1 text-[11px] text-center font-semibold">
-                {totalAmount.toFixed(2)}
+                {totalAmount?.toFixed(2)}
               </td>
             </tr>
           </tbody>
@@ -301,7 +312,7 @@ const EstimateFormDetail = () => {
           <tbody>
             {matchedEstimate &&
               matchedEstimate.items.map((item, index) => (
-                <tr>
+                <tr key={index}>
                   <td className="border px-2 py-1 text-[11px] text-center">
                     {index + 1}
                   </td>

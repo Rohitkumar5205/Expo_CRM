@@ -27,7 +27,7 @@ const CreateInvoice = () => {
   const { cities } = useSelector((state) => state.cities);
   const { invoices } = useSelector((state) => state.invoice);
   console.log("companies...", companies);
-  console.log("events...", events);
+  // console.log("events...", events);
   // console.log(" cities...", cities);
 
   // 1. Initial state to match Mongoose schema keys
