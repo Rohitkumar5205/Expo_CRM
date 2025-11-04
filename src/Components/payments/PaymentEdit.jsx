@@ -265,10 +265,10 @@ const PaymentEdit = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100 font-sans">
       {/* 1. Heading and Navigation Buttons */}
-      <div className="max-w-full mx-auto bg-white shadow-lg sticky top-0 z-10">
+      <div className="max-w-full mx-auto bg-white  sticky top-0 z-10">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
-            ACCOUNT SECTION | PAYMENTS
+            ACCOUNT 
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
             <button onClick={handleAddClient} className={buttonStyle}>
@@ -281,11 +281,14 @@ const PaymentEdit = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-md p-4 m-4 rounded">
+      <div className="bg-white shadow-md pb-4 px-5 pt-2 m-4 rounded">
+        <div className="flex justify-between mb-2">
+           <h1 className="font-medium text-lg text-gray-500 mb-0.5">
+            Edit Payments 
+          </h1>
+          {/*<button className="px-2 py-0.5 h-fit w-auto border border-gray-300 text-gray-600 text-sm text-center font-normal bg-white hover:bg-gray-100">Add TDS</button>*/}
+        </div>
         <hr className="w-full opacity-10 mb-6" />
-        {/* <form
-        // onSubmit={handleSubmit}
-        > */}
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
             <div className="flex flex-col md:col-span-1">
@@ -297,7 +300,7 @@ const PaymentEdit = () => {
                 value={formData.pymtAgainst}
                 onChange={handlePymtAgainstChange}
                 required
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs  h-8 font-normal focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Here</option>
                 <option value="PerInvoice">Performa Invoice</option>
@@ -314,7 +317,7 @@ const PaymentEdit = () => {
                 value={formData.invoice_id}
                 onChange={handleDocumentChange}
                 required
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs  h-8 font-normal focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               >
                 <option value="">Select Here</option>
                 {documentOptions.length > 0 ? (
@@ -350,7 +353,7 @@ const PaymentEdit = () => {
                     f_amount: value,
                   }));
                 }}
-                className="border border-gray-300 px-2 text-xs h-8  focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+                className="border border-gray-300 px-2 text-xs h-8 bg-gray-100 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 inputMode="decimal"
               />
             </div>
@@ -413,7 +416,7 @@ const PaymentEdit = () => {
                 name="payment_date"
                 value={formData.payment_date}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs bg-gray-100 h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 required
               />
             </div>
@@ -465,7 +468,7 @@ const PaymentEdit = () => {
                 name="debit_note_date"
                 value={formData.debit_note_date}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                className="border border-gray-300 px-2 text-xs bg-gray-100 h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
               />
             </div>
 
@@ -479,7 +482,7 @@ const PaymentEdit = () => {
                 // onChange={handlePaymentTypeChange}
                 value={formData.status_short}
                 onChange={handleInputChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+                className="border border-gray-300 px-2 text-xs  h-8 font-normal focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 required
               >
                 <option value="">Select Here</option>
@@ -498,7 +501,7 @@ const PaymentEdit = () => {
                 name="payment_mode"
                 value={formData.payment_mode}
                 onChange={handlePaymentModeChange}
-                className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
+                className="border border-gray-300 px-2 text-xs  h-8 font-normal focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
                 required
               >
                 <option value="">Select Here</option>
@@ -510,208 +513,7 @@ const PaymentEdit = () => {
               </select>
             </div>
 
-            <div className="md:col-span-1 h-8"></div>
-          </div>
-
-          {showCardFields && (
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-              <div className="flex flex-col md:col-span-1">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Card Type
-                </label>
-                <select
-                  name="card_type"
-                  value={formData.card_type}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                >
-                  <option value="">Select Card Type</option>
-                  <option value="Debit Card">Debit Card</option>
-                  <option value="Credit Card">Credit Card</option>
-                </select>
-              </div>
-              <div className="flex flex-col md:col-span-1">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Name on Card
-                </label>
-                <input
-                  type="text"
-                  name="card_name"
-                  value={formData.card_name}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col md:col-span-1">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Transaction Number
-                </label>
-                <input
-                  type="text"
-                  name="card_transaction_no"
-                  value={formData.card_transaction_no}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    value = value.replace(/[^0-9.]/g, "");
-                    if ((value.match(/\./g) || []).length > 1) {
-                      return;
-                    }
-                    setFormData((prev) => ({
-                      ...prev,
-                      card_transaction_no: value,
-                    }));
-                  }}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col md:col-span-1">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Card Last Four Digit
-                </label>
-                <input
-                  type="text"
-                  name="card_last_digit"
-                  value={formData.card_last_digit}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (!isNaN(value) && value.length <= 4) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        card_last_digit: value,
-                      }));
-                    }
-                  }}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Bank Name of Card *
-                </label>
-                <select
-                  name="card_bank"
-                  value={formData.card_bank}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                  required={showCardFields}
-                >
-                  <option value="">Select Bank Name</option>
-                  <option value="Kotak Bank">Kotak Bank</option>
-                  <option value="Punjab National Bank">
-                    Punjab National Bank
-                  </option>
-                  <option value="Yes Bank Ltd">Yes Bank Ltd</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {showEwalletFields && (
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  e-Wallet Name
-                </label>
-                <select
-                  name="wallet_name"
-                  value={formData.wallet_name}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                >
-                  <option value="">Select e-Wallet</option>
-                  <option value="Paytm">Paytm</option>
-                  <option value="PhonePe powered by YES Bank">
-                    PhonePe powered by YES Bank
-                  </option>
-                  <option value="Gpay">Gpay</option>
-                </select>
-              </div>
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Transaction Number
-                </label>
-                <input
-                  type="text"
-                  name="wallet_transaction_no"
-                  value={formData.wallet_transaction_no}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Mobile Number
-                </label>
-                <input
-                  type="text"
-                  name="wallet_mobile"
-                  value={formData.wallet_mobile}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (!isNaN(value) && value.length <= 10) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        wallet_mobile: value,
-                      }));
-                    }
-                  }}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {showNeftFields && (
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Bank Name
-                </label>
-                <select
-                  name="neft_bank"
-                  value={formData.neft_bank}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 font-medium focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                >
-                  <option value="">Select Here</option>
-                  <option value="AU Small Finance Bank">
-                    AU Small Finance Bank
-                  </option>
-                  <option value="Kotak Bank">Kotak Bank</option>
-                  <option value="Punjab National Bank">
-                    Punjab National Bank
-                  </option>
-                  <option value="Yes Bank Ltd">Yes Bank Ltd</option>
-                </select>
-              </div>
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  UTR No.
-                </label>
-                <input
-                  type="text"
-                  name="utr_no"
-                  value={formData.utr_no}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    value = value.replace(/[^0-9.]/g, "");
-                    if ((value.match(/\./g) || []).length > 1) {
-                      return;
-                    }
-                    setFormData((prev) => ({
-                      ...prev,
-                      utr_no: value,
-                    }));
-                  }}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {showUpiFields && (
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-              <div className="flex flex-col md:col-span-3">
+            <div className="flex flex-col md:col-span-2">
                 <label className="text-[13px] text-gray-900 font-medium mb-1">
                   Transaction Details
                 </label>
@@ -722,10 +524,10 @@ const PaymentEdit = () => {
                   onChange={handleInputChange}
                   className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                 />
-              </div>
+              
             </div>
-          )}
-
+          </div>
+          <hr className="w-full opacity-10 pb-4 " />
           <div className="flex justify-between">
             <div>
               <p className="text-red-500 text-xs mt-2">* Required Fields</p>

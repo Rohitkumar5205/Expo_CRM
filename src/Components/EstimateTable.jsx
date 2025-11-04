@@ -86,7 +86,7 @@ const EstimateTable = ({ clientId }) => {
 
   // New function to handle navigation for Print/Copy buttons
   const handlePrintCopyNavigation = (copyType) => {
-    navigate("/payments/ODT/taxInvoiceDetails", {
+    navigate(`/payments/ODT/taxInvoiceDetails/${id}`, {
       state: { heading: copyType },
     });
   };

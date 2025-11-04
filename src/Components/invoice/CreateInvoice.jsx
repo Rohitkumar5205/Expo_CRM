@@ -214,10 +214,10 @@ const CreateInvoice = () => {
           ACCOUNT SECTION | INVOICE
         </h1>
         <div className="flex gap-2">
-          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
+          <button onClick={()=>navigate("/ihweClientData2026/addNewClients")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Add Client
           </button>
-          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
+          <button onClick={()=>navigate("/ihweClientData2026/masterData")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
             Master List
           </button>
         </div>

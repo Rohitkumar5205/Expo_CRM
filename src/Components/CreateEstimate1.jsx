@@ -281,6 +281,15 @@ const CreateEstimate1 = () => {
     // 🟢 NEW: Dispatch the Redux Thunk
     dispatch(addEstimate(finalEstimateData));
   };
+  // Derived filtered lists
+const filteredStates = states?.data?.filter(
+  (st) => st.country_id === estimateData.country
+);
+
+const filteredCities = cities?.data?.filter(
+  (ct) => ct.state_id === estimateData.state
+);
+
 
   // --- Navigation Handlers (Unchanged) ---
   const handleMasterList = () => {
@@ -437,68 +446,74 @@ const CreateEstimate1 = () => {
               />
             </div>
 
-            {/* Country */}
-            <div>
-              <label htmlFor="country" className={labelClass}>
-                Country *
-              </label>
-              <select
-                id="country"
-                name="country"
-                value={estimateData.country}
-                onChange={handleEstimateChange}
-                className={`w-full  ${inputClass}`}
-                required
-              >
-                <option value="">Select Country</option>
-                {countries.map((country, i) => (
-                  <option key={i}>{country?.name}</option>
-                ))}
-              </select>
-            </div>
+           {/* Country */}
+<div>
+  <label htmlFor="country" className={labelClass}>
+    Country *
+  </label>
+  <select
+    id="country"
+    name="country"
+    value={estimateData.country}
+    onChange={handleEstimateChange}
+    className={`w-full ${inputClass}`}
+    required
+  >
+    <option value="">Select Country</option>
+    {countries?.data?.map((country) => (
+      <option key={country.id} value={country.id}>
+        {country.name}
+      </option>
+    ))}
+  </select>
+</div>
 
-            {/* State */}
-            <div>
-              <label htmlFor="state" className={labelClass}>
-                State *
-              </label>
-              <select
-                id="state"
-                name="state"
-                value={estimateData.state}
-                onChange={handleEstimateChange}
-                className={`w-full ${inputClass}`}
-                required
-              >
-                <option value="">Select State</option>
-                {estimateData.country &&
-                  states.map((state, i) => (
-                    <option key={i}>{state?.name}</option>
-                  ))}
-              </select>
-            </div>
+{/* State */}
+<div>
+  <label htmlFor="state" className={labelClass}>
+    State *
+  </label>
+  <select
+    id="state"
+    name="state"
+    value={estimateData.state}
+    onChange={handleEstimateChange}
+    className={`w-full ${inputClass}`}
+    required
+    disabled={!estimateData.country}
+  >
+    <option value="">Select State</option>
+    {filteredStates?.map((state) => (
+      <option key={state.id} value={state.id}>
+        {state.name}
+      </option>
+    ))}
+  </select>
+</div>
 
-            {/* City */}
-            <div>
-              <label htmlFor="city" className={labelClass}>
-                City *
-              </label>
-              <select
-                id="city"
-                name="city"
-                value={estimateData.city}
-                onChange={handleEstimateChange}
-                className={`w-full ${inputClass}`}
-                required
-              >
-                <option value="">Select City</option>
-                {estimateData.country &&
-                  estimateData.state &&
-                  cities?.data?.map((city, i) => (
-                    <option key={i}>{city?.name}</option>
-                  ))}
-              </select>
-            </div>
+{/* City */}
+<div>
+  <label htmlFor="city" className={labelClass}>
+    City *
+  </label>
+  <select
+    id="city"
+    name="city"
+    value={estimateData.city}
+    onChange={handleEstimateChange}
+    className={`w-full ${inputClass}`}
+    required
+    disabled={!estimateData.state}
+  >
+    <option value="">Select City</option>
+    {filteredCities?.map((city) => (
+      <option key={city.id} value={city.id}>
+        {city.name}
+      </option>
+    ))}
+  </select>
+</div>
+
 
             {/* Pin Code */}
             <div>
