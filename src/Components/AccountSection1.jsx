@@ -94,12 +94,6 @@ const AccountSection1 = () => {
             >
               Payments
             </button>
-            {/* <button
-              onClick={() => navigate(`/ihweClientData2026/creditNote/${id}`)}
-              className="bg-white text-gray-700 border border-gray-400 hover:bg-gray-200 px-3 py-1  text-xs font-medium"
-            >
-              Credit Note
-            </button> */}
           </div>
         </div>
         <hr className="opacity-10 " />
