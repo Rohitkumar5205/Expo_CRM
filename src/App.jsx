@@ -56,6 +56,7 @@ import CreateEstimate1 from "./Components/CreateEstimate1";
 import CreditNote from "./Components/CreditNote";
 import Payments from "./Components/payments/Payment";
 import PaymentEdit from "./Components/payments/PaymentEdit";
+import InvoiceEdit from "./Components/InvoiceEdit";
 const App = () => {
   return (
     <>
@@ -138,8 +139,8 @@ const App = () => {
             element={<CreateInvoice />}
           />
           <Route
-            path="/payments/createInvoice"
-            element={<CreateInvoice />}
+            path="/payments/createInvoice/invoice/invoiceEdit"
+            element={<InvoiceEdit />}
           />
           <Route
             path="/payments/ODT/taxInvoiceDetails/:id"

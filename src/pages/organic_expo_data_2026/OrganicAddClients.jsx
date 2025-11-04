@@ -498,7 +498,7 @@ const handleChange=(e)=>{
 
   const handleSubmit=(e)=>{
     e.preventDefault();
-    console.log("form has been successfully submitted:", formData);
+    console.log("form has been successfully submitted:", );
     toast.success("form has been successfully submitted");
   };
   

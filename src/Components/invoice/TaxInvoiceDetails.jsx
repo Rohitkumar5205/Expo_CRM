@@ -24,9 +24,7 @@ const TaxInvoiceDetails = () => {
         <h1 className="text-xl text-gray-600">INVOICE</h1>
         <div className="flex gap-2">
           
-            <button onClick={()=> navigate("/payments/createInvoice", {
-          state: { id, heading: "Update Invoice" },
-        })} 
+            <button onClick={()=> navigate("/payments/createInvoice/invoice/invoiceEdit")} 
         className="w-fit h-fit border border-[#3598dc] text-[#3598dc] text-[12px] hover:text-white hover:bg-[#3598dc] px-2 py-1  cursor-pointer">
               <MdOutlineModeEdit />
             </button>
