@@ -7,15 +7,30 @@ import UploaderTextarea from "../../Components/UploaderTextarea";
 const RawDataList = () => {
   const [selectedClient, setSelectedClient] = useState(null);
 
- // Columns definition with padding
-const columns = [
-  { label: "Company Name", accessor: "company.name",  },
+   const dispatch = useDispatch();
+  const { companies, loading, error } = useSelector((state) => state.companies);
+
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+  
+   const columns = [
+    {
+      label: "Company Name",
+      accessor: "company.name",
+      render: (value, row) => (
+        <Link to={`/clientOverview1/${row.id}`} className="hover:underline text-blue-500">
+          {value}
+        </Link>
+      ),
+    },
+   { label: "Company Name", accessor: "company.name",  },
   { label: "Category", accessor: "category.main",  },
   { label: "Mobile", accessor: "mobile.number",  },
   { label: "City", accessor: "location.city",  },
   { label: "Source", accessor: "source.type",  },
   { label: "Added on", accessor: "added.date",  },
-];
+  ];
 
 // 10 rows data
 const rows = [
