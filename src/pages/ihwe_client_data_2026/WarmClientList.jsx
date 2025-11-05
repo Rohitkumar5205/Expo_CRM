@@ -38,108 +38,150 @@ const WarmClientList = () => {
          }, 
         { label: "Contact Details", accessor: "contact.details" },
         { label: "Category", accessor: "category.main" },
-        { label: "Nature Bussiness", accessor: "Nature Bussiness" },
+        { label: "Nature Bussiness", accessor: "business.type" },
         { label: "City", accessor: "location.city" },
         { label: "State", accessor: "location.state" },
-        { label: "Source", accessor: "source.type" },
-        { label: "Status", accessor: "Status" },
+        { label: "Source", accessor: "source.name" },
+        { label: "Status", accessor: "status.name" },
         { label: "Event", accessor: "Event.type" },
         { label: "Updated Details", accessor: "Update.detail" },
     ];
 
-     // 🧱 Prepare Rows
-  const rows = companies.map((c) => ({
-    id: c._id,
-    checkbox: true,
-    company: {
-      name: c.companyName,
-    },
-    contact: {
-      details: c.contacts
-        ?.map(
-          (contact) =>
-            `${contact.firstName} ${contact.surname} | ${contact.mobile}`
-        )
-        .join(", "),
-    },
-    category: { main: c.category },
-    business: { type: c.businessNature },
-    location: { city: c.city, state: c.state },
-    source: { name: c.dataSource || "-" },
-    update: {
-      details: `${new Date(c.updatedAt).toLocaleDateString()} | ${
-        c.contacts?.[0]?.firstName || "-"
-      }`,
-    },
-  }));
+  
+// 2️⃣ Dynamic data mapping from Redux
+const dynamicRows = companies?.map((c) => ({
+  id: c._id,
+  checkbox: true,
+  company: {
+    name: c.companyName || "N/A",
+  },
+  contact: {
+    details:
+      c.contacts?.length > 0
+        ? c.contacts
+            .map(
+              (contact) =>
+                `${contact.firstName} ${contact.surname} | ${contact.mobile}`
+            )
+            .join(", ")
+        : "No Contacts",
+  },
+  category: { main: c.category || "Not Specified" },
+  business: { type: c.businessNature || "Not Specified" },
+  location: { city: c.city || "Unknown", state: c.state || "Unknown" },
+  source: { name: c.dataSource || "Manual Entry" },
+  status: { name: c.status || "Pending" },
+  Event: { type: c.event || "N/A" },
+  Update: {
+    detail: `${new Date(c.updatedAt).toLocaleDateString()} | ${
+      c.contacts?.[0]?.firstName || "-"
+    }`,
+  },
+})) || [];
 
-  {/* const rows = [
+
+// 3️⃣ Final rows selection (fallback logic)
+const rows = dynamicRows.length > 0 ? dynamicRows : fallbackRows;
+
+  const fallbackRows = [
   {
-    id: {_id:1},
+    id: 1,
     company: { name: "Tentamus India Pvt. Ltd" },
     contact: { details: "Rohit Sharma | +91-9876543210 | rohit@tentamus.com" },
     category: { main: "Food & Beverages" },
-    "Nature Bussiness": "Manufacturing",
-    Bussiness: { type: "Private Limited" },
+    business: { type: "Manufacturing" },
     location: { city: "New Delhi", state: "Delhi" },
-    source: { type: "Website Inquiry" },
-    Status: "Warm Client",
-    Event: { type: "Organic Expo 2026" },
+    source: { name: "Website Inquiry" },
+    status: { name: "Warm Client" },
+    event: { type: "Organic Expo 2026" },
     Update: { detail: "Updated by Abhay Raj on 20 Sep 2025" },
   },
   {
-    id: {_id:2},
+    id: 2,
     company: { name: "AgroTech Solutions" },
     contact: { details: "Priya Verma | +91-9876501234 | priya@agrotech.com" },
     category: { main: "Agriculture" },
-    "Nature Bussiness": "Trading",
-    Bussiness: { type: "Proprietorship" },
+    business: { type: "Trading" },
     location: { city: "Lucknow", state: "Uttar Pradesh" },
-    source: { type: "Cold Call" },
-    Status: "Follow-up Call",
+    source: { name: "Cold Call" },
+    status: { name: "Follow-up" },
     Event: { type: "Agri India Expo 2025" },
     Update: { detail: "Updated by Rishabh Singh on 18 Sep 2025" },
   },
   {
-    id: {_id:3},
+    id: 3,
     company: { name: "Green Organics Ltd" },
     contact: { details: "Ankit Mehra | +91-9012345678 | ankit@greenorganics.com" },
     category: { main: "Organic Products" },
-    "Nature Bussiness": "Distributor",
-    Bussiness: { type: "Public Limited" },
+    business: { type: "Distributor" },
     location: { city: "Mumbai", state: "Maharashtra" },
-    source: { type: "Reference" },
-    Status: "Sent Details",
+    source: { name: "Reference" },
+    status: { name: "Sent Details" },
     Event: { type: "Organic Expo 2026" },
     Update: { detail: "Updated by Tanya Jaiswal on 16 Sep 2025" },
   },
   {
-    id: {_id:4},
+    id: 4,
     company: { name: "Herbal Life Care" },
     contact: { details: "Sunita Gupta | +91-9090909090 | sunita@herballife.com" },
     category: { main: "Healthcare" },
-    "Nature Bussiness": "Retail" ,
-    Bussiness: { type: "Partnership" },
+    business: { type: "Retail" },
     location: { city: "Jaipur", state: "Rajasthan" },
-    source: { type: "Event Lead" },
-    Status: "New Client",
+    source: { name: "Event Lead" },
+    status: { name: "New Client" },
     Event: { type: "Health Expo 2025" },
     Update: { detail: "Updated by Shimpi Rawat on 14 Sep 2025" },
   },
   {
-    id: {_id:5},
+    id: 5,
     company: { name: "Spice World Exporters" },
     contact: { details: "Arjun Yadav | +91-9123456789 | arjun@spiceworld.com" },
     category: { main: "Export" },
-    "Nature Bussiness": "Exporter",
-    Bussiness: { type: "LLP" },
+    business: { type: "Exporter" },
     location: { city: "Kochi", state: "Kerala" },
-    source: { type: "Walk-in" },
-    Status: "Not Interested",
+    source: { name: "Walk-in" },
+    status: { name: "Not Interested" },
     Event: { type: "International Trade Fair 2025" },
     Update: { detail: "Updated by Manoj Mishra on 10 Sep 2025" },
-  }
-];*/}
+  },
+  {
+    id: 6,
+    company: { name: "BioPure Naturals" },
+    contact: { details: "Kavita Joshi | +91-9811122233 | kavita@biopure.com" },
+    category: { main: "Cosmetics" },
+    business: { type: "Manufacturer" },
+    location: { city: "Pune", state: "Maharashtra" },
+    source: { name: "Social Media" },
+    status: { name: "Interested" },
+    Event: { type: "Beauty Expo 2025" },
+    Update: { detail: "Updated by Anjali Singh on 12 Oct 2025" },
+  },
+  {
+    id: 7,
+    company: { name: "Ayurveda Essentials" },
+    contact: { details: "Rajesh Patel | +91-9823456789 | rajesh@ayurvedaessentials.com" },
+    category: { main: "Wellness" },
+    business: { type: "Retail Chain" },
+    location: { city: "Ahmedabad", state: "Gujarat" },
+    source: { name: "Reference" },
+    status: { name: "Warm Client" },
+    Event: { type: "Wellness Fair 2025" },
+    Update: { detail: "Updated by Deepak Singh on 22 Oct 2025" },
+  },
+  {
+    id: 8,
+    company: { name: "EcoGrow Fertilizers" },
+    contact: { details: "Meena Kumari | +91-9876001122 | meena@ecogrow.com" },
+    category: { main: "Agriculture" },
+    business: { type: "Supplier" },
+    location: { city: "Chandigarh", state: "Punjab" },
+    source: { name: "Cold Email" },
+    status: { name: "Pending Follow-up" },
+    Event: { type: "Agri Expo 2026" },
+    Update: { detail: "Updated by Vishal Tiwari on 02 Nov 2025" },
+  },
+];
+
 
   const handleClientClick = (clientData) => {
     setSelectedClient(clientData);

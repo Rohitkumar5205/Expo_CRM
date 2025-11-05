@@ -151,14 +151,14 @@ const ReminderList = () => {
                 <>
                    <div className="w-full bg-white  mb-4">
                         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-5 py-1.5">
-                            <h1 className="text-xl  text-gray-700 mb-2 lg:mb-0">
+                            <h1 className="text-xl  text-gray-600 mb-2 lg:mb-0">
                                 CLIENT REMINDERS
                             </h1>
                             <button onClick={()=>navigation("/notification/reminderList/upcomingList")} className='px-3 py-1.5 bg-[#78a300] hover:bg-[#bcbfb5] text-white text-[13px] font-normal'>Upcoming Reminder</button>
                         </div>
                     </div>
-                    <div className="w-[97%] bg-white m-4 mb-40">
-                        
+
+                    <div className="w-[97%] bg-white m-5 "> 
                         <div className='flex justify-between pt-1'>
                             <h1 className='text-base font-semibold text-gray-600 pl-4 pt-1'>REMINDER LIST</h1>
                           <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1 pr-3">

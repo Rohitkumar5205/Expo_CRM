@@ -59,7 +59,7 @@ const NewLeadList = () => {
     business: { type: c.businessNature },
     location: { city: c.city, state: c.state },
     source: { name: c.dataSource || "-" },
-    update: {
+    update: { 
       details: `${new Date(c.updatedAt).toLocaleDateString()} | ${
         c.contacts?.[0]?.firstName || "-"
       }`,

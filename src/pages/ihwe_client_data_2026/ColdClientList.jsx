@@ -1,14 +1,104 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Globallytable from "../../Components/Globallytable";
 import Textarea from "../../Components/Textarea";
 import ClientOverview from "../../Components/ClientOverview";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCompanies } from "../../features/company/companySlice";
 
 const ColdClientList = () => {
   const [selectedClient, setSelectedClient] = useState(null);
 
-  const columns = [
-    { label: "Company Name", accessor: "company.name" },
-    { label: "Contact Details", accessor: "contact.details" },
+  const dispatch = useDispatch();
+  const { companies, loading, error } = useSelector((state) => state.companies);
+
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+
+const fallbackRows = [
+  {
+    id: 1,
+    company: { name: "Tentamus India Pvt. Ltd" },
+    contact: { details: "Rohit Sharma | +91-9876543210 | rohit@tentamus.com" },
+    Exihibitor: { Category: "Food & Beverages" },
+    Nature: { Bussiness: "Manufacturer" },
+    location: { city: "New Delhi", state: "Delhi" },
+    source: { type: "Website Inquiry" },
+    Status: { name: "Hot Client" },
+    Event: { name: "Food Expo 2025", type: "Anita Verma" },
+    Document: { Number: "DOC-2025-001" },
+    Update: { detail: "Updated by Abhay Raj on 20 Sep 2025" },
+  },
+  {
+    id: 2,
+    company: { name: "AgroTech Solutions" },
+    contact: { details: "Priya Verma | +91-9876501234 | priya@agrotech.com" },
+    Exihibitor: { Category: "Agriculture" },
+    Nature: { Bussiness: "Distributor" },
+    location: { city: "Lucknow", state: "Uttar Pradesh" },
+    source: { type: "Cold Call" },
+    Status: { name: "Follow-up" },
+    Event: { name: "AgroFair 2025", type: "Rishabh Singh" },
+    Document: { Number: "DOC-2025-002" },
+    Update: { detail: "Updated by Rishabh Singh on 18 Sep 2025" },
+  },
+  {
+    id: 3,
+    company: { name: "Green Organics Ltd" },
+    contact: { details: "Ankit Mehra | +91-9012345678 | ankit@greenorganics.com" },
+    Exihibitor: { Category: "Organic Products" },
+    Nature: { Bussiness: "Exporter" },
+    location: { city: "Mumbai", state: "Maharashtra" },
+    source: { type: "Reference" },
+    Status: { name: "Sent Details" },
+    Event: { name: "Organic India Expo", type: "Tanya Jaiswal" },
+    Document: { Number: "DOC-2025-003" },
+    Update: { detail: "Updated by Tanya Jaiswal on 16 Sep 2025" },
+  },
+];
+
+const dynamicRows =
+  companies?.map((c) => ({
+    id: c._id,
+    company: { name: c.companyName || "N/A" },
+    contact: {
+      details:
+        c.contacts?.length > 0
+          ? c.contacts
+              .map((ct) => `${ct.firstName} ${ct.surname} | ${ct.mobile}`)
+              .join(", ")
+          : "No Contacts",
+    },
+    Exihibitor: { Category: c.category || "Uncategorized" },
+    Nature: { Bussiness: c.businessNature || "Unknown" },
+    location: { city: c.city || "-", state: c.state || "-" },
+    source: { type: c.dataSource || "Manual Entry" },
+    Status: { name: c.status || "Pending" },
+    Event: { name: c.eventName || "No Event", type: c.dealBy || "Not Assigned" },
+    Document: { Number: c.documentNo || "N/A" },
+    Update: {
+      detail: `${
+        new Date(c.updatedAt).toLocaleDateString() || "-"
+      } | ${c.contacts?.[0]?.firstName || "-"} `,
+    },
+  })) || [];
+
+  const rows =
+  dynamicRows && dynamicRows.length > 0 ? dynamicRows : fallbackRows;
+
+
+   const columns = [
+    {
+      label: "Company Name",
+      accessor: "company.name",
+      render: (value, row) => (
+        <Link to={`/clientOverview1/${row.id}`} className="hover:underline text-blue-500">
+          {value}
+        </Link>
+      ),
+    },
+   { label: "Contact Details", accessor: "contact.details" },
     { label: "Exihibitor Category", accessor: "Exihibitor.Category" },
     { label: "Nature of Bussiness", accessor: "Nature.Bussiness" },
     { label: "City", accessor: "location.city" },
@@ -19,129 +109,6 @@ const ColdClientList = () => {
     { label: "Document No.", accessor: "Document.Number" },
     { label: "DealBy", accessor: "Event.type" },
     { label: "Updated Details", accessor: "Update.detail" },
-  ];
-
-  const rows = [
-    {
-      company: { name: "TechVision Pvt. Ltd." },
-      contact: { details: "info@techvision.com, +91-9876543210" },
-      Exihibitor: { Category: "IT Services" },
-      Nature: { Bussiness: "Software Development" },
-      location: { city: "Bangalore", state: "Karnataka" },
-      source: { type: "Website" },
-      Status: { name: "Active" },
-      Event: { name: "Tech Expo 2025", type: "Mr. Sharma" },
-      Document: { Number: "DOC-001" },
-      Update: { detail: "Meeting scheduled for next week" },
-    },
-    {
-      company: { name: "GreenLeaf Organics" },
-      contact: { details: "contact@greenleaf.in, +91-9988776655" },
-      Exihibitor: { Category: "Agriculture" },
-      Nature: { Bussiness: "Organic Farming" },
-      location: { city: "Pune", state: "Maharashtra" },
-      source: { type: "Referral" },
-      Status: { name: "Pending" },
-      Event: { name: "Agro Fair", type: "Ms. Verma" },
-      Document: { Number: "DOC-002" },
-      Update: { detail: "Requested brochure via email" },
-    },
-    {
-      company: { name: "Skyline Constructions" },
-      contact: { details: "sales@skyline.com, +91-9123456789" },
-      Exihibitor: { Category: "Real Estate" },
-      Nature: { Bussiness: "Construction" },
-      location: { city: "Hyderabad", state: "Telangana" },
-      source: { type: "Cold Call" },
-      Status: { name: "Interested" },
-      Event: { name: "Infra Expo", type: "Mr. Khan" },
-      Document: { Number: "DOC-003" },
-      Update: { detail: "Shared proposal" },
-    },
-    {
-      company: { name: "MediCare Solutions" },
-      contact: { details: "support@medicare.com, +91-9786543210" },
-      Exihibitor: { Category: "Healthcare" },
-      Nature: { Bussiness: "Medical Equipment" },
-      location: { city: "Chennai", state: "Tamil Nadu" },
-      source: { type: "Event" },
-      Status: { name: "Active" },
-      Event: { name: "HealthCon", type: "Dr. Mehta" },
-      Document: { Number: "DOC-004" },
-      Update: { detail: "Demo arranged for next week" },
-    },
-    {
-      company: { name: "EduSmart Technologies" },
-      contact: { details: "hello@edusmart.com, +91-9345678901" },
-      Exihibitor: { Category: "Education" },
-      Nature: { Bussiness: "E-learning" },
-      location: { city: "Delhi", state: "Delhi" },
-      source: { type: "LinkedIn" },
-      Status: { name: "Pending" },
-      Event: { name: "EduTech Summit", type: "Ms. Kapoor" },
-      Document: { Number: "DOC-005" },
-      Update: { detail: "Follow-up in 2 days" },
-    },
-    {
-      company: { name: "AquaPure Systems" },
-      contact: { details: "sales@aquapure.com, +91-9654321876" },
-      Exihibitor: { Category: "Water Solutions" },
-      Nature: { Bussiness: "Water Purification" },
-      location: { city: "Ahmedabad", state: "Gujarat" },
-      source: { type: "Distributor" },
-      Status: { name: "Active" },
-      Event: { name: "Water Expo", type: "Mr. Patel" },
-      Document: { Number: "DOC-006" },
-      Update: { detail: "Quotation sent" },
-    },
-    {
-      company: { name: "AutoDrive Motors" },
-      contact: { details: "contact@autodrive.com, +91-9123987654" },
-      Exihibitor: { Category: "Automobile" },
-      Nature: { Bussiness: "Car Manufacturing" },
-      location: { city: "Mumbai", state: "Maharashtra" },
-      source: { type: "Website" },
-      Status: { name: "Interested" },
-      Event: { name: "Auto Expo", type: "Mr. Desai" },
-      Document: { Number: "DOC-007" },
-      Update: { detail: "Test drive requested" },
-    },
-    {
-      company: { name: "FinServe Capital" },
-      contact: { details: "info@finserve.com, +91-9345098765" },
-      Exihibitor: { Category: "Finance" },
-      Nature: { Bussiness: "Investment Advisory" },
-      location: { city: "Kolkata", state: "West Bengal" },
-      source: { type: "Email Campaign" },
-      Status: { name: "Pending" },
-      Event: { name: "Finance Summit", type: "Mr. Roy" },
-      Document: { Number: "DOC-008" },
-      Update: { detail: "Presentation scheduled" },
-    },
-    {
-      company: { name: "Foodies Hub Pvt. Ltd." },
-      contact: { details: "support@foodieshub.com, +91-9456123789" },
-      Exihibitor: { Category: "Food & Beverages" },
-      Nature: { Bussiness: "Restaurant Chain" },
-      location: { city: "Jaipur", state: "Rajasthan" },
-      source: { type: "Event" },
-      Status: { name: "Active" },
-      Event: { name: "Food Fest", type: "Chef Arora" },
-      Document: { Number: "DOC-009" },
-      Update: { detail: "Franchise inquiry received" },
-    },
-    {
-      company: { name: "NextGen Robotics" },
-      contact: { details: "hello@nextgenrobotics.com, +91-9765432189" },
-      Exihibitor: { Category: "Robotics" },
-      Nature: { Bussiness: "AI & Robotics" },
-      location: { city: "Gurugram", state: "Haryana" },
-      source: { type: "LinkedIn" },
-      Status: { name: "Interested" },
-      Event: { name: "Robotics Expo", type: "Ms. Nair" },
-      Document: { Number: "DOC-010" },
-      Update: { detail: "Product demo scheduled" },
-    },
   ];
 
   const handleClientClick = (clientData) => {
