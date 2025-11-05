@@ -147,54 +147,56 @@ const OrganicHotClientsList = () => {
         <ClientOverview client={selectedClient} onBack={handleBackClick} />
       ) : (
         <>
-          <div className="w-full bg-white shadow-md border-b">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-              <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
+          <div className="w-full bg-white shadow-md ">
+            <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 mb-3">
+              <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
                 ORGANIC EXPO 2026 - HOT CLIENT LIST
               </h1>
             </div>
           </div>
-          <div className="w-full bg-white p-3">
-            <h1 className="text-lg text-[#4f5a67] pl-4 pt-1">
+          <div className="w-[97%] bg-white p-1 m-4">
+             <div className="flex justify-between md:justify-between ">
+              <h1 className="text-base font-semibold text-gray-900 pl-4 pt-1">
               HOT CLIENT LIST
             </h1>
-            <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
+            <div className="flex flex-wrap justify-start gap-2 mb-1">
               <button
                 onClick={handleAddNewLeadClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Add New Lead
               </button>
               <button
                 onClick={handleWarmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Warm Client
               </button>
               <button
                 onClick={handleHotClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Hot Client
               </button>
               <button
                 onClick={handleConfirmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Confirm Client
               </button>
               <button
                 onClick={handleColdClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Cold Client
               </button>
               <button
                 onClick={handleRawDataListClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
+                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
               >
                 Raw Data List
               </button>
+            </div>
             </div>
             <hr className="opacity-10 mb-2" />
             <div className="text-xs">
@@ -205,7 +207,7 @@ const OrganicHotClientsList = () => {
               />
             </div>
           </div>
-          <div className="bg-white shadow-md m-3 p-4 rounded-md">
+          <div className="bg-white shadow-md m-4 w-[97%]">
             <Textarea />
           </div>
         </>

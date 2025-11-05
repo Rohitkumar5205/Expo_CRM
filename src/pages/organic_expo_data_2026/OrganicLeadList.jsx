@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Globallytable from "../../Components/Globallytable";
 import Textarea from "../../Components/Textarea";
 import ClientOverview from "../../Components/ClientOverview";
@@ -146,54 +146,60 @@ const OrganicLeadList = () => {
         <ClientOverview client={selectedClient} onBack={handleBackClick} />
       ) : (
         <>
-          <div className="w-full bg-white shadow-md border-b">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-3">
-              <h1 className="text-xl font-semibold text-gray-700 mb-2 lg:mb-0">
+          <div className="w-full bg-white mb-6">
+            <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 mb-3">
+              <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
                 ORGANIC EXPO 2026 - NEW LEAD LIST
               </h1>
             </div>
           </div>
-          <div className="w-full bg-white p-3">
-            <h1 className="text-lg text-[#4f5a67] pl-4 pt-1">NEW LEAD LIST</h1>
-            <div className="flex flex-wrap justify-start md:justify-end gap-2 mb-1">
-              <button
-                onClick={handleAddNewLeadClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Add New Lead
-              </button>
-              <button
-                onClick={handleWarmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Warm Client
-              </button>
-              <button
-                onClick={handleHotClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Hot Client
-              </button>
-              <button
-                onClick={handleConfirmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Confirm Client
-              </button>
-              <button
-                onClick={handleColdClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Cold Client
-              </button>
-              <button
-                onClick={handleRawDataListClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1 rounded-sm text-sm font-medium"
-              >
-                Raw Data List
-              </button>
-            </div>
-            <hr className="opacity-10 mb-2" />
+          <div className="w-[97%] bg-white ml-5 p-2 ">
+             <div className="flex justify-between items-center pr-4 pt-2">
+                      <h1 className="text-base font-semibold text-gray-900 pl-4">
+                        NEW LEAD LIST
+                      </h1>
+            
+                      {/* 🔸 Navigation Buttons */}
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Link
+                          to="/ihweClientData2026/addNewClients"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Add New Lead
+                        </Link>
+                        <Link
+                          to="/ihweClientData2026/warmClientList"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Warm Client
+                        </Link>
+                        <Link
+                          to="/ihweClientData2026/hotClientList"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Hot Client
+                        </Link>
+                        <Link
+                          to="/ihweClientData2026/confirmClientList"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Confirm Client
+                        </Link>
+                        <Link
+                          to="/ihweClientData2026/coldClientList"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Cold Client
+                        </Link>
+                        <Link
+                          to="/ihweClientData2026/rawDataList"
+                          className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                        >
+                          Raw Data List
+                        </Link>
+                      </div>
+                    </div>
+            <hr className="opacity-10 my-2 " />
             <div className="text-xs">
               <Globallytable
                 rows={rows}
@@ -202,7 +208,7 @@ const OrganicLeadList = () => {
               />
             </div>
           </div>
-          <div className="bg-white shadow-md m-3 p-4 rounded-md">
+          <div className="bg-white shadow-md m-3 ml-5 p-3">
             <Textarea />
           </div>
         </>

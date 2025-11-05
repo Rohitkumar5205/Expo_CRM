@@ -208,7 +208,7 @@ const ConfirmClientList = () => {
                         </div>
                         <hr className="opacity-10 mb-2" />
                         <div className="text-xs">
-                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} />
+                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} specificColor={false} />
                         </div>
                     </div>
                     {/* The Textarea component is now placed outside of the table's container */}

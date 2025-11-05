@@ -219,7 +219,7 @@ const exportTableToExcel = () => {
                         <hr className="opacity-10 mb-2" />
                         
                         <div ref={printref} className="text-xs print:text-sm print:block print:w-full print:overflow-visible">
-                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} extrabutton={false} />
+                            <Globallytable rows={rows} colomns={columns} onRowClick={handleClientClick} extrabutton={false} specificColor={false} />
                         </div>
                         
                     </div>

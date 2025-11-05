@@ -157,6 +157,7 @@ const rows = [
                 colomns={columns}
                 onRowClick={handleClientClick}
                  tableClassName="text-xs"
+                 specificColor={false}
   
               />
             </div>

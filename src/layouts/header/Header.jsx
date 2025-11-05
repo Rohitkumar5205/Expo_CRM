@@ -72,7 +72,7 @@ const Header = () => {
           <FaPaypal size={20} className=" text-gray-300 cursor-pointer" />
         </li>
         <li className="relative p-1 rounded-full hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
-          <IoNotifications size={22} className="text-gray-300" />
+          <IoNotifications onClick={()=>navigate("/notification/reminderList")} size={20} className="text-gray-300" />
 
           {/* Notification Count Badge */}
           <span className="absolute -top-1 -right-1 bg-[#37C6D3] text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-sm">

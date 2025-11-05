@@ -140,13 +140,13 @@ const NewLeadList = () => {
               Error loading companies: {error}
             </div>
           ) : (
-            <Globallytable rows={rows} colomns={columns} />
+            <Globallytable rows={rows} colomns={columns} specificColor={false}/>
           )}
         </div>
       </div>
 
       {/* 🔹 Notes Section */}
-      <div className="bg-white shadow-md m-3 ml-5 p-3 -md">
+      <div className="bg-white shadow-md m-3 ml-5 p-3 ">
         <Textarea />
       </div>
     </div>
