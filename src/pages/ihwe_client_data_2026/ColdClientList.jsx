@@ -200,6 +200,7 @@ const ColdClientList = () => {
                 rows={rows}
                 colomns={columns}
                 onRowClick={handleClientClick}
+                specificColor={false}
               />
             </div>
           </div>

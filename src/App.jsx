@@ -57,6 +57,8 @@ import CreditNote from "./Components/CreditNote";
 import Payments from "./Components/payments/Payment";
 import PaymentEdit from "./Components/payments/PaymentEdit";
 import InvoiceEdit from "./Components/InvoiceEdit";
+import ReminderList from "./pages/Notification/ReminderList";
+import UpcomingList from "./pages/Notification/UpcomingList";
 const App = () => {
   return (
     <>
@@ -73,7 +75,16 @@ const App = () => {
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<MainComponent />} />
           {/* <Route path="/client-overview" element={<ClientOverview />} /> */}
-
+         
+          {/* Notification Page */}
+          <Route
+           path="/notification/reminderList"
+           element={<ReminderList/>}
+            />
+            <Route
+           path="/notification/reminderList/upcomingList"
+           element={<UpcomingList/>}
+            />
           {/* Section One */}
           <Route
             path="/ihweClientData2026/addNewClients"

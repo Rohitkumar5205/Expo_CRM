@@ -1,5 +1,6 @@
 import React, { useRef, useState, useMemo } from "react";
 import { TbCaretUpDownFilled } from "react-icons/tb";
+import { RiExpandUpDownFill } from "react-icons/ri";
 
 // Helper function to access nested object properties
 const getValue = (obj, path) =>
@@ -10,6 +11,7 @@ const Globallytable = ({
   colomns = [],
   onRowClick,
   extrabutton = true,
+  specificColor=true,
 }) => {
   const [filters, setFilters] = useState({});
   const [globalSearch, setGlobalSearch] = useState("");
@@ -223,7 +225,7 @@ const Globallytable = ({
         <div>
           <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 w-full min-w-max">
             <thead>
-              <tr className="bg-[#555555] text-white">
+              <tr className={specificColor?"bg-[#337ab7] text-white":"bg-[#555555] text-white"}>
                 <th className="h-8 w-[60px] pl-3 border border-gray-200 print-hidden">
                   <div className="h-6 flex items-center justify-center">
                     <input
@@ -251,16 +253,18 @@ const Globallytable = ({
                         setSortConfig({ key: col.accessor, direction: "asc" });
                       }
                     }}
-                    className=" h-8 pl-3 border border-gray-200 text-center cursor-pointer select-none"
+                    className=" h-6 pl-3 border border-gray-200 text-center cursor-pointer select-none"
                     style={{ width: col.width }}
-                  >
+                  > <div  className="flex gap-3 justify-center">
                     {col.label}
 
-                    {sortConfig.key === col.accessor && (
-                      <span className="ml-3">
+                    {sortConfig.key === col.accessor? (
+                      <span className="ml-0.5">
                         {sortConfig.direction === "asc" ? "▲" : "▼"}
+                       
                       </span>
-                    )}
+                    ):(<RiExpandUpDownFill  size={16} />)}
+                    </div>
                   </th>
                 ))}
               </tr>
