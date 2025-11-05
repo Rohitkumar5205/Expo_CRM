@@ -139,7 +139,7 @@ const App = () => {
             element={<CreateInvoice />}
           />
           <Route
-            path="/payments/createInvoice/invoice/invoiceEdit"
+            path="/payments/invoiceEdit/:id"
             element={<InvoiceEdit />}
           />
           <Route

@@ -7,12 +7,30 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 // -------------------- 🧠 Async Thunks --------------------
 
 // ✅ Get all estimates
+// export const fetchEstimates = createAsyncThunk(
+//   "estimates/fetchAll",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.get(`${BASE_URL}/estimates`);
+//       return res.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data || err.message);
+//     }
+//   }
+// );
+// ✅ Get grouped estimates by companyId
 export const fetchEstimates = createAsyncThunk(
   "estimates/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (companyId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${BASE_URL}/estimates`);
-      return res.data;
+      const res = await axios.get(`${BASE_URL}/estimates/grouped/${companyId}`);
+
+      // API returns: { success, count, data: [...] }
+      if (res.data.success) {
+        return res.data.data;
+      } else {
+        return rejectWithValue(res.data.message || "Failed to fetch estimates");
+      }
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }

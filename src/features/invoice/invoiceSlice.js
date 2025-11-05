@@ -47,12 +47,9 @@ export const createInvoice = createAsyncThunk(
 // 📍 UPDATE Invoice
 export const updateInvoice = createAsyncThunk(
   "invoice/update",
-  async ({ id, updatedData }, thunkAPI) => {
+  async ({ id, data }, thunkAPI) => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/invoices/${id}`,
-        updatedData
-      );
+      const response = await axios.put(`${BASE_URL}/invoices/${id}`, data);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
