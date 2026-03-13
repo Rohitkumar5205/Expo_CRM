@@ -25,7 +25,7 @@ const Login = () => {
         loginUser({
           user_name: formData.username,
           user_password: formData.password,
-        })
+        }),
       ).unwrap();
 
       // OTP will be generated and sent via backend (or console/log)

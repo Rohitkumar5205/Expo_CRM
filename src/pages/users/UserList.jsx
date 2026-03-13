@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import {  Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, deleteUser } from "../../features/auth/userSlice";
@@ -34,9 +34,17 @@ const UserList = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#f5f5f5]">
-      <div className="w-full bg-white border-b border-gray-200">
-        <div className="flex items-center justify-between px-6 py-2">
+      <div className="flex justify-between items-center py-2 px-6 w-full bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between  ">
           <h1 className="text-xl font-normal text-gray-600">USERS</h1>
+        </div>
+        <div>
+          <button
+            onClick={() => navigate("/users/addUser")}
+            className="rounded h-auto w-auto border border-[#ccc] text-[13px] font-normal bg-white hover:bg-[#ccc] px-[10px] py-[4px]  text-center truncate sm:w-auto cursor-pointer"
+          >
+            Add User
+          </button>
         </div>
       </div>
 
@@ -120,7 +128,6 @@ const UserList = () => {
                         className="px-1.5 py-1 border border-[#3598dc] text-[#3598dc] bg-white "
                         title="Edit"
                       >
-                        
                         <BiEdit size={14} />
                       </button>
                       <button

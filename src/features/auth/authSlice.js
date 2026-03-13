@@ -14,15 +14,21 @@ export const loginUser = createAsyncThunk(
       const response = await axios.post(
         `${BASE_URL}/login`,
         { user_name, user_password },
-        { withCredentials: true } // cookie handling if needed
+        { withCredentials: true }, // cookie handling if needed
       );
+
       // Save username for resend OTP
-      localStorage.setItem("user_name", user_name);
+      // localStorage.setItem("user_name", user_name);
+
+      // sessionStorage use karo
+      sessionStorage.setItem("user_name", user_name);
+      sessionStorage.setItem("user_id", response.data.user_id);
+
       return response.data; // { message, otp, user_name } will come
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
-  }
+  },
 );
 
 // 🟢 Verify OTP
@@ -30,12 +36,26 @@ export const verifyOTP = createAsyncThunk(
   "auth/verifyOTP",
   async ({ otp }, { rejectWithValue }) => {
     try {
-      const response = await API.post("/verify-otp", { otp });
-      return response.data; // { message, token }
+      const user_id = sessionStorage.getItem("user_id");
+
+      if (!user_id) {
+        throw new Error("Session expired. Please login again.");
+      }
+
+      const response = await API.post("/verify-otp", {
+        user_id,
+        otp,
+      });
+
+      // token + user session me store
+      sessionStorage.setItem("token", response.data.token);
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
-  }
+  },
 );
 
 // 🟢 Resend OTP → only username needed
@@ -43,17 +63,19 @@ export const resendOTP = createAsyncThunk(
   "auth/resendOTP",
   async (_, { rejectWithValue }) => {
     try {
-      const user_name = localStorage.getItem("user_name");
-      if (!user_name)
-        throw new Error("Username not found. Please login again.");
+      const user_id = sessionStorage.getItem("user_id");
+
+      if (!user_id) throw new Error("Session expired. Please login again.");
+
       const response = await axios.post(`${BASE_URL}/resend-otp`, {
-        user_name,
+        user_id,
       });
-      return response.data; // { message, otp } for testing only
+
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
-  }
+  },
 );
 
 // 4. Logout Thunk (Clears server-side httpOnly cookie)
@@ -72,13 +94,13 @@ export const logoutUser = createAsyncThunk(
       // Agar server call fail bhi ho, tab bhi client-side ko logout kar dein (UX)
       console.error(
         "Logout API failed, forcing client-side logout:",
-        error.message
+        error.message,
       );
       dispatch(logout());
 
       return rejectWithValue(error.response?.data?.message || error.message);
     }
-  }
+  },
 );
 
 const initialState = {
@@ -98,8 +120,11 @@ const authSlice = createSlice({
       state.error = null;
       state.isAuthenticated = false;
       state.otpSent = false;
-      state.resentOTP = null;
-      localStorage.removeItem("user_name");
+
+      sessionStorage.removeItem("user_name");
+      sessionStorage.removeItem("user_id");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
@@ -126,9 +151,6 @@ const authSlice = createSlice({
       .addCase(verifyOTP.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        // if (action.payload.token) {
-        //   localStorage.setItem("token", action.payload.token);
-        // }
       })
       .addCase(verifyOTP.rejected, (state, action) => {
         state.loading = false;

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { GrGroup } from "react-icons/gr";
 import { FaPaypal } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
@@ -12,7 +13,7 @@ import { showSuccess } from "../../utils/toastMessage";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../features/auth/authSlice";
 
-const Header = () => {
+const Header = ({ onMenuToggle }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -28,7 +29,7 @@ const Header = () => {
   const toggleSearch = () => {
     setIsSearchOpen((prev) => !prev);
     setIsOpen(false);
-  };  
+  };
 
   const handleLogout = () => {
     setIsOpen(false);
@@ -56,8 +57,17 @@ const Header = () => {
 
   return (
     <nav className="h-auto py-0.5 w-full bg-[#4f5a67] flex justify-between items-center px-3 md:px-5 shadow-md z-50 ">
-      {/* Left Section: Logo and Search Input */}
+      {/* Left Section: Logo and Hamburger Menu */}
       <div className="flex items-center gap-2 md:gap-x-8">
+        {/* Hamburger Button for Mobile */}
+        <button
+          onClick={onMenuToggle}
+          aria-label="Toggle sidebar"
+          className="md:hidden text-white focus:outline-none hover:bg-gray-700 p-1 rounded-md transition-colors duration-200"
+        >
+          <GiHamburgerMenu size={24} />
+        </button>
+
         <h1 className="font-bold text-2xl md:text-3xl text-[#337AB7] font-sans tracking-wide">
           EXPO CRM
         </h1>

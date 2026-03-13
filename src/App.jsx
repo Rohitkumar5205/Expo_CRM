@@ -131,17 +131,17 @@ const App = () => {
             path="/ihweClientData2026/payments/:id"
             element={<Payments />}
           />
-          <Route path="/ihweClientData2026/paymentEdit/:id" element={<PaymentEdit />} />
+          <Route
+            path="/ihweClientData2026/paymentEdit/:id"
+            element={<PaymentEdit />}
+          />
           <Route path="/clientOverview1/:id" element={<ClientOverview1 />} />
           <Route path="/history" element={<History />} />
           <Route
             path="/payments/createInvoice/:id"
             element={<CreateInvoice />}
           />
-          <Route
-            path="/payments/invoiceEdit/:id"
-            element={<InvoiceEdit />}
-          />
+          <Route path="/payments/invoiceEdit/:id" element={<InvoiceEdit />} />
           <Route
             path="/payments/ODT/taxInvoiceDetails/:id"
             element={<TaxInvoiceDetails />}
@@ -153,7 +153,7 @@ const App = () => {
           <Route
             path="/payments/performanceInvoiceDetails/:id"
             element={<PerformaInvoiceDetails />}
-          />    
+          />
           <Route
             path="/payments/estimateDetails/:id"
             element={<EstimateDetails />}

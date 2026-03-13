@@ -15,6 +15,8 @@ const Globallytable = ({
   const [globalSearch, setGlobalSearch] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const tableContainerRef = useRef();
 
   const handleFilterChange = (accessor, value) => {
@@ -22,16 +24,34 @@ const Globallytable = ({
   };
 
   const toggleSelectAll = () => {
-    if (selectedRows.length === filteredRows.length) {
-      setSelectedRows([]);
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, paginatedRows.length);
+    const pageIndices = Array.from(
+      { length: endIndex - startIndex },
+      (_, i) => startIndex + i,
+    );
+
+    if (
+      selectedRows.length === paginatedRows.length &&
+      selectedRows.every((index) => pageIndices.includes(index))
+    ) {
+      setSelectedRows(
+        selectedRows.filter((index) => !pageIndices.includes(index)),
+      );
     } else {
-      setSelectedRows(filteredRows.map((_, i) => i));
+      const newSelected = [...selectedRows];
+      pageIndices.forEach((index) => {
+        if (!newSelected.includes(index)) {
+          newSelected.push(index);
+        }
+      });
+      setSelectedRows(newSelected);
     }
   };
 
   const toggleRow = (index) => {
     setSelectedRows((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
 
@@ -48,7 +68,7 @@ const Globallytable = ({
       ? colomns.some((col) =>
           String(getValue(row, col.accessor))
             .toLowerCase()
-            .includes(globalSearch.toLowerCase())
+            .includes(globalSearch.toLowerCase()),
         )
       : true;
 
@@ -71,7 +91,14 @@ const Globallytable = ({
     return sorted;
   }, [filteredRows, sortConfig]);
 
-  const noData = sortedRows.length === 0;
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(sortedRows.length / pageSize);
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return sortedRows.slice(startIndex, startIndex + pageSize);
+  }, [sortedRows, currentPage, pageSize]);
+
+  const noData = paginatedRows.length === 0;
 
   // Print functionality
   const handlePrint = () => {
@@ -110,7 +137,7 @@ const Globallytable = ({
           const sanitizedValue = String(value).replace(/"/g, '""');
           return `"${sanitizedValue}"`;
         })
-        .join(",")
+        .join(","),
     );
     const csvString = [headers, ...csvRows].join("\n");
 
@@ -127,15 +154,186 @@ const Globallytable = ({
     }
   };
 
-  const scrollTable = (direction) => {
-    const container = tableContainerRef.current;
-    if (container) {
-      const scrollAmount = 300;
-      container.scrollBy({
-        left: direction === "forward" ? scrollAmount : -scrollAmount,
-        behavior: "smooth",
-      });
+  const handlePageSizeChange = (e) => {
+    const value = e.target.value;
+    if (value === "all") {
+      setPageSize(sortedRows.length || 10);
+    } else {
+      setPageSize(Number(value));
     }
+    setCurrentPage(1); // Reset to first page when changing page size
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const totalPagesNum = totalPages;
+
+    // Previous button
+    buttons.push(
+      <li
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        className={`border border-gray-200 flex items-center justify-center h-8 w-12 cursor-pointer ${
+          currentPage === 1
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-gray-600 hover:bg-gray-100"
+        }`}
+      >
+        &lt;
+      </li>,
+    );
+
+    // Always show first 3 pages if total pages > 3
+    if (totalPagesNum > 3) {
+      // Page 1
+      buttons.push(
+        <li
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+            1 === currentPage
+              ? "bg-[#337ab7] text-white"
+              : "text-gray-600 hover:bg-gray-100"
+          }`}
+        >
+          1
+        </li>,
+      );
+
+      // Page 2
+      buttons.push(
+        <li
+          key={2}
+          onClick={() => handlePageChange(2)}
+          className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+            2 === currentPage
+              ? "bg-[#337ab7] text-white"
+              : "text-gray-600 hover:bg-gray-100"
+          }`}
+        >
+          2
+        </li>,
+      );
+
+      // Page 3
+      buttons.push(
+        <li
+          key={3}
+          onClick={() => handlePageChange(3)}
+          className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+            3 === currentPage
+              ? "bg-[#337ab7] text-white"
+              : "text-gray-600 hover:bg-gray-100"
+          }`}
+        >
+          3
+        </li>,
+      );
+
+      // Check if we need ellipsis after first 3
+      if (currentPage > 5) {
+        buttons.push(
+          <li
+            key="dots1"
+            className="border border-gray-200 flex items-center justify-center h-8 w-10 text-gray-400"
+          >
+            ...
+          </li>,
+        );
+      }
+
+      // Middle section - show current page and adjacent pages
+      const middleStart = Math.max(4, currentPage - 1);
+      const middleEnd = Math.min(totalPagesNum - 3, currentPage + 1);
+
+      for (let i = middleStart; i <= middleEnd; i++) {
+        if (i > 3 && i < totalPagesNum - 2) {
+          buttons.push(
+            <li
+              key={i}
+              onClick={() => handlePageChange(i)}
+              className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+                i === currentPage
+                  ? "bg-[#337ab7] text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {i}
+            </li>,
+          );
+        }
+      }
+
+      // Check if we need ellipsis before last 3
+      if (currentPage < totalPagesNum - 4) {
+        buttons.push(
+          <li
+            key="dots2"
+            className="border border-gray-200 flex items-center justify-center h-8 w-10 text-gray-400"
+          >
+            ...
+          </li>,
+        );
+      }
+
+      // Last 3 pages
+      const lastStart = Math.max(totalPagesNum - 2, 4);
+      for (let i = lastStart; i <= totalPagesNum; i++) {
+        buttons.push(
+          <li
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+              i === currentPage
+                ? "bg-[#337ab7] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {i}
+          </li>,
+        );
+      }
+    } else {
+      // If total pages <= 3, show all pages
+      for (let i = 1; i <= totalPagesNum; i++) {
+        buttons.push(
+          <li
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`border border-gray-200 flex items-center justify-center h-8 w-10 cursor-pointer ${
+              i === currentPage
+                ? "bg-[#337ab7] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {i}
+          </li>,
+        );
+      }
+    }
+
+    // Next button
+    buttons.push(
+      <li
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        className={`border border-gray-200 flex items-center justify-center h-8 w-12 cursor-pointer ${
+          currentPage === totalPages
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-gray-600 hover:bg-gray-100"
+        }`}
+      >
+        &gt;
+      </li>,
+    );
+
+    return buttons;
   };
 
   return (
@@ -171,9 +369,13 @@ const Globallytable = ({
       </style>
 
       {/* Header Section */}
-      <div className="flex flex-wrap justify-between items-center p-5 pt-3 print-hidden">
+      <div className="flex flex-wrap justify-between items-center px-2 pb-2 print-hidden">
         <div className="flex items-center mb-4 md:mb-0">
-          <select className="h-8 w-20 border border-gray-300 text-sm pl-4">
+          <select
+            value={pageSize === sortedRows.length ? "all" : pageSize}
+            onChange={handlePageSizeChange}
+            className="h-7 w-20 border border-gray-300 text-sm pl-4"
+          >
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="30">30</option>
@@ -181,7 +383,7 @@ const Globallytable = ({
             <option value="100">100</option>
             <option value="all">All</option>
           </select>
-          <p className="ml-1 text-sm mt-1">entries</p>
+          <p className="ml-1 text-sm mt-1">Entries</p>
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-2">
@@ -218,7 +420,7 @@ const Globallytable = ({
       {/* Table */}
       <div
         ref={tableContainerRef}
-        className="overflow-x-auto mx-auto printable-table-container w-[97%]"
+        className="overflow-x-auto mx-auto printable-table-container px-2 mr-2"
       >
         <div>
           <table className="border border-gray-200 text-[#4f5a67] text-xs font-semibold mb-5 w-full min-w-max">
@@ -229,8 +431,13 @@ const Globallytable = ({
                     <input
                       className="table-checkbox"
                       checked={
-                        selectedRows.length === filteredRows.length &&
-                        filteredRows.length > 0
+                        paginatedRows.length > 0 &&
+                        selectedRows.length >= paginatedRows.length &&
+                        paginatedRows.every((_, i) =>
+                          selectedRows.includes(
+                            (currentPage - 1) * pageSize + i,
+                          ),
+                        )
                       }
                       onChange={toggleSelectAll}
                       type="checkbox"
@@ -268,41 +475,44 @@ const Globallytable = ({
 
             <tbody>
               {!noData ? (
-                sortedRows.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="h-8 w-[60px] pl-3 border border-gray-200 text-center print-hidden">
-                      <div className="h-5 flex items-center justify-center">
-                        <input
-                          className="table-checkbox"
-                          checked={selectedRows.includes(i)}
-                          onChange={() => toggleRow(i)}
-                          type="checkbox"
-                          readOnly
-                        />
-                      </div>
-                    </td>
-                    {colomns.map((col) => (
-                      <td
-                        key={col.accessor}
-                        className="h-8 pl-3 border border-gray-200 text-left text-xs font-medium "
-                        style={{ width: col.width }}
-                      >
-                        {col.render ? (
-                          col.render(getValue(row, col.accessor), row)
-                        ) : col.accessor === "company.name" ? (
-                          <span
-                            onClick={() => onRowClick(row)}
-                            className="text-[#337ab7] cursor-pointer hover:underline print-hidden"
-                          >
-                            {getValue(row, col.accessor)}
-                          </span>
-                        ) : (
-                          getValue(row, col.accessor)
-                        )}
+                paginatedRows.map((row, i) => {
+                  const globalIndex = (currentPage - 1) * pageSize + i;
+                  return (
+                    <tr key={globalIndex} className="hover:bg-gray-50">
+                      <td className="h-8 w-[60px] pl-3 border border-gray-200 text-center print-hidden">
+                        <div className="h-5 flex items-center justify-center">
+                          <input
+                            className="table-checkbox"
+                            checked={selectedRows.includes(globalIndex)}
+                            onChange={() => toggleRow(globalIndex)}
+                            type="checkbox"
+                            readOnly
+                          />
+                        </div>
                       </td>
-                    ))}
-                  </tr>
-                ))
+                      {colomns.map((col) => (
+                        <td
+                          key={col.accessor}
+                          className="h-8 pl-3 border border-gray-200 text-left text-xs font-medium "
+                          style={{ width: col.width }}
+                        >
+                          {col.render ? (
+                            col.render(getValue(row, col.accessor), row)
+                          ) : col.accessor === "company.name" ? (
+                            <span
+                              onClick={() => onRowClick(row)}
+                              className="text-[#337ab7] cursor-pointer hover:underline print-hidden"
+                            >
+                              {getValue(row, col.accessor)}
+                            </span>
+                          ) : (
+                            getValue(row, col.accessor)
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td
@@ -346,26 +556,13 @@ const Globallytable = ({
       {/* Footer */}
       <div className="w-full flex flex-col md:flex-row justify-between items-center p-5 text-xs pt-6 print-hidden">
         <p className="p-2 mb-4 md:mb-0">
-          Showing 1 to {sortedRows.length} of {rows.length} entries
+          Showing{" "}
+          {Math.min((currentPage - 1) * pageSize + 1, sortedRows.length)} to{" "}
+          {Math.min(currentPage * pageSize, sortedRows.length)} of{" "}
+          {sortedRows.length} entries
         </p>
         <div className="flex">
-          <ul className="flex cursor-pointer">
-            <li
-              onClick={() => scrollTable("back")}
-              className="border text-gray-400 border-gray-200 flex items-center justify-center h-8 w-12"
-            >
-              &lt;
-            </li>
-            <li className="border text-white border-gray-200 flex items-center justify-center h-8 w-10 bg-[#337ab7]">
-              1
-            </li>
-            <li
-              onClick={() => scrollTable("forward")}
-              className="border text-gray-400 border-gray-200 flex items-center justify-center h-8 w-12"
-            >
-              &gt;
-            </li>
-          </ul>
+          <ul className="flex cursor-pointer">{renderPaginationButtons()}</ul>
         </div>
       </div>
     </>

@@ -50,6 +50,8 @@ const CreateEstimate1 = () => {
   const { loading, error, success } = useSelector((state) => state.estimates);
   const { events } = useSelector((state) => state.crmEvents);
   const { countries } = useSelector((state) => state.countries);
+  console.log("countries...", countries);
+
   const { states } = useSelector((state) => state.states);
   const { cities } = useSelector((state) => state.cities);
   const { companies } = useSelector((state) => state.companies);
@@ -213,7 +215,7 @@ const CreateEstimate1 = () => {
     const transformedItems = items.map((item) => {
       const taxableValue = parseFloat(item.tax) || 0;
       const totalGstRate = parseFloat(item.gstRate) || 0;
-      const totalGstAmount = (taxableValue * (totalGstRate / 100));
+      const totalGstAmount = taxableValue * (totalGstRate / 100);
       let cgstPer = "0";
       let cgstAmount = "0.00";
       let igstPer = "0";
@@ -287,14 +289,13 @@ const CreateEstimate1 = () => {
     dispatch(addEstimate(finalEstimateData));
   };
   // Derived filtered lists
-const filteredStates = states?.data?.filter(
-  (st) => st.country_id === estimateData.country
-);
+  const filteredStates = states?.data?.filter(
+    (st) => st.country_id === estimateData.country,
+  );
 
-const filteredCities = cities?.data?.filter(
-  (ct) => ct.state_id === estimateData.state
-);
-
+  const filteredCities = cities?.data?.filter(
+    (ct) => ct.state_id === estimateData.state,
+  );
 
   // --- Navigation Handlers (Unchanged) ---
   const handleMasterList = () => {
@@ -308,8 +309,8 @@ const filteredCities = cities?.data?.filter(
   };
 
   const inputClass =
-    "w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none";
-  const labelClass = "block text-xs font-semibold text-gray-700 mb-1 ";
+    "w-full px-2 py-1 text-sm border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none";
+  const labelClass = "block text-sm font-normal text-gray-700 mb-1 ";
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -451,74 +452,73 @@ const filteredCities = cities?.data?.filter(
               />
             </div>
 
-           {/* Country */}
-<div>
-  <label htmlFor="country" className={labelClass}>
-    Country *
-  </label>
-  <select
-    id="country"
-    name="country"
-    value={estimateData.country}
-    onChange={handleEstimateChange}
-    className={`w-full ${inputClass}`}
-    required
-  >
-    <option value="">Select Country</option>
-    {countries?.data?.map((country) => (
-      <option key={country.id} value={country.id}>
-        {country.name}
-      </option>
-    ))}
-  </select>
-</div>
+            {/* Country */}
+            <div>
+              <label htmlFor="country" className={labelClass}>
+                Country *
+              </label>
+              <select
+                id="country"
+                name="country"
+                value={estimateData.country}
+                onChange={handleEstimateChange}
+                className={`w-full ${inputClass}`}
+                required
+              >
+                <option value="">Select Country</option>
+                {countries?.data?.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-{/* State */}
-<div>
-  <label htmlFor="state" className={labelClass}>
-    State *
-  </label>
-  <select
-    id="state"
-    name="state"
-    value={estimateData.state}
-    onChange={handleEstimateChange}
-    className={`w-full ${inputClass}`}
-    required
-    disabled={!estimateData.country}
-  >
-    <option value="">Select State</option>
-    {filteredStates?.map((state) => (
-      <option key={state.id} value={state.id}>
-        {state.name}
-      </option>
-    ))}
-  </select>
-</div>
+            {/* State */}
+            <div>
+              <label htmlFor="state" className={labelClass}>
+                State *
+              </label>
+              <select
+                id="state"
+                name="state"
+                value={estimateData.state}
+                onChange={handleEstimateChange}
+                className={`w-full ${inputClass}`}
+                required
+                disabled={!estimateData.country}
+              >
+                <option value="">Select State</option>
+                {filteredStates?.map((state) => (
+                  <option key={state.id} value={state.id}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-{/* City */}
-<div>
-  <label htmlFor="city" className={labelClass}>
-    City *
-  </label>
-  <select
-    id="city"
-    name="city"
-    value={estimateData.city}
-    onChange={handleEstimateChange}
-    className={`w-full ${inputClass}`}
-    required
-    disabled={!estimateData.state}
-  >
-    <option value="">Select City</option>
-    {filteredCities?.map((city) => (
-      <option key={city.id} value={city.id}>
-        {city.name}
-      </option>
-    ))}
-  </select>
-</div>
-
+            {/* City */}
+            <div>
+              <label htmlFor="city" className={labelClass}>
+                City *
+              </label>
+              <select
+                id="city"
+                name="city"
+                value={estimateData.city}
+                onChange={handleEstimateChange}
+                className={`w-full ${inputClass}`}
+                required
+                disabled={!estimateData.state}
+              >
+                <option value="">Select City</option>
+                {filteredCities?.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Pin Code */}
             <div>
@@ -630,8 +630,8 @@ const filteredCities = cities?.data?.filter(
                     required
                   >
                     <option value="">Select Unit</option>
-                    {unitOptions.map((unit) => (
-                      <option key={unit} value={unit}>
+                    {unitOptions.map((unit, index) => (
+                      <option key={index} value={unit}>
                         {unit}
                       </option>
                     ))}

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
 import { AiOutlineHome } from "react-icons/ai";
 import { RiArrowRightUpBoxFill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
@@ -9,54 +8,27 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const SidebarMenu = () => {
+const SidebarMenu = ({ onClose }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleDropdownToggle = (id) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  const handleSidebarToggle = () => {
-    setSidebarOpen(!sidebarOpen);
+  const handleLinkClick = () => {
+    onClose?.();
   };
 
   return (
     <>
-      {/* Hamburger Menu for Mobile */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-[#4f5a67] text-white p-4 flex items-center justify-between z-50 ">
-        <button
-          onClick={handleSidebarToggle}
-          aria-label="Toggle sidebar"
-          className="text-white focus:outline-none"
-        >
-          <GiHamburgerMenu size={28} />
-        </button>
-        <span className="font-bold text-lg">Menu</span>
-      </div>
-
       {/* Sidebar */}
-
-      <div
-        className={`fixed top-0 left-0 h-full z-40 bg-[#4f5a67] text-gray-200 font-lato transition-transform duration-300 ease-in-out 
-                ${
-                  sidebarOpen ? "translate-x-0" : "-translate-x-full"
-                } md:translate-x-0 md:static overflow-y-auto `}
-      >
-        {/* Close Button for Mobile */}
-        <div className="md:hidden flex justify-end p-4">
-          <button
-            onClick={handleSidebarToggle}
-            aria-label="Close sidebar"
-            className="text-white text-2xl focus:outline-none"
-          >
-            ×
-          </button>
-        </div>
-
+      <div className="flex flex-col h-full bg-[#4f5a67] text-gray-200 font-lato">
         {/* Dashboard Link */}
-        <div className="overflow-y-auto max-h-screen">
-          <div className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+        <div className="overflow-y-auto flex-1">
+          <div
+            className="flex items-center gap-2 p-3 text-sm hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+            onClick={handleLinkClick}
+          >
             <AiOutlineHome size={18} className="text-gray-400" />
             <Link to="/dashboard">
               {" "}
@@ -92,6 +64,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all  duration-300 ease-in-out ${
               openDropdown === 1 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -185,6 +158,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 2 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -231,6 +205,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 3 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -296,6 +271,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 4 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -386,6 +362,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 5 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -449,6 +426,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 6 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -485,6 +463,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 7 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -528,6 +507,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 8 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -584,6 +564,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 9 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -620,6 +601,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 10 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -659,6 +641,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 11 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -715,6 +698,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 12 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -771,6 +755,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 13 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -807,6 +792,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 14 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -878,6 +864,7 @@ const SidebarMenu = () => {
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               openDropdown === 15 ? "max-h-96" : "max-h-0"
             }`}
+            onClick={handleLinkClick}
           >
             <ul className="text-[12px] font-normal text-white uppercase">
               <li className="hover:bg-gray-700 hover:text-blue-400 transition-colors duration-200 rounded-md">
@@ -889,14 +876,6 @@ const SidebarMenu = () => {
           </div>
           <hr className="border-gray-700" />
         </div>
-
-        {/* Overlay for Mobile when Sidebar is Open */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black opacity-50 z-30 md:hidden"
-            onClick={handleSidebarToggle}
-          ></div>
-        )}
       </div>
     </>
   );

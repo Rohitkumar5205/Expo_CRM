@@ -54,8 +54,6 @@ const AddNewClients = () => {
   const { events } = useSelector((state) => state.crmEvents);
   const { companies } = useSelector((state) => state.companies);
 
- 
-
   // 🧩 Form State
   const [formData, setFormData] = useState({
     companyName: "",
@@ -73,6 +71,7 @@ const AddNewClients = () => {
     eventName: "",
     reminder: "",
     forwardTo: "",
+    updated_by: "",
     contacts: [
       {
         title: "",
@@ -85,6 +84,9 @@ const AddNewClients = () => {
       },
     ],
   });
+
+  // Loading state for save operations
+  const [isSaving, setIsSaving] = useState(false);
 
   // Fetch Companies on mount for editing logic
   useEffect(() => {
@@ -127,6 +129,8 @@ const AddNewClients = () => {
           reminder: formatReminderDate(companyToEdit.reminder) || "",
 
           forwardTo: companyToEdit.forwardTo || "",
+          // Keep existing updated_by value for edit mode, will be updated on save
+          updated_by: companyToEdit.updated_by || "",
           contacts:
             companyToEdit.contacts.length > 0
               ? companyToEdit.contacts
@@ -148,7 +152,7 @@ const AddNewClients = () => {
 
   const heading = id ? "Edit Client Details" : "Add New Company";
   //for button
-  const buttonName = id?"Update":"Save";
+  const buttonName = id ? "Update" : "Save";
 
   // 🧠 Update any input value dynamically
   const handleChange = (field, value) => {
@@ -199,38 +203,36 @@ const AddNewClients = () => {
   };
 
   // 💾 Save (Add or Update)
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
-    if (id) {
-      // Editing existing company
-      dispatch(updateCompany({ id, data: formData }))
-        .unwrap()
-        .then(() => {
-          showSuccess("Company updated successfully!");
-          handleReset();
-          navigate(`/clientOverview1/${id}`);
-        })
-        .catch((err) => {
-          console.error("Failed to update company:", err);
-          // Show error toast
-        });
-    } else {
-      // Adding new company
-      dispatch(addCompany(formData))
-        .unwrap()
-        .then(() => {
-          showSuccess("New company added successfully!");
-          handleReset();
-          navigate("/ihweClientData2026/newLeadList"); // Navigate to the list
-        })
-        .catch((err) => {
-          console.error("Failed to add company:", err);
-          // Show error toast
-        });
+    try {
+      // Get current user name from session storage
+      const userName = sessionStorage.getItem("user_name");
+      const dataToSave = {
+        ...formData,
+        updated_by: userName || formData.updated_by,
+      };
+
+      if (id) {
+        // Editing existing company
+        await dispatch(updateCompany({ id, data: dataToSave })).unwrap();
+        showSuccess("Company updated successfully!");
+        navigate(`/clientOverview1/${id}`);
+      } else {
+        // Adding new company
+        await dispatch(addCompany(dataToSave)).unwrap();
+        showSuccess("New company added successfully!");
+        handleReset();
+        navigate("/ihweClientData2026/newLeadList"); // Navigate to the list
+      }
+    } catch (err) {
+      console.error("Failed to save company:", err);
+      // Error handling can be added here
+    } finally {
+      setIsSaving(false);
     }
-
-    console.log("Form Data:", formData);
   };
 
   // 🔁 Reset
@@ -310,9 +312,7 @@ const AddNewClients = () => {
       {/* Form */}
       <form onSubmit={handleSave} className="max-w-full bg-white shadow-lg m-4">
         <div className="px-4 pb-4 pt-2">
-          <h2 className="text-xl font-normal text-gray-500 mb-1 ">
-            {heading}
-          </h2>
+          <h2 className="text-xl font-normal text-gray-500 mb-1 ">{heading}</h2>
           <hr className="mb-3 opacity-10" />
 
           {/* --- Company Details --- */}
@@ -729,7 +729,7 @@ const AddNewClients = () => {
                       <button
                         type="button"
                         onClick={addContact}
-                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 flex items-center justify-center text-sm font-bold" 
+                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 flex items-center justify-center text-sm font-bold"
                       >
                         +
                       </button>

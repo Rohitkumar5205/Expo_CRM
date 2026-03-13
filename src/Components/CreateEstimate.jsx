@@ -59,7 +59,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -116,11 +116,11 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
     // Calculate totals
     const totalAmount = items.reduce(
       (sum, item) => sum + parseFloat(item.finalAmount || 0),
-      0
+      0,
     );
     const totalTaxable = items.reduce(
       (sum, item) => sum + parseFloat(item.taxable || 0),
-      0
+      0,
     );
 
     const estimateData = {
@@ -137,7 +137,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
     alert(
       `✅ Estimate saved successfully!\n\nEstimate No: ${
         formData.estimateNo
-      }\nTotal Amount: ₹${totalAmount.toFixed(2)}\nItems: ${items.length}`
+      }\nTotal Amount: ₹${totalAmount.toFixed(2)}\nItems: ${items.length}`,
     );
 
     // Pass data to parent component
@@ -165,7 +165,6 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
   return (
     <div className="w-full min-h-screen bg-gray-100 font-sans">
       {/* Heading Section */}
-     
 
       {/* Main Form Section */}
       <div className="max-w-full mx-auto bg-white shadow-lg m-4 rounded-lg">
@@ -178,14 +177,14 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           {/* Basic Information - Row 1 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Estimate Types <span className="text-red-500">*</span>
               </label>
               <select
                 name="estimateType"
                 value={formData.estimateType}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select Here</option>
                 <option value="proforma">Proforma</option>
@@ -194,7 +193,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Estimate No. <span className="text-red-500">*</span>
               </label>
               <input
@@ -202,12 +201,12 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="estimateNo"
                 value={formData.estimateNo}
                 readOnly
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 GSTIN No./PAN No. <span className="text-red-500">*</span>
               </label>
               <input
@@ -215,12 +214,12 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="gstNo"
                 value={formData.gstNo}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Supply Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -228,12 +227,12 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="supplyDate"
                 value={formData.supplyDate}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Consignee Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -241,7 +240,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="consigneeName"
                 value={formData.consigneeName}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -249,7 +248,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           {/* Address Information - Row 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div className="col-span-2">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Consignee Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -257,32 +256,35 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="address"
                 value={formData.address}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Country <span className="text-red-500">*</span>
               </label>
-              <input
+              <select
                 type="text"
                 name="country"
                 value={formData.country}
                 readOnly
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-              />
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select Country</option>
+                <option value="India">India</option>
+              </select>
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 State <span className="text-red-500">*</span>
               </label>
               <select
                 name="state"
                 value={formData.state}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select State</option>
                 <option value="Delhi">Delhi</option>
@@ -292,14 +294,14 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
             </div>
 
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 City <span className="text-red-500">*</span>
               </label>
               <select
                 name="city"
                 value={formData.city}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select Here</option>
                 <option value="Delhi">Delhi</option>
@@ -312,7 +314,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           {/* Pin Code Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4">
             <div className="col-span-1">
-              <label className="block text-xs font-normal text-gray-700 mb-1">
+              <label className="block text-sm font-normal text-gray-700 mb-1">
                 Pin Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -320,7 +322,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                 name="pinCode"
                 value={formData.pinCode}
                 onChange={handleBasicChange}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -342,7 +344,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <button
                     type="button"
                     onClick={() => removeItemRow(item.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-200"
+                    className="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200"
                   >
                     -
                   </button>
@@ -352,7 +354,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
               {/* Item Fields Row 1 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-3 mb-3">
                 <div className="col-span-2">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Item Description <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -361,12 +363,12 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "itemDesc", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Type here..."
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     HSN No. <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -375,11 +377,11 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "hsn", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Qty <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -388,11 +390,11 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "qty", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Size
                   </label>
                   <input
@@ -401,11 +403,11 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "size", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Unit <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -413,7 +415,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "unit", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Unit</option>
                     <option value="kg">Kg</option>
@@ -422,7 +424,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Rate <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -431,22 +433,22 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "rate", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Amount <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
                     value={item.amount}
                     readOnly
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     DISC % <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -455,18 +457,18 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "disc", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Taxable Value <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
                     value={item.taxable}
                     readOnly
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -474,7 +476,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
               {/* Item Fields Row 2 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-3">
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     GST Rate % <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center">
@@ -484,28 +486,28 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                       onChange={(e) =>
                         handleItemChange(item.id, "gstRate", e.target.value)
                       }
-                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     />
-                    <span className="ml-2 text-xs font-normal text-gray-700">
+                    <span className="ml-2 text-sm font-normal text-gray-700">
                       %
                     </span>
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Final Amount
                   </label>
                   <input
                     type="number"
                     value={item.finalAmount}
                     readOnly
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div className="col-span-3">
-                  <label className="block text-xs font-normal text-gray-700 mb-1">
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
                     Any Remarks
                   </label>
                   <input
@@ -514,7 +516,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                     onChange={(e) =>
                       handleItemChange(item.id, "remarks", e.target.value)
                     }
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Type here..."
                   />
                 </div>
@@ -526,7 +528,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   type="button"
                   onClick={() => removeItemRow(item.id)}
                   disabled={items.length === 1}
-                  className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   -
                 </button>
@@ -534,7 +536,7 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
                   <button
                     type="button"
                     onClick={addItemRow}
-                    className="px-2 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
+                    className="px-2 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
                   >
                     +
                   </button>
@@ -546,19 +548,19 @@ const CreateEstimate = ({ onEstimateCreated, onCancel }) => {
           {/* Footer Section */}
           <hr className="my-4" />
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3">
-            <p className="text-xs text-gray-600 mb-3 sm:mb-0">
+            <p className="text-sm text-gray-600 mb-3 sm:mb-0">
               <span className="text-red-500 text-sm">*</span> Required Fields
             </p>
             <div className="flex gap-2">
               <button
                 onClick={handleAddEstimate}
-                className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200 flex items-center gap-1"
+                className="px-4 py-1.5 text-sm bg-[#337ab7] hover:bg-[#286090] text-white rounded transition-colors duration-200 flex items-center gap-1"
               >
                 ADD ESTIMATE <ArrowIcon />
               </button>
               <button
                 onClick={onCancel}
-                className="px-4 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200"
+                className="px-4 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200"
               >
                 CANCEL
               </button>

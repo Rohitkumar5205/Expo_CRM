@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Swal from "sweetalert2";
 import { FaTrash, FaUser, FaBuilding, FaPencilAlt } from "react-icons/fa";
-import { fetchCompanies } from "../features/company/companySlice";
+import {
+  fetchCompanies,
+  updateCompany,
+} from "../features/company/companySlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -29,7 +32,7 @@ const ClientOverview1 = () => {
   const { companies, loading, error } = useSelector((state) => state.companies);
   const [company, setCompany] = useState(null);
   const companyId = company?._id;
-  const updateBy = localStorage.getItem("user_name");
+  const updateBy = sessionStorage.getItem("user_name");
   console.log("companyId...", companyId);
   const [reviewData, setReviewData] = useState({
     cmpny_id: companyId || "",
@@ -69,9 +72,15 @@ const ClientOverview1 = () => {
     error: reviewError,
   } = useSelector((state) => state.reviews);
 
+  // Filter reviews for this company only
+  const filteredReviews = useMemo(
+    () => reviews.filter((rev) => rev?.cmpny_id === companyId),
+    [reviews, companyId],
+  );
+
   // console.log("events..", events);
   console.log("ClientOverview1...", companyId);
-  // console.log("reviews///", reviews);
+  // console.log("reviews///", filteredReviews);
   useEffect(() => {
     if (companies.length === 0) {
       dispatch(fetchCompanies());
@@ -137,22 +146,34 @@ const ClientOverview1 = () => {
     e.preventDefault();
 
     if (!reviewData.cmpny_id) {
-      showError("Company ID लोड नहीं हुआ है। कृपया पेज रिफ्रेश करें।");
-      console.error("Validation failed: cmpny_id is missing.");
+      showError("Company ID is missing. Please select a company.");
+      console.error("Validation failed: Company ID is missing.");
       return;
     }
 
     if (!reviewData.status_short || !reviewData.evnt_id || !reviewData.re_msg) {
-      showError("कृपया Client Status, Event Name, और Remark भरें।");
+      showError(
+        "Status, Event Name, and Remark are required. Please fill them in.",
+      );
       return;
     }
 
     try {
       await dispatch(createReview(reviewData)).unwrap();
-      showSuccess("Review added successfully!");
+
+      // update company status
+      await dispatch(
+        updateCompany({
+          id: companyId,
+          data: { companyStatus: reviewData.status_short },
+        }),
+      ).unwrap();
+
+      showSuccess("Review added and company status updated successfully!");
       setPopUp(false);
       // console.log("New Review:", reviewData);
       dispatch(fetchReviews()); // refresh list
+      dispatch(fetchCompanies()); // refresh companies to show updated status
       // console.log("status Update", companyId);
       // Reset form
       setReviewData({
@@ -165,8 +186,10 @@ const ClientOverview1 = () => {
         updated_by: updateBy || "",
       });
     } catch (err) {
-      showError("Failed to add review. Please try again.");
-      console.error("Add review error:", err);
+      showError(
+        "Failed to add review or update company status. Please try again.",
+      );
+      console.error("Add review or update error:", err);
     }
   };
 
@@ -202,15 +225,24 @@ const ClientOverview1 = () => {
     <div className="w-full h-auto bg-[#eef1f5]">
       {/* Header */}
       <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 ">
-        <h2 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">CLIENT OVERVIEW</h2>
+        <h2 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
+          CLIENT OVERVIEW
+        </h2>
         <div className="flex gap-2">
-          <button className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
+          {/* <button
+            onClick={handleCancel} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal">
             Back to List
-          </button>
-          <button onClick={()=>navigate("/ihweClientData2026/addNewClients")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
+          </button> */}
+          <button
+            onClick={() => navigate("/ihweClientData2026/addNewClients")}
+            className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer"
+          >
             Add Client
           </button>
-          <button onClick={()=>navigate("/ihweClientData2026/masterData")} className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer">
+          <button
+            onClick={() => navigate("/ihweClientData2026/masterData")}
+            className="hover:bg-gray-200 border border-gray-600  text-gray-600 px-1 py-0.5  text-xs font-normal cursor-pointer"
+          >
             Master List
           </button>
         </div>
@@ -255,7 +287,9 @@ const ClientOverview1 = () => {
           {/* Client Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-600 px-2 py-3 mb-4">
             <div className="flex gap-11">
-              <p className="font-semibold text-gray-800">Company <br /> Details</p>
+              <p className="font-semibold text-gray-800">
+                Company <br /> Details
+              </p>
               <p>
                 {company.companyName} | {company.businessNature} |{" "}
                 {company.category}
@@ -281,8 +315,10 @@ const ClientOverview1 = () => {
               <p className="font-semibold text-gray-800">Landline No.</p>
               <p>{company.landline || "-"}</p>
             </div>
-            <div className="flex gap-13"> 
-              <p className="font-semibold text-gray-800">Contact <br /> Person</p>
+            <div className="flex gap-13">
+              <p className="font-semibold text-gray-800">
+                Contact <br /> Person
+              </p>
               <p>
                 {company.contacts
                   ?.map((c) => `${c.firstName} ${c.surname} | ${c.mobile}`)
@@ -290,18 +326,20 @@ const ClientOverview1 = () => {
               </p>
             </div>
             <div className="flex gap-11.5">
-              <p className="font-semibold text-gray-800">Added / <br /> Updated By</p>
+              <p className="font-semibold text-gray-800">
+                Added / <br /> Updated By
+              </p>
               <p>{company.updated_by || "-"}</p>
             </div>
             <div className="flex gap-9">
               <p className="font-semibold text-gray-800">Client Status</p>
-              <p className="text-green-700">{company.status || "New Client"}</p>
+              <p className="text-green-700">{company?.companyStatus}</p>
             </div>
           </div>
         </div>
 
         {/* Pop-Up Form — Show only when no history or when manually toggled */}
-        {(reviews.length === 0 || popUp) && (
+        {(filteredReviews.length === 0 || popUp) && (
           <form
             onSubmit={handleAddReview}
             className="w-full h-auto bg-white  shadow-md px-4 py-4 gap-4"
@@ -316,10 +354,10 @@ const ClientOverview1 = () => {
               />
 
               {/* Client Status */}
-              <div className="flex flex-col flex-1 min-w-[120px]">
+              <div className="flex flex-col flex-1 ">
                 <label
                   htmlFor="ClientStatus"
-                  className="block text-xs font-medium text-gray-900 mb-1"
+                  className="block text-sm font-normal text-gray-900"
                 >
                   Client Status
                 </label>
@@ -332,7 +370,7 @@ const ClientOverview1 = () => {
                     setFlip(!hideFor.includes(value));
                     handleChange(e);
                   }}
-                  className=" h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+                  className="  block w-full mt-1 px-2 py-1 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 >
                   <option value="">Select Current Status</option>
                   {statusOptions
@@ -348,10 +386,10 @@ const ClientOverview1 = () => {
               {/* Reminder & Forward Fields */}
               {Flip && (
                 <>
-                  <div className="flex flex-col flex-1 min-w-[200px]">
+                  <div className="flex flex-col flex-1">
                     <label
                       htmlFor="ReminderDateTime"
-                      className="block text-xs font-medium text-gray-900 mb-1"
+                      className="block text-sm font-normal text-gray-900 "
                     >
                       Reminder Date & Time{" "}
                       <span className="text-red-700">*</span>
@@ -361,14 +399,14 @@ const ClientOverview1 = () => {
                       id="ReminderDateTime"
                       value={reviewData.reminder_dt}
                       onChange={handleChange}
-                      className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+                      className="mt-1 block w-full px-2 py-1 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                     />
                   </div>
 
-                  <div className="flex flex-col flex-1 min-w-[200px]">
+                  <div className="flex flex-col flex-1 ">
                     <label
                       htmlFor="ForwardTo"
-                      className="block text-xs font-medium text-gray-900 mb-1"
+                      className="block text-sm font-normal text-gray-900"
                     >
                       Forward To <span className="text-red-700">*</span>
                     </label>
@@ -377,7 +415,7 @@ const ClientOverview1 = () => {
                       id="ForwardTo"
                       value={reviewData.forward_to}
                       onChange={handleChange}
-                      className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+                      className=" mt-1 block w-full px-2 py-1 font-normal border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
                     >
                       <option value="">Select Here</option>
                       {users.length > 0 ? (
@@ -397,19 +435,19 @@ const ClientOverview1 = () => {
               )}
 
               {/* Previous Status */}
-              <div className="flex flex-col flex-1 min-w-[200px]">
+              <div className="flex flex-col flex-1">
                 <label
                   htmlFor="PreviousStatus"
-                  className="block text-xs font-medium text-gray-900 mb-1"
+                  className="block text-sm font-normal text-gray-900"
                 >
                   Previous Status
                 </label>
                 <input
                   type="text"
                   id="PreviousStatus"
-                  value="Follow Up call"
+                  value={company?.companyStatus || " "}
                   readOnly
-                  className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+                  className="mt-1 block w-full px-2 py-1 bg-gray-100 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 />
               </div>
 
@@ -417,7 +455,7 @@ const ClientOverview1 = () => {
               <div className="flex flex-col flex-1 min-w-[200px]">
                 <label
                   htmlFor="EventName"
-                  className="block text-xs font-medium text-gray-900 mb-1"
+                  className="block text-sm font-normal text-gray-900"
                 >
                   Event Name <span className="text-red-700">*</span>
                 </label>
@@ -426,7 +464,7 @@ const ClientOverview1 = () => {
                   id="EventName"
                   value={reviewData.evnt_id}
                   onChange={handleChange}
-                  className="h-[42px] mt-1 block w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+                  className=" mt-1 block w-full px-2 py-1 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                 >
                   <option value="">Select Event</option>
                   {events.length > 0 ? (
@@ -448,7 +486,7 @@ const ClientOverview1 = () => {
             <div className="mt-4">
               <label
                 htmlFor="Remark"
-                className="flex gap-2 text-xs font-medium text-gray-900"
+                className="flex gap-2 text-sm font-normal text-gray-900"
               >
                 Any Remark <span className="text-red-600">*</span>
               </label>
@@ -457,9 +495,11 @@ const ClientOverview1 = () => {
                   id="Remark"
                   value={reviewData.re_msg}
                   onChange={handleChange}
-                  className="w-full border p-2 text-xs"
+                  className="w-full border px-2 py-1.5 text-sm"
                   placeholder="update status"
                 ></textarea>
+              </div>
+              <div className="flex justify-end mt-4">
                 <button
                   type="submit"
                   className="w-full md:w-auto px-4 py-2 text-xs bg-[#3598dc] text-white hover:bg-[#246a99] transition"
@@ -472,7 +512,7 @@ const ClientOverview1 = () => {
         )}
 
         {/* Communication History */}
-        {reviews.length > 0 && (
+        {filteredReviews.length > 0 && (
           <div className="bg-white shadow-md  w-full">
             <h3 className="text-lg font-semibold text-gray-700 py-3 px-4 bg-gray-100 border border-gray-300">
               <p className="flex items-center gap-2">
@@ -481,7 +521,7 @@ const ClientOverview1 = () => {
               </p>
             </h3>
             <div className="space-y-0.5 p-2 ">
-              {reviews.map((entry, index) => (
+              {filteredReviews.map((entry, index) => (
                 <div
                   key={entry?._id}
                   className="flex items-start hover:bg-gray-200 gap-2 py-1.5 px-2 bg-white  border border-gray-200 text-sm"
@@ -513,7 +553,7 @@ const ClientOverview1 = () => {
                                 hour: "2-digit",
                                 minute: "2-digit",
                                 hour12: true,
-                              }
+                              },
                             )
                           : "N/A"}
                       </span>

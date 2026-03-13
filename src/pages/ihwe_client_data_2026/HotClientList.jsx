@@ -1,42 +1,79 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Globallytable from "../../Components/Globallytable";
 import Textarea from "../../Components/Textarea";
 import ClientOverview from "../../Components/ClientOverview";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCompanies } from "../../features/company/companySlice";
 
 const HotClientList = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const navigate = useNavigate();
 
-   const columns = [
-        { label: "Client Name", accessor: "Client.name" }, 
-        { label: "Contact Details", accessor: "contact.details" },
-        { label: "Category", accessor: "category.main" },
-        { label: "City", accessor: "location.city" },
-        { label: "State", accessor: "location.state" },
-         { label: "Source", accessor: "source.type" },
-         { label: "Status", accessor: "Status" },
-         { label: "Event", accessor: "Event.type" },
-        { label: "Document No.", accessor: "Document.number" },
-       { label: "Updated No.", accessor: "Updated.number" },  
-        { label: "Updated Details", accessor: "Updated.detail" },  
-    ];
+  //logic of table data
+  const dispatch = useDispatch();
 
-  const rows = [
-  {
-    Client: { name: "Ravi Sharma" },
-    contact: { details: "ravi.sharma@example.com | +91-9876543210" },
-    category: { main: "Pharmaceuticals" },
-    location: { city: "Mumbai", state: "Maharashtra" },
-    source: { type: "Website Inquiry" },
-    Status: "Active",
-    Event: { type: "Pharma Expo 2025" },
-    Document: { number: "DOC-1001" },
-    Updated:{number:"64"},
-    Updated: { detail: "Updated by Neha Verma on 20 Sep 2025" },
-  }
+  // 🏢 Company redux data
+  const { companies, loading, error } = useSelector((state) => state.companies);
+
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+
+  const columns = [
+    {
+      label: "Company Name",
+      accessor: "company.name",
+      render: (value, row) => (
+        <Link
+          to={`/clientOverview1/${row.id}`}
+          className="hover:underline text-blue-500"
+        >
+          {value}
+        </Link>
+      ),
+    },
+    { label: "Contact Details", accessor: "contact.details" },
+    { label: "Category", accessor: "category.main" },
+    { label: "Nature Bussiness", accessor: "Nature Bussiness" },
+    { label: "City", accessor: "location.city" },
+    { label: "State", accessor: "location.state" },
+    { label: "Source", accessor: "source.type" },
+    { label: "Status", accessor: "Status" },
+    { label: "Event", accessor: "Event.type" },
+    { label: "Updated Details", accessor: "Update.detail" },
   ];
 
+  // 🧱 Prepare Rows
+  const filteredCompanies = companies.filter(
+    (c) => c.companyStatus === "Est./PI Sent",
+  );
+  const rows = filteredCompanies.map((c) => ({
+    id: c._id,
+    checkbox: true,
+    company: {
+      name: c.companyName,
+    },
+    contact: {
+      details: c.contacts
+        ?.map(
+          (contact) =>
+            `${contact.firstName} ${contact.surname} | ${contact.mobile}`,
+        )
+        .join(", "),
+    },
+    category: { main: c.category },
+    "Nature Bussiness": c.businessNature,
+    location: { city: c.city, state: c.state },
+    source: { type: c.dataSource || "-" },
+    Status: c.companyStatus,
+    Event: { type: "Organic Expo 2026" },
+    Update: {
+      detail: `${new Date(c.updatedAt).toLocaleDateString()} | ${
+        c.contacts?.[0]?.firstName || "-"
+      }`,
+    },
+  }));
 
   const handleClientClick = (clientData) => {
     setSelectedClient(clientData);
@@ -77,58 +114,61 @@ const HotClientList = () => {
         <ClientOverview client={selectedClient} onBack={handleBackClick} />
       ) : (
         <>
-          <div className="w-full bg-white shadow-md ">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
-              <h1 className="text-xl  text-gray-600 mb-2 lg:mb-0">
-                CLIENT DATA 2023
+          {/* 🔹 Header */}
+          <div className="w-full bg-white">
+            <div className="w-full bg-white  flex flex-col sm:flex-row justify-between items-center px-4 py-1 mb-3">
+              <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
+                CLIENT DATA 2026
               </h1>
             </div>
           </div>
-          <div className="w-[97%] bg-white p-1 m-4">
-            <div className="flex justify-between md:justify-between ">
-              <h1 className="text-base font-semibold text-gray-900 pl-4 pt-1">
-              HOT CLIENT LIST
-            </h1>
-            <div className="flex flex-wrap justify-start gap-2 mb-1">
-              <button
-                onClick={handleAddNewLeadClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Add New Lead
-              </button>
-              <button
-                onClick={handleWarmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Warm Client
-              </button>
-              <button
-                onClick={handleHotClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Hot Client
-              </button>
-              <button
-                onClick={handleConfirmClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Confirm Client
-              </button>
-              <button
-                onClick={handleColdClientClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Cold Client
-              </button>
-              <button
-                onClick={handleRawDataListClick}
-                className="bg-[#337ab7] hover:bg-[#286090] text-white px-2.5 py-1  text-xs font-medium"
-              >
-                Raw Data List
-              </button>
+          {/* 🔹 Main Section */}
+          <div className=" bg-white mx-3 p-2 rounded shadow-sm">
+            <div className="flex justify-between items-center pr-4 pt-2">
+              <h1 className="text-base font-normal text-gray-800 px-4">
+                HOT CLIENT LIST{" "}
+              </h1>
+              {/* 🔸 Navigation Buttons */}
+              <div className="flex flex-wrap justify-end gap-2">
+                <Link
+                  to="/ihweClientData2026/addNewClients"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Add New Lead
+                </Link>
+                <Link
+                  to="/ihweClientData2026/warmClientList"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Warm Client
+                </Link>
+                <Link
+                  to="/ihweClientData2026/hotClientList"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Hot Client
+                </Link>
+                <Link
+                  to="/ihweClientData2026/confirmClientList"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Confirm Client
+                </Link>
+                <Link
+                  to="/ihweClientData2026/coldClientList"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Cold Client
+                </Link>
+                <Link
+                  to="/ihweClientData2026/rawDataList"
+                  className="px-3 py-1 text-xs bg-[#337ab7] hover:bg-[#286090]  text-white  transition"
+                >
+                  Raw Data List
+                </Link>
+              </div>
             </div>
-            </div>
-            <hr className="opacity-10 mb-2" />
+            <hr className="opacity-10 my-2" />
             <div className="text-xs">
               <Globallytable
                 rows={rows}
@@ -137,7 +177,7 @@ const HotClientList = () => {
               />
             </div>
           </div>
-          <div className="bg-white shadow-md m-4 w-[97%]">
+          <div className="bg-white shadow-md m-3 ">
             <Textarea />
           </div>
         </>
