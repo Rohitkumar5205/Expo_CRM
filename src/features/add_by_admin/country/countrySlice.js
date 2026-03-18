@@ -17,7 +17,7 @@ export const fetchCountries = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // FETCH country by ID
@@ -30,7 +30,7 @@ export const fetchCountryById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // CREATE country
@@ -40,13 +40,13 @@ export const createCountry = createAsyncThunk(
     try {
       const response = await axios.post(
         `${BASE_URL}/crm-countries`,
-        countryData
+        countryData,
       );
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // UPDATE country
@@ -56,13 +56,13 @@ export const updateCountry = createAsyncThunk(
     try {
       const response = await axios.put(
         `${BASE_URL}/crm-countries/${id}`,
-        updates
+        updates,
       );
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // DELETE country
@@ -75,7 +75,7 @@ export const deleteCountry = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // **Initial State**
@@ -103,7 +103,7 @@ const countrySlice = createSlice({
       })
       .addCase(fetchCountries.fulfilled, (state, action) => {
         state.loading = false;
-        state.countries = action.payload;
+        state.countries = action.payload.data;
       })
       .addCase(fetchCountries.rejected, (state, action) => {
         state.loading = false;
@@ -132,7 +132,7 @@ const countrySlice = createSlice({
       .addCase(updateCountry.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.countries.findIndex(
-          (c) => c._id === action.payload._id
+          (c) => c._id === action.payload._id,
         );
         if (index !== -1) state.countries[index] = action.payload;
       })
@@ -149,7 +149,7 @@ const countrySlice = createSlice({
       .addCase(deleteCountry.fulfilled, (state, action) => {
         state.loading = false;
         state.countries = state.countries.filter(
-          (c) => c._id !== action.payload
+          (c) => c._id !== action.payload,
         );
       })
       .addCase(deleteCountry.rejected, (state, action) => {

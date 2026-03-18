@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import mainpic from "../../assets/images/header.png";
-import { fetchEstimates } from "../../features/estimates/estimateSlice";
+import { fetchEstimateById } from "../../features/estimates/estimateSlice";
+import { fetchCountries } from "../../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../../features/state/stateSlice";
+import { fetchCities } from "../../features/city/citySlice";
 import { fetchCompanies } from "../../features/company/companySlice";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,47 +11,48 @@ import { useSelector, useDispatch } from "react-redux";
 const EstimateFormDetail = () => {
   const { id } = useParams(); // this will be your est_no
   const dispatch = useDispatch();
-  const [matchedEstimate, setMatchedEstimate] = useState(null);
   const [company, setCompany] = useState(null);
 
   // Redux data
-  const { estimates, loading } = useSelector((state) => state.estimates);
+  const { loading, selectedEstimate } = useSelector((state) => state.estimates);
+  const matchedEstimate = selectedEstimate;
   const { companies } = useSelector((state) => state.companies);
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
 
   // console.log("companies...", companies);
 
   useEffect(() => {
-    dispatch(fetchEstimates());
+    if (id) {
+      dispatch(fetchEstimateById(id));
+    }
+
     dispatch(fetchCompanies());
-  }, [dispatch]);
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
+  }, [dispatch, id]);
 
   // Calculate the total amount from all items
   const totalAmount =
     matchedEstimate?.items?.reduce(
       (sum, item) => sum + (parseFloat(item?.tax) || 0),
-      0
+      0,
     ) || 0;
 
   // Calculate the grand total from all items
   const grandTotal =
     matchedEstimate?.items?.reduce(
       (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
-      0
+      0,
     ) || 0;
-
-  useEffect(() => {
-    // Match estimate using est_no (since your route uses est_no like "NGW/25-26/EST/009")
-    if (estimates && estimates.length > 0) {
-      const match = estimates.find((e) => e._id === id);
-      setMatchedEstimate(match || null);
-    }
-  }, [id, estimates]);
 
   useEffect(() => {
     if (matchedEstimate && companies.length > 0) {
       // Match company using the companyId from the matched estimate
       const matchedCompany = companies.find(
-        (c) => c._id === matchedEstimate.companyId
+        (c) => c._id === matchedEstimate.companyId,
       );
       setCompany(matchedCompany || null);
     }
@@ -57,6 +61,21 @@ const EstimateFormDetail = () => {
   // Debug logs
   // console.log("matchedEstimate:", matchedEstimate);
   // console.log("company:", company);
+
+  const companyCountryName =
+    countries?.find((c) => c.countryCode == company?.country)?.name ||
+    company?.country;
+  const companyStateName =
+    states?.find((s) => s.stateCode == company?.state)?.name || company?.state;
+  const companyCityName =
+    cities?.find((c) => c.cityCode == company?.city)?.name || company?.city;
+
+  const estimateStateName =
+    states?.find((s) => s.stateCode == matchedEstimate?.state)?.name ||
+    matchedEstimate?.state;
+  const estimateCityName =
+    cities?.find((c) => c.cityCode == matchedEstimate?.city)?.name ||
+    matchedEstimate?.city;
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen ">
@@ -115,9 +134,9 @@ const EstimateFormDetail = () => {
                 {[
                   company?.landline,
                   company?.address,
-                  company?.city,
-                  company?.state,
-                  company?.country,
+                  companyCityName,
+                  companyStateName,
+                  companyCountryName,
                   company?.pincode,
                 ]
                   .filter(Boolean) // remove empty or undefined values
@@ -140,7 +159,7 @@ const EstimateFormDetail = () => {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
-                      }
+                      },
                     )
                   : ""}
               </td>
@@ -156,7 +175,7 @@ const EstimateFormDetail = () => {
                 Place of Supply
               </td>
               <td className="border px-1 py-1 text-[11px]">
-                {matchedEstimate?.city}
+                {estimateCityName}
               </td>
             </tr>
             <tr>
@@ -177,7 +196,7 @@ const EstimateFormDetail = () => {
                 State of Supply
               </td>
               <td className="border px-1 py-1 text-[11px]">
-                {matchedEstimate?.state}
+                {estimateStateName}
               </td>
             </tr>
           </tbody>
@@ -218,7 +237,7 @@ const EstimateFormDetail = () => {
           </thead>
           <tbody>
             {matchedEstimate &&
-              matchedEstimate.items.map((item, index) => (
+              matchedEstimate?.items?.map((item, index) => (
                 <tr key={index}>
                   <td className="border  px-2 py-1 text-[11px] text-center">
                     {index + 1}

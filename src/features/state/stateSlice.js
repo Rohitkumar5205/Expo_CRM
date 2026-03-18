@@ -15,7 +15,7 @@ export const fetchStates = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // FETCH state by ID
@@ -28,7 +28,7 @@ export const fetchStateById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // CREATE state
@@ -41,7 +41,7 @@ export const createState = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // UPDATE state
@@ -54,7 +54,7 @@ export const updateState = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // DELETE state
@@ -67,7 +67,7 @@ export const deleteState = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // **Initial State**
@@ -95,7 +95,7 @@ const stateSlice = createSlice({
       })
       .addCase(fetchStates.fulfilled, (state, action) => {
         state.loading = false;
-        state.states = action.payload;
+        state.states = action.payload.data;
       })
       .addCase(fetchStates.rejected, (state, action) => {
         state.loading = false;
@@ -124,7 +124,7 @@ const stateSlice = createSlice({
       .addCase(updateState.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.states.findIndex(
-          (s) => s._id === action.payload._id
+          (s) => s._id === action.payload._id,
         );
         if (index !== -1) state.states[index] = action.payload;
       })

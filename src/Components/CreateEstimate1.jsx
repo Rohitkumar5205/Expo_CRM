@@ -50,8 +50,6 @@ const CreateEstimate1 = () => {
   const { loading, error, success } = useSelector((state) => state.estimates);
   const { events } = useSelector((state) => state.crmEvents);
   const { countries } = useSelector((state) => state.countries);
-  console.log("countries...", countries);
-
   const { states } = useSelector((state) => state.states);
   const { cities } = useSelector((state) => state.cities);
   const { companies } = useSelector((state) => state.companies);
@@ -76,8 +74,11 @@ const CreateEstimate1 = () => {
       .catch((err) => {
         showError(`Failed to fetch estimate number: ${err.message || err}`);
       });
-  }, [dispatch, companies.length]);
+  }, [dispatch]);
 
+  console.log("countries", countries);
+  console.log("states", states);
+  console.log("cities", cities);
   // --- State Initialization ---
   const [estimateData, setEstimateData] = useState({
     est_type: "",
@@ -110,23 +111,32 @@ const CreateEstimate1 = () => {
     },
   ]);
 
+  // 🟢 NEW: State to track submission status
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   // 🟢 NEW: Handle API feedback (Success/Error)
   useEffect(() => {
-    if (success) {
+    if (success && isSubmitted) {
       showSuccess("Estimate created successfully!");
       dispatch(clearEstimateState()); // Clear success message after showing
       navigate(`/ihweClientData2026/accountSection1/${companyIdFromParams}`);
     }
-    if (error) {
+    if (error && isSubmitted) {
       showError(`Error: ${error.message || error}`); // Show error message
       dispatch(clearEstimateState()); // Clear error message
     }
-  }, [success, error, dispatch, navigate]);
+  }, [success, error, isSubmitted, dispatch, navigate, companyIdFromParams]);
 
   // --- Handlers (Unchanged) ---
   const handleEstimateChange = (e) => {
     const { name, value } = e.target;
-    setEstimateData((prev) => ({ ...prev, [name]: value }));
+
+    setEstimateData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "country" && { state: "", city: "" }),
+      ...(name === "state" && { city: "" }),
+    }));
   };
 
   const handleItemChange = (index, e) => {
@@ -204,11 +214,14 @@ const CreateEstimate1 = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // 🟢 Set submitted flag to true to trigger effect on success/error
+    setIsSubmitted(true);
+
     const isIntrastate = estimateData.est_type === "Intrastate";
     const isInterstate = estimateData.est_type === "Interstate Sale";
     const isForeignSale = estimateData.est_type === "Foreign Sale";
 
-    const addedBy = localStorage.getItem("user_name") || "";
+    const addedBy = sessionStorage.getItem("user_name") || "unknown_user";
     // Assuming 'company_id' holds the companyId value
     const companyId = companyIdFromParams;
     // Item Data Transformation with GST Breakdown
@@ -289,12 +302,14 @@ const CreateEstimate1 = () => {
     dispatch(addEstimate(finalEstimateData));
   };
   // Derived filtered lists
-  const filteredStates = states?.data?.filter(
-    (st) => st.country_id === estimateData.country,
+  const selectedCountryObj = countries?.find((c) => c.name === estimateData.country);
+  const filteredStates = states?.filter(
+    (st) => st.countryCode == selectedCountryObj?.countryCode,
   );
 
-  const filteredCities = cities?.data?.filter(
-    (ct) => ct.state_id === estimateData.state,
+  const selectedStateObj = states?.find((s) => s.name === estimateData.state);
+  const filteredCities = cities?.filter(
+    (ct) => ct.stateCode == selectedStateObj?.stateCode,
   );
 
   // --- Navigation Handlers (Unchanged) ---
@@ -466,8 +481,8 @@ const CreateEstimate1 = () => {
                 required
               >
                 <option value="">Select Country</option>
-                {countries?.data?.map((country) => (
-                  <option key={country.id} value={country.id}>
+                {countries?.map((country) => (
+                  <option key={country.countryCode} value={country.name}>
                     {country.name}
                   </option>
                 ))}
@@ -490,7 +505,7 @@ const CreateEstimate1 = () => {
               >
                 <option value="">Select State</option>
                 {filteredStates?.map((state) => (
-                  <option key={state.id} value={state.id}>
+                  <option key={state.stateCode} value={state.name}>
                     {state.name}
                   </option>
                 ))}
@@ -513,7 +528,7 @@ const CreateEstimate1 = () => {
               >
                 <option value="">Select City</option>
                 {filteredCities?.map((city) => (
-                  <option key={city.id} value={city.id}>
+                  <option key={city.cityCode} value={city.name}>
                     {city.name}
                   </option>
                 ))}

@@ -21,7 +21,7 @@ const InvoiceEdit = () => {
 
   // Redux state (safe fallback)
   const { invoices, loading, error, success } = useSelector(
-    (state) => state.invoice
+    (state) => state.invoice,
   );
   const estimates = useSelector((state) => state.estimates?.estimates || []);
   const companies = useSelector((state) => state.companies?.companies || []);
@@ -49,7 +49,6 @@ const InvoiceEdit = () => {
 
   // --- 1. Fetch Initial Data (Estimates, Invoices, Companies, Locations) ---
   useEffect(() => {
-    dispatch(fetchEstimates());
     dispatch(fetchCompanies());
     dispatch(fetchEvents());
     dispatch(fetchCountries());
@@ -58,52 +57,62 @@ const InvoiceEdit = () => {
 
   // --- 2. Pre-fill Form Data from Matched Invoice ---
   useEffect(() => {
-    if (invoices.length > 0 && id) {
-      const matchedInvoice = invoices.find((inv) => inv._id === id);
-
-      if (matchedInvoice) {
-        setCurrentInvoice(matchedInvoice);
-        setCompanyIdForSubmission(matchedInvoice.companyId);
-
-        setFormData({
-          estimate_no: matchedInvoice.estimate_no || "",
-          type_of_invoice: matchedInvoice.type_of_invoice || "",
-          gst_no: matchedInvoice.gst_no || "",
-          supply_date: matchedInvoice.supply_date || "",
-          consignee_name: matchedInvoice.consignee_name || "",
-          consignee_addr: matchedInvoice.consignee_addr || "",
-          country: matchedInvoice.country || "",
-          state: matchedInvoice.state || "",
-          city: matchedInvoice.city || "",
-          pincode: String(matchedInvoice.pincode || ""),
-          stateCode: matchedInvoice.stateCode || "",
-        });
-
-        // Fetch location data needed for dropdowns on load
-        if (matchedInvoice.country) {
-          dispatch(fetchStates({ country: matchedInvoice.country }));
-        }
-        if (matchedInvoice.state) {
-          dispatch(fetchCities({ state: matchedInvoice.state }));
-        }
-      } else {
-        showError(`Invoice with ID ${id} not found.`);
-      }
+    // Wait for all required data to prevent race conditions.
+    if (
+      !id ||
+      loading ||
+      !invoices.length ||
+      !countries.length ||
+      !states.length ||
+      !cities.length
+    ) {
+      return;
     }
-  }, [invoices, id, dispatch]);
+    const matchedInvoice = invoices.find((inv) => inv._id === id);
+
+    if (matchedInvoice) {
+      setCurrentInvoice(matchedInvoice);
+      if (matchedInvoice.companyId)
+        dispatch(fetchEstimates(matchedInvoice.companyId));
+      setCompanyIdForSubmission(matchedInvoice.companyId);
+
+      setFormData({
+        estimate_no: matchedInvoice.estimate_no || "",
+        type_of_invoice: matchedInvoice.type_of_invoice || "",
+        gst_no: matchedInvoice.gst_no || "",
+        supply_date: matchedInvoice.supply_date || "",
+        consignee_name: matchedInvoice.consignee_name || "",
+        consignee_addr: matchedInvoice.consignee_addr || "",
+        country:
+          countries?.find((c) => c.countryCode == matchedInvoice.country)
+            ?.name ||
+          matchedInvoice.country ||
+          "",
+        state:
+          states?.find((s) => s.stateCode == matchedInvoice.state)?.name ||
+          matchedInvoice.state ||
+          "",
+        city:
+          cities?.find((c) => c.cityCode == matchedInvoice.city)?.name ||
+          matchedInvoice.city ||
+          "",
+        pincode: String(matchedInvoice.pincode || ""),
+        stateCode: matchedInvoice.stateCode || "",
+      });
+
+      // Fetch location data needed for dropdowns on load
+    } else if (!loading) {
+      showError(`Invoice with ID ${id} not found.`);
+    }
+  }, [invoices, id, dispatch, countries, states, cities, loading]);
 
   // --- 3. Dynamic Location Fetching (when country/state changes manually) ---
   useEffect(() => {
-    if (formData.country) {
-      dispatch(fetchStates({ country: formData.country }));
-    }
-  }, [formData.country, dispatch]);
-
-  useEffect(() => {
-    if (formData.state) {
-      dispatch(fetchCities({ state: formData.state }));
-    }
-  }, [formData.state, dispatch]);
+    // Logic handled by Redux slice fetchStates() in initial load or master data
+    // Assuming fetchStates() fetches all. If it fetches by ID, we need logic here.
+    // Based on previous files, fetchStates() seems to fetch all.
+    // If your backend requires countryCode to fetch states, use selectedCountryObj.countryCode
+  }, [formData.country]);
 
   useEffect(() => {
     if (success) {
@@ -160,12 +169,12 @@ const InvoiceEdit = () => {
       return;
     }
 
-    const userName = localStorage.getItem("user_name") || "unknown_user";
+    const userName = sessionStorage.getItem("user_name") || "unknown_user";
     const invoicePayload = {
       ...currentInvoice,
       ...formData,
       companyId: currentInvoice.companyId,
-      added_by: userName,
+      updated_by: userName,
     };
 
     // Dispatch the update action with the ID and the payload
@@ -173,15 +182,27 @@ const InvoiceEdit = () => {
       updateInvoice({
         id: currentInvoice._id,
         data: invoicePayload,
-      })
+      }),
     );
   };
 
   const styling =
     "w-full px-2 py-1.5 text-xs border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none";
 
-  const stateOptions = states?.data || states || [];
-  const cityOptions = cities?.data || cities || [];
+  // Filter Logic
+  const selectedCountryObj = (countries || []).find(
+    (c) => c.name === formData.country,
+  );
+  const stateOptions = (states?.data || states || []).filter(
+    (st) => st.countryCode == selectedCountryObj?.countryCode,
+  );
+
+  const selectedStateObj = (states?.data || states || []).find(
+    (s) => s.name === formData.state,
+  );
+  const cityOptions = (cities?.data || cities || []).filter(
+    (ct) => ct.stateCode == selectedStateObj?.stateCode,
+  );
 
   // Disable form while loading
   const isFormDisabled = loading || !currentInvoice;

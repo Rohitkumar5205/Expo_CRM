@@ -4,8 +4,14 @@ import { useReactToPrint } from "react-to-print";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { fetchInvoices } from "../../features/invoice/invoiceSlice";
-import { fetchEstimates } from "../../features/estimates/estimateSlice";
+import {
+  fetchEstimates,
+  fetchEstimateById,
+} from "../../features/estimates/estimateSlice";
 import { fetchCompanies } from "../../features/company/companySlice";
+import { fetchCountries } from "../../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../../features/state/stateSlice";
+import { fetchCities } from "../../features/city/citySlice";
 import { useSelector, useDispatch } from "react-redux";
 
 const InvoiceNumberDetails = () => {
@@ -16,30 +22,35 @@ const InvoiceNumberDetails = () => {
   const heading = location.state?.heading || "";
   const [matchedInvoice, setMatchedInvoice] = useState(null);
   const [company, setCompany] = useState(null);
-  const [matchedEstimate, setMatchedEstimate] = useState(null);
 
   // redux logic
   const { invoices } = useSelector((state) => state.invoice);
   const { companies } = useSelector((state) => state.companies);
-  const { estimates, loading } = useSelector((state) => state.estimates);
+  const { estimates, selectedEstimate, loading } = useSelector(
+    (state) => state.estimates,
+  );
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
+  const matchedEstimate = selectedEstimate;
 
-  //   console.log("id", id);
-  //   console.log("invoices", invoices);
-  // console.log("matchedInvoice", matchedInvoice);
-  // console.log("matchedEstimate", matchedEstimate);
-  //   console.log("companies", companies);
-  //   console.log("company", company);
-
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchInvoices());
-    dispatch(fetchEstimates());
     dispatch(fetchCompanies());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (matchedInvoice?.companyId)
+      dispatch(fetchEstimates(matchedInvoice.companyId));
+  }, [dispatch, matchedInvoice]);
 
   const totalAmount =
     matchedEstimate?.items?.reduce(
       (sum, item) => sum + (parseFloat(item.tax) || 0),
-      0
+      0,
     ) || 0;
 
   // Calculate the grand total from all items
@@ -63,28 +74,48 @@ const InvoiceNumberDetails = () => {
 
   useEffect(() => {
     // Match estimate using est_no (since your route uses est_no like "NGW/25-26/EST/009")
-    if (estimates && estimates.length > 0) {
-      const match = estimates.find(
-        (e) => e.est_no === matchedInvoice?.estimate_no
+    if (estimates && estimates.length > 0 && matchedInvoice) {
+      const estimateToSelect = estimates.find(
+        (e) => e.est_no === matchedInvoice?.estimate_no,
       );
-      setMatchedEstimate(match || null);
+      if (estimateToSelect) {
+        dispatch(fetchEstimateById(estimateToSelect?._id));
+      }
     }
-  }, [id, estimates]);
+  }, [estimates, matchedInvoice, dispatch]);
 
   useEffect(() => {
-    if (matchedEstimate && companies.length > 0) {
+    if (matchedInvoice && companies.length > 0) {
       // Match company using the companyId from the matched estimate
       const matchedCompany = companies.find(
-        (c) => c._id === matchedEstimate?.companyId
+        (c) => c._id === matchedInvoice?.companyId,
       );
       setCompany(matchedCompany || null);
     }
-  }, [matchedEstimate, companies]);
+  }, [matchedInvoice, companies]);
 
   const handleprint = useReactToPrint({
     contentRef: sameRef, // Changed from contentRef to content
     documentTitle: "invoice",
   });
+
+  const companyCountryName =
+    countries?.find((c) => c.countryCode == company?.country)?.name ||
+    company?.country;
+  const companyStateName =
+    states?.find((s) => s.stateCode == company?.state)?.name || company?.state;
+  const companyCityName =
+    cities?.find((c) => c.cityCode == company?.city)?.name || company?.city;
+
+  const invoiceCountryName =
+    countries?.find((c) => c.countryCode == matchedInvoice?.country)?.name ||
+    matchedInvoice?.country;
+  const invoiceStateName =
+    states?.find((s) => s.stateCode == matchedInvoice?.state)?.name ||
+    matchedInvoice?.state;
+  const invoiceCityName =
+    cities?.find((c) => c.cityCode == matchedInvoice?.city)?.name ||
+    matchedInvoice?.city;
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen ">
@@ -139,9 +170,9 @@ const InvoiceNumberDetails = () => {
                 {[
                   company?.landline,
                   company?.address,
-                  company?.city,
-                  company?.state,
-                  company?.country,
+                  companyCityName,
+                  companyStateName,
+                  companyCountryName,
                   company?.pincode,
                 ]
                   .filter(Boolean) // remove empty or undefined values
@@ -150,9 +181,9 @@ const InvoiceNumberDetails = () => {
               <td className=" border px-1 py-0.5 text-[11px]">
                 {[
                   matchedInvoice?.address,
-                  matchedInvoice?.city,
-                  matchedInvoice?.state,
-                  matchedInvoice?.country,
+                  invoiceCityName,
+                  invoiceStateName,
+                  invoiceCountryName,
                   matchedInvoice?.pincode,
                 ]
                   .filter(Boolean) // remove empty or undefined values
@@ -173,16 +204,12 @@ const InvoiceNumberDetails = () => {
             </tr>
             <tr className="border">
               <td className=" px-1 py-0.5 text-[11px] ">
-                {[company?.city, company?.state, company?.country]
+                {[companyCityName, companyStateName, companyCountryName]
                   .filter(Boolean) // remove empty or undefined values
                   .join(", ")}{" "}
               </td>
               <td className=" border px-1 py-0.5 text-[11px] ">
-                {[
-                  matchedInvoice?.city,
-                  matchedInvoice?.state,
-                  matchedInvoice?.country,
-                ]
+                {[invoiceCityName, invoiceStateName, invoiceCountryName]
                   .filter(Boolean) // remove empty or undefined values
                   .join(", ")}{" "}
               </td>
@@ -205,8 +232,7 @@ const InvoiceNumberDetails = () => {
                   .join(" ")}
               </td>
               <td className=" border px-1 py-0.5 text-[11px]">
-                Place of Supply & State : {matchedInvoice?.city} |{" "}
-                {matchedInvoice?.state}
+                Place of Supply & State : {invoiceCityName} | {invoiceStateName}
               </td>
               <td className="border px-1 py-0.5 font-semibold text-[11px] ">
                 Estimate Status
@@ -221,7 +247,7 @@ const InvoiceNumberDetails = () => {
                 Email : {company?.contacts?.[0]?.email}
               </td>
               <td className=" border px-1 py-0.5 text-[11px]">
-                State of Supply & Code : {matchedInvoice?.state} |{" "}
+                State of Supply & Code : {invoiceStateName} |{" "}
                 {matchedInvoice?.stateCode}
               </td>
               <td className="border px-1 py-0.5 font-semibold text-[11px] ">
@@ -236,14 +262,14 @@ const InvoiceNumberDetails = () => {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
-                      }
+                      },
                     )
                   : ""}
               </td>
             </tr>
             <tr className="border">
               <td className=" px-1 py-0.5 text-[11px] ">
-                GSTIN/PAN No. : {matchedInvoice?.gst_no}...
+                GSTIN/PAN No. : {matchedInvoice?.gst_no}
               </td>
               <td className="border px-1 py-0.5 text-[11px]">
                 GSTIN/PAN No. : {matchedInvoice?.gst_no}
@@ -291,13 +317,16 @@ const InvoiceNumberDetails = () => {
           </thead>
           <tbody>
             {matchedEstimate &&
-              matchedEstimate?.items.map((item, index) => (
+              matchedEstimate?.items?.map((item, index) => (
                 <tr key={index}>
                   <td className="border  px-2 py-0.5 text-[11px] text-center">
                     {index + 1}
                   </td>
                   <td className="border  px-2 py-0.5 text-[11px]">
-                    {matchedEstimate?.consignee_name}
+                    <span className="font-medium">
+                      {" "}
+                      {matchedEstimate?.consignee_name}
+                    </span>
                     <br />
                     {item?.remarks}
                   </td>
@@ -308,7 +337,8 @@ const InvoiceNumberDetails = () => {
                     {item?.qty}
                   </td>
                   <td className="border  px-2 py-0.5 text-[11px] text-center">
-                    {item?.size} {item?.unit}
+                    {/* {item?.size}  */}
+                    {item?.unit}
                   </td>
                   <td className="border  px-2 py-0.5 text-[11px] text-center">
                     {item?.rate}
@@ -416,7 +446,7 @@ const InvoiceNumberDetails = () => {
           </thead>
           <tbody>
             {matchedEstimate &&
-              matchedEstimate?.items.map((item, index) => {
+              matchedEstimate?.items?.map((item, index) => {
                 const isInterstate =
                   matchedInvoice?.type_of_invoice === "Interstate Sale";
                 const taxableValue = parseFloat(item?.tax) || 0;

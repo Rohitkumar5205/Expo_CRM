@@ -17,7 +17,7 @@ const EditEstimate = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { estimates, loading, error, success } = useSelector(
-    (state) => state.estimates
+    (state) => state.estimates,
   );
   const { events } = useSelector((state) => state.crmEvents);
   const { countries } = useSelector((state) => state.countries);
@@ -86,28 +86,47 @@ const EditEstimate = () => {
 
   // Effect to populate form when estimate data is available
   useEffect(() => {
-    if (estimates.length > 0 && id) {
-      const estimateToEdit = estimates.find((est) => est._id === id);
-      if (estimateToEdit) {
-        setFormData({
-          est_type: estimateToEdit.est_type || "",
-          est_no: estimateToEdit.est_no || "",
-          gst_no: estimateToEdit.gst_no || "",
-          supply_date: estimateToEdit.supply_date
-            ? estimateToEdit.supply_date.split("T")[0]
-            : "",
-          consignee_name: estimateToEdit.consignee_name || "",
-          consignee_addr: estimateToEdit.consignee_addr || "",
-          country: estimateToEdit.country || "",
-          state: estimateToEdit.state || "",
-          city: estimateToEdit.city || "",
-          pincode: estimateToEdit.pincode || "",
-          remarks: estimateToEdit.remarks || "",
-        });
-        setItems(estimateToEdit.items || []);
-      }
+    // Wait for all required data to prevent race conditions.
+    if (
+      !id ||
+      loading ||
+      !estimates.length ||
+      !countries.length ||
+      !states.length ||
+      !cities.length
+    ) {
+      return;
     }
-  }, [id, estimates]);
+    const estimateToEdit = estimates.find((est) => est._id === id);
+    if (estimateToEdit) {
+      setFormData({
+        est_type: estimateToEdit.est_type || "",
+        est_no: estimateToEdit.est_no || "",
+        gst_no: estimateToEdit.gst_no || "",
+        supply_date: estimateToEdit.supply_date
+          ? estimateToEdit.supply_date.split("T")[0]
+          : "",
+        consignee_name: estimateToEdit.consignee_name || "",
+        consignee_addr: estimateToEdit.consignee_addr || "",
+        country:
+          countries?.find((c) => c.countryCode == estimateToEdit.country)
+            ?.name ||
+          estimateToEdit.country ||
+          "",
+        state:
+          states?.find((s) => s.stateCode == estimateToEdit.state)?.name ||
+          estimateToEdit.state ||
+          "",
+        city:
+          cities?.find((c) => c.cityCode == estimateToEdit.city)?.name ||
+          estimateToEdit.city ||
+          "",
+        pincode: estimateToEdit.pincode || "",
+        remarks: estimateToEdit.remarks || "",
+      });
+      setItems(estimateToEdit.items || []);
+    }
+  }, [id, estimates, countries, states, cities, loading]);
 
   // Effect for API feedback
   useEffect(() => {
@@ -146,7 +165,7 @@ const EditEstimate = () => {
 
     const totalFinalAmount = newItems.reduce(
       (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
-      0
+      0,
     );
     setFormData((prev) => ({
       ...prev,
@@ -213,9 +232,11 @@ const EditEstimate = () => {
       };
     });
 
+    const userName = sessionStorage.getItem("user_name") || "unknown_user";
     const updatedData = {
       ...formData,
       items: transformedItems,
+      updated_by: userName,
     };
 
     dispatch(updateEstimate({ id, updatedData }));
@@ -224,6 +245,18 @@ const EditEstimate = () => {
   const handleCancel = () => {
     navigate(-1); // Go back to the previous page
   };
+
+  // Filtering Logic
+  const selectedCountryObj = countries?.find(
+    (c) => c.name === formData.country,
+  );
+  const filteredStates = states?.filter(
+    (st) => st.countryCode == selectedCountryObj?.countryCode,
+  );
+  const selectedStateObj = states?.find((s) => s.name === formData.state);
+  const filteredCities = (cities?.data || cities)?.filter(
+    (ct) => ct.stateCode == selectedStateObj?.stateCode,
+  );
 
   return (
     <>
@@ -349,9 +382,9 @@ const EditEstimate = () => {
                   onChange={handleBasicChange}
                 >
                   {/* <option value="">Select Country</option>
-                  {countries.map((country, i) => (
-                    <option key={i}>{country?.name}</option>
-                  ))} */}
+                  {countries.map((country) => (
+                    <option key={country.countryCode} value={country.name}>{country.name}</option>
+                  ))}  */}
                 </input>
               </div>
 
@@ -367,8 +400,10 @@ const EditEstimate = () => {
                 >
                   <option value="">Select State</option>
                   {formData.country &&
-                    states.map((state, i) => (
-                      <option key={i}>{state?.name}</option>
+                    filteredStates.map((state) => (
+                      <option key={state.stateCode} value={state.name}>
+                        {state.name}
+                      </option>
                     ))}
                 </select>
               </div>
@@ -385,9 +420,10 @@ const EditEstimate = () => {
                 >
                   <option value="">Select Here</option>
                   {formData.country &&
-                    formData.state &&
-                    cities?.data?.map((city, i) => (
-                      <option key={i}>{city?.name}</option>
+                    filteredCities?.map((city) => (
+                      <option key={city.cityCode} value={city.name}>
+                        {city.name}
+                      </option>
                     ))}
                 </select>
               </div>

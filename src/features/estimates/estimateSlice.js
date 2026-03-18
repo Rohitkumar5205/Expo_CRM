@@ -130,7 +130,7 @@ const estimateSlice = createSlice({
       })
       .addCase(fetchEstimates.fulfilled, (state, action) => {
         state.loading = false;
-        state.estimates = action.payload;
+        state.estimates = action.payload || [];
       })
       .addCase(fetchEstimates.rejected, (state, action) => {
         state.loading = false;
@@ -171,7 +171,7 @@ const estimateSlice = createSlice({
       .addCase(updateEstimate.fulfilled, (state, action) => {
         state.loading = false;
         state.estimates = state.estimates.map((est) =>
-          est._id === action.payload._id ? action.payload : est
+          est._id === action.payload._id ? action.payload : est,
         );
         state.success = "Estimate updated successfully!";
       })
@@ -187,7 +187,7 @@ const estimateSlice = createSlice({
       .addCase(deleteEstimate.fulfilled, (state, action) => {
         state.loading = false;
         state.estimates = state.estimates.filter(
-          (est) => est._id !== action.payload
+          (est) => est._id !== action.payload,
         );
         state.success = "Estimate deleted successfully!";
       })

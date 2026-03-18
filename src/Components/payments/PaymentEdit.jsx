@@ -17,13 +17,13 @@ const PaymentEdit = () => {
   const added_By = localStorage.getItem("user_name");
   const { estimates } = useSelector((state) => state.estimates);
   const { payments: allPayments, loading: paymentsLoading } = useSelector(
-    (state) => state.payment
+    (state) => state.payment,
   );
   const { invoices } = useSelector((state) => state.invoice);
   const { perInvoices, loading: piLoading } = useSelector(
-    (state) => state.perinvoice
+    (state) => state.perinvoice,
   );
-  console.log("invoices...", invoices);
+
   const [showCardFields, setShowCardFields] = useState(false);
   const [showEwalletFields, setShowEwalletFields] = useState(false);
   const [showNeftFields, setShowNeftFields] = useState(false);
@@ -52,29 +52,45 @@ const PaymentEdit = () => {
     neft_bank: "",
     utr_no: "",
     transactionDetailsUpi: "",
+    companyId: "", // Ensure companyId is part of initial state structure
   });
   const [documentOptions, setDocumentOptions] = useState([]);
 
   // Fetch all required data on component mount
   useEffect(() => {
     dispatch(fetchPayments());
-    dispatch(fetchEstimates());
     dispatch(fetchInvoices());
     dispatch(fetchPerformaInvoices());
   }, [dispatch]);
 
   // Populate form with payment data when it's available
   useEffect(() => {
-    console.log("EDIT PAGE: Checking for payment data...");
-    console.log("EDIT PAGE: URL ID:", id);
-    console.log("EDIT PAGE: All payments from Redux:", allPayments);
-
     if (allPayments.length > 0 && id) {
       const paymentToEdit = allPayments.find((p) => p._id === id);
-      console.log("EDIT PAGE: Found payment to edit:", paymentToEdit);
       if (paymentToEdit) {
+        if (paymentToEdit.companyId)
+          dispatch(fetchEstimates(paymentToEdit.companyId));
+
+        // Determine invoice_id from either invoice_id field or ex_no (legacy support)
+        const docId = paymentToEdit.invoice_id || paymentToEdit.ex_no || "";
+
+        // Infer pymtAgainst if it is missing in the saved data
+        let inferredPymtAgainst = paymentToEdit.pymtAgainst || "";
+        if (!inferredPymtAgainst && docId) {
+          // Try to find in Invoices
+          if (invoices.some((inv) => inv.invoice_no === docId)) {
+            inferredPymtAgainst = "Invoice";
+          }
+          // Try to find in Performa Invoices
+          else if (perInvoices.some((pi) => pi.pi_no === docId)) {
+            inferredPymtAgainst = "PerInvoice";
+          }
+        }
+
         const formattedData = {
           ...paymentToEdit,
+          invoice_id: docId,
+          pymtAgainst: inferredPymtAgainst,
           payment_date: paymentToEdit.payment_date
             ? paymentToEdit.payment_date.split("T")[0]
             : "",
@@ -84,48 +100,38 @@ const PaymentEdit = () => {
         };
         setFormData(formattedData);
         updateConditionalFields(formattedData);
-        console.log("EDIT PAGE: Form data set for editing:", formattedData);
-        console.log(
-          "EDIT PAGE: Checking pymtAgainst:",
-          formattedData.pymtAgainst,
-          "for company:",
-          formattedData.ex_no
-        );
-
-        // Pre-populate document options based on the loaded data
-        if (formattedData.pymtAgainst === "PerInvoice") {
-          const companyPerInvoices = perInvoices.filter(
-            (pi) => pi.companyId === formattedData.companyId
-          );
-          setDocumentOptions(
-            companyPerInvoices.map((pi) => ({
-              value: pi.pi_no,
-              label: pi.pi_no,
-              est_no: pi.est_no,
-            }))
-          );
-        } else if (formattedData.pymtAgainst === "Invoice") {
-          const companyInvoices = invoices.filter(
-            (inv) => inv.companyId === formattedData.companyId
-          );
-          console.log("EDIT PAGE: Found Invoices:", companyInvoices);
-          setDocumentOptions(
-            companyInvoices.map((inv) => ({
-              value: inv.invoice_no,
-              label: inv.invoice_no,
-              est_no: inv.estimate_no,
-            }))
-          );
-        }
-      } else {
-        console.log("EDIT PAGE: No payment found with the given ID.");
       }
-    } else {
-      console.log(
-        "EDIT PAGE: Waiting for payments data or ID is not available."
-      );
     }
-  }, [id, allPayments, invoices, perInvoices]);
+  }, [id, allPayments, invoices, perInvoices, dispatch]); // Added invoices/perInvoices to dependency to re-run inference if they load later
+
+  // Effect to populate document options dynamically whenever formData.pymtAgainst changes
+  useEffect(() => {
+    if (formData.companyId && formData.pymtAgainst) {
+      let options = [];
+      if (formData.pymtAgainst === "PerInvoice") {
+        const companyPerInvoices = perInvoices.filter(
+          (pi) => pi.companyId === formData.companyId,
+        );
+        options = companyPerInvoices.map((pi) => ({
+          value: pi.pi_no,
+          label: pi.pi_no,
+          est_no: pi.est_no,
+        }));
+      } else if (formData.pymtAgainst === "Invoice") {
+        const companyInvoices = invoices.filter(
+          (inv) => inv.companyId === formData.companyId,
+        );
+        options = companyInvoices.map((inv) => ({
+          value: inv.invoice_no,
+          label: inv.invoice_no,
+          est_no: inv.estimate_no,
+        }));
+      }
+      setDocumentOptions(options);
+    } else {
+      setDocumentOptions([]);
+    }
+  }, [formData.companyId, formData.pymtAgainst, invoices, perInvoices]);
 
   const resetConditionalFields = () => {
     setShowCardFields(false);
@@ -156,40 +162,8 @@ const PaymentEdit = () => {
       invoice_id: "",
       f_amount: "",
     }));
-    console.log("CHANGE HANDLER: Switched to:", value);
-    console.log(
-      "CHANGE HANDLER: Filtering documents for company:",
-      formData.companyId
-    );
-    if (value === "PerInvoice") {
-      const companyPerInvoices = perInvoices.filter(
-        (pi) => pi.companyId === formData.companyId
-      );
-      setDocumentOptions(
-        companyPerInvoices.map((pi) => ({
-          value: pi.pi_no,
-          // label: `${pi.pi_no} - ₹${pi.finalAmount?.toFixed(2) || "0.00"}`,
-          label: pi.pi_no,
-          est_no: pi.est_no,
-        }))
-      );
-      console.log("CHANGE HANDLER: Found PIs:", companyPerInvoices);
-    } else if (value === "Invoice") {
-      const companyInvoices = invoices.filter(
-        (inv) => inv.companyId === formData.companyId
-      );
-      console.log("CHANGE HANDLER: Found Invoices:", companyInvoices);
-      setDocumentOptions(
-        companyInvoices.map((inv) => ({
-          value: inv.invoice_no,
-          label: inv.invoice_no,
-          est_no: inv.estimate_no,
-        }))
-      );
-    } else {
-      setDocumentOptions([]);
-    }
   };
+
   const handleDocumentChange = (e) => {
     const { name, value } = e.target;
     const selectedDoc = documentOptions.find((doc) => doc.value === value);
@@ -198,17 +172,16 @@ const PaymentEdit = () => {
     if (selectedDoc && selectedDoc.est_no) {
       // Find the corresponding estimate from the Redux store
       const relatedEstimate = estimates.find(
-        // (est) => est.est_no === selectedDoc.est_no && est.companyId === id
         (est) =>
           est.est_no === selectedDoc.est_no &&
-          est.companyId === formData.companyId
+          est.companyId === formData.companyId,
       );
 
       if (relatedEstimate && relatedEstimate.items) {
         // Calculate the total final amount from the estimate's items
         const totalAmount = relatedEstimate.items.reduce(
           (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
-          0
+          0,
         );
         finalAmount = totalAmount.toFixed(2);
       }
@@ -217,7 +190,6 @@ const PaymentEdit = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      // f_amount: selectedDoc ? (selectedDoc.amount || "").toString() : "",
       f_amount: finalAmount,
     }));
   };
@@ -240,7 +212,7 @@ const PaymentEdit = () => {
       await dispatch(updatePayment({ id, updatedData: formData })).unwrap();
       showSuccess("Payment updated successfully!");
       if (formData.ex_no) {
-        navigate(`/ihweClientData2026/payments/${formData.ex_no}`);
+        navigate(`/ihweClientData2026/payments/${formData.companyId}`); // Redirect to client payment list
       } else {
         navigate(-1); // Fallback to go back one page
       }
@@ -268,7 +240,7 @@ const PaymentEdit = () => {
       <div className="max-w-full mx-auto bg-white  sticky top-0 z-10">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 py-1">
           <h1 className="text-xl text-gray-500 mb-2 lg:mb-0 uppercase">
-            ACCOUNT 
+            ACCOUNT
           </h1>
           <div className="flex flex-wrap gap-2 cursor-pointer">
             <button onClick={handleAddClient} className={buttonStyle}>
@@ -283,10 +255,9 @@ const PaymentEdit = () => {
 
       <div className="bg-white shadow-md pb-4 px-5 pt-2 m-4 rounded">
         <div className="flex justify-between mb-2">
-           <h1 className="font-medium text-lg text-gray-500 mb-0.5">
-            Edit Payments 
+          <h1 className="font-medium text-lg text-gray-500 mb-0.5">
+            Edit Payments
           </h1>
-          {/*<button className="px-2 py-0.5 h-fit w-auto border border-gray-300 text-gray-600 text-sm text-center font-normal bg-white hover:bg-gray-100">Add TDS</button>*/}
         </div>
         <hr className="w-full opacity-10 mb-6" />
         <form onSubmit={handleSubmit}>
@@ -326,6 +297,10 @@ const PaymentEdit = () => {
                       {doc.label}
                     </option>
                   ))
+                ) : formData.invoice_id ? (
+                  <option value={formData.invoice_id}>
+                    {formData.invoice_id}
+                  </option>
                 ) : (
                   <option disabled>Please select a payment type first</option>
                 )}{" "}
@@ -478,8 +453,6 @@ const PaymentEdit = () => {
               </label>
               <select
                 name="status_short"
-                // value={reviewData.status_short}
-                // onChange={handlePaymentTypeChange}
                 value={formData.status_short}
                 onChange={handleInputChange}
                 className="border border-gray-300 px-2 text-xs  h-8 font-normal focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none "
@@ -514,17 +487,16 @@ const PaymentEdit = () => {
             </div>
 
             <div className="flex flex-col md:col-span-2">
-                <label className="text-[13px] text-gray-900 font-medium mb-1">
-                  Transaction Details
-                </label>
-                <input
-                  type="text"
-                  name="transactionDetailsUpi"
-                  value={formData.transactionDetailsUpi}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                />
-              
+              <label className="text-[13px] text-gray-900 font-medium mb-1">
+                Transaction Details
+              </label>
+              <input
+                type="text"
+                name="transactionDetailsUpi"
+                value={formData.transactionDetailsUpi}
+                onChange={handleInputChange}
+                className="border border-gray-300 px-2 text-xs  h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+              />
             </div>
           </div>
           <hr className="w-full opacity-10 pb-4 " />
@@ -532,7 +504,6 @@ const PaymentEdit = () => {
             <div>
               <p className="text-red-500 text-xs mt-2">* Required Fields</p>
             </div>
-            {/* <div className=""> */}
             <div className="flex gap-2">
               <button
                 type="button"
@@ -546,7 +517,6 @@ const PaymentEdit = () => {
                 type="submit"
                 className="px-4 py-1.5 text-xs bg-[#337ab7] hover:bg-[#286090] text-white"
               >
-                {/* ADD PAYMENT */}
                 UPDATE PAYMENT
               </button>
             </div>

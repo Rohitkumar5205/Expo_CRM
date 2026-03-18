@@ -25,14 +25,12 @@ const formatDate = (dateString) => {
 
 // ✅ HELPER: Calculate Total Credit Amount (Sum of all cn_amount in items array)// यदि आपको (Quantity * Amount) का योग चाहिए
 const calculateTotalCNAmount = (items) => {
-  if (!items || items.length === 0) return 0;
+  if (!items || items.length === 0) return "0.00";
 
   return items
-    .reduce(
-      (total, item) =>
-        total + (Number(item.quantity) || 0) * (Number(item.cn_amount) || 0),
-      0
-    )
+    .reduce((total, item) => {
+      return total + (Number(item.cn_amount) || 0);
+    }, 0)
     .toFixed(2);
 };
 
@@ -42,16 +40,13 @@ const CreditNote = () => {
 
   const { id } = useParams();
 
-  const { estimates } = useSelector((state) => state.estimates);
+  const estimates = useSelector((state) => state.estimates?.estimates || []);
   const {
     creditNotes,
     loading: cnLoading,
     error: cnError,
     success: cnSuccess,
-  } = useSelector((state) => state.creditnotes); // Credit Note Redux State
-
-  const [matchedEstNo, setMatchedEstNo] = useState("");
-  console.log("creditNotes..", creditNotes);
+  } = useSelector((state) => state?.creditnotes); // Credit Note Redux State
 
   const [rows, setRows] = useState([
     { estimate: "", item: "", qty: "", amount: "", remark: "" },
@@ -60,12 +55,12 @@ const CreditNote = () => {
   // Datas array को Redux data से बदल दिया गया है (Credit Note Details table के लिए)
   // const Datas = [ ... ];
 
-  const userName = localStorage.getItem("user_name") || "unknown_user";
+  const userName = sessionStorage.getItem("user_name") || "unknown_user";
 
   useEffect(() => {
-    dispatch(fetchEstimates());
+    if (id) dispatch(fetchEstimates(id));
     dispatch(fetchCreditNotes());
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   // --- 💡 success/error/loading Handling useEffect ---
   useEffect(() => {
@@ -77,43 +72,25 @@ const CreditNote = () => {
     }
     if (cnError) {
       showError(
-        `❌ Error: ${cnError.message || "Could not create Credit Note"}`
+        `❌ Error: ${cnError.message || "Could not create Credit Note"}`,
       );
       dispatch(clearCreditNoteState());
     }
   }, [cnSuccess, cnError, dispatch]);
 
-  // --- Collect unique item descriptions ---
-  const uniqueItemDescriptions = useMemo(() => {
-    if (!estimates || estimates.length === 0) return [];
+  // --- Get items from the selected estimate ---
+  const selectedEstimateItems = useMemo(() => {
+    const selectedEstimateId = rows[0]?.estimate;
 
-    const descriptions = new Set();
-    const companyEstimates = estimates.filter((est) => est.companyId === id);
+    if (!selectedEstimateId) return [];
 
-    companyEstimates.forEach((estimate) => {
-      estimate.items.forEach((item) => {
-        if (item.description) {
-          descriptions.add(item.description);
-        }
-      });
-    });
-    return Array.from(descriptions);
-  }, [estimates, id]);
+    const selectedEstimate = estimates.find(
+      (est) => est._id === selectedEstimateId,
+    );
+
+    return selectedEstimate?.items || [];
+  }, [rows, estimates]);
   // ----------------------------------------------------
-
-  // --- CORRECTED MATCHING LOGIC (Assuming 'id' is CompanyId) ---
-  useEffect(() => {
-    if (id && estimates && estimates.length > 0) {
-      const matchedEstimate = estimates.find((est) => est.companyId === id);
-
-      if (matchedEstimate) {
-        setMatchedEstNo(matchedEstimate.est_no);
-      } else {
-        setMatchedEstNo("");
-      }
-    }
-  }, [id, estimates]);
-  // ------------------------------------------------------------------
 
   const buttonStyle =
     "px-3 py-1 text-xs bg-[#3598dc] hover:bg-[#286090] text-white transition-colors";
@@ -141,6 +118,34 @@ const CreditNote = () => {
       if ((value.match(/\./g) || []).length > 1) return;
     }
     updatedRows[index][field] = value;
+
+    // When the estimate is changed (only on the first row), reset all item rows
+    if (field === "estimate") {
+      setRows([{ estimate: value, item: "", qty: "", amount: "", remark: "" }]);
+      return;
+    }
+
+    // When an item is selected, populate qty and amount
+    if (field === "item") {
+      const selectedEstimateId = rows[0].estimate;
+
+      const selectedEstimate = estimates.find(
+        (est) => est._id === selectedEstimateId,
+      );
+
+      const selectedItem = selectedEstimate?.items.find(
+        (it) => it.description === value,
+      );
+
+      if (selectedItem) {
+        updatedRows[index]["qty"] = String(selectedItem.qty || "");
+        updatedRows[index]["amount"] = String(selectedItem.finalAmount || "");
+      } else {
+        updatedRows[index]["qty"] = "";
+        updatedRows[index]["amount"] = "";
+      }
+    }
+
     setRows(updatedRows);
   };
 
@@ -154,7 +159,7 @@ const CreditNote = () => {
     const selectedEstimateId = rows.length > 0 ? rows[0].estimate : "";
 
     const selectedEstimate = estimates.find(
-      (est) => est._id === selectedEstimateId
+      (est) => est._id === selectedEstimateId,
     );
     const estNoToSend = selectedEstimate ? selectedEstimate.est_no : "";
 
@@ -212,9 +217,7 @@ const CreditNote = () => {
       </div>
 
       <div className="bg-white shadow-md px-5 pt-3 pb-10 m-4 ">
-        <h2 className="text-lg font-medium text-gray-600 ">
-          Add Credit Note
-        </h2>
+        <h2 className="text-lg font-medium text-gray-600 ">Add Credit Note</h2>
         <hr className="w-full opacity-10 pb-4" />
         {/* Display the matched est_no for confirmation */}
         {/* {matchedEstNo && (
@@ -247,7 +250,9 @@ const CreditNote = () => {
                   >
                     <option value="">Select Here</option>
                     {estimates
-                      .filter((est) => est.companyId === id)
+                      .filter(
+                        (est) => (est.companyId?._id || est.companyId) == id,
+                      )
                       .map((est) => (
                         <option key={est._id} value={est._id}>
                           {est.est_no}
@@ -274,14 +279,22 @@ const CreditNote = () => {
                   className="border border-gray-300 px-2 text-xs h-8 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none font-medium"
                 >
                   <option value="">Select Here</option>
-                  {uniqueItemDescriptions.map((description, descIndex) => (
-                    <option key={descIndex} value={description}>
-                      {description}
+                  {selectedEstimateItems.map((item, itemIndex) => (
+                    <option
+                      key={item._id || itemIndex}
+                      value={item.description}
+                    >
+                      {item.description}
                     </option>
                   ))}
-                  {uniqueItemDescriptions.length === 0 && (
+                  {rows[0]?.estimate && selectedEstimateItems.length === 0 && (
                     <option value="" disabled>
-                      No items found for this Company
+                      No items in this estimate
+                    </option>
+                  )}
+                  {!rows[0]?.estimate && (
+                    <option value="" disabled>
+                      Select an estimate first
                     </option>
                   )}
                 </select>
@@ -386,68 +399,66 @@ const CreditNote = () => {
           </div>
         </form>
       </div>
-       <div className="mt-6 bg-white mx-4 py-3 px-4">
-          <h3 className="text-xl font-normal mb-3 text-gray-500 border-b pb-1">
-            Credit Note Details
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full border border-gray-300 text-xs">
-              <thead className="bg-gray-700 text-white">
+      <div className="mt-6 bg-white mx-4 py-3 px-4">
+        <h3 className="text-xl font-normal mb-3 text-gray-500 border-b pb-1">
+          Credit Note Details
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full border border-gray-300 text-xs">
+            <thead className="bg-gray-700 text-white">
+              <tr>
+                <th className="border px-2 py-1 font-normal">
+                  Credit Note No.
+                </th>
+                <th className="border px-2 py-1 font-normal">Credit Amount</th>
+                <th className="border px-2 py-1 font-normal">Credit Date</th>
+                <th className="border px-2 py-1 font-normal">Updated</th>
+                <th className="border px-2 py-1 font-normal">Updated By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* ✅ Credit Notes Data Mapping */}
+              {creditNotes.length === 0 ? (
                 <tr>
-                  <th className="border px-2 py-1 font-normal">
-                    Credit Note No.
-                  </th>
-                  <th className="border px-2 py-1 font-normal">
-                    Credit Amount
-                  </th>
-                  <th className="border px-2 py-1 font-normal">Credit Date</th>
-                  <th className="border px-2 py-1 font-normal">Updated</th>
-                  <th className="border px-2 py-1 font-normal">Updated By</th>
+                  <td
+                    className="border border-gray-300 px-2 py-3 text-center text-gray-500"
+                    colSpan={5}
+                  >
+                    No Data Found
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {/* ✅ Credit Notes Data Mapping */}
-                {creditNotes.length === 0 ? (
-                  <tr>
-                    <td
-                      className="border border-gray-300 px-2 py-3 text-center text-gray-500"
-                      colSpan={5}
-                    >
-                      No Data Found
+              ) : (
+                creditNotes.map((creditNote, i) => (
+                  <tr key={creditNote._id || i}>
+                    <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                      {creditNote?.create_note_no}
+                    </td>
+                    {/* ✅ Improvement 2: Total Credit Amount Calculation */}
+                    <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                      {/* सुनिश्चित करें कि क्रेडिट नोट ऑब्जेक्ट और आइटम्स एरे मौजूद हों */}
+                      ₹{" "}
+                      {creditNote?.items
+                        ? calculateTotalCNAmount(creditNote.items)
+                        : "0.00"}
+                    </td>
+                    {/* ✅ Improvement 1: Date Formatting (Created Date) */}
+                    <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                      {formatDate(creditNote?.created_at)}
+                    </td>
+                    {/* ✅ Improvement 1: Date Formatting (Updated Date) */}
+                    <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                      {formatDate(creditNote?.updated_date)}
+                    </td>
+                    <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
+                      {creditNote?.added_by || creditNote?.addedBy}
                     </td>
                   </tr>
-                ) : (
-                  creditNotes.map((creditNote, i) => (
-                    <tr key={creditNote._id || i}>
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {creditNote?.create_note_no}
-                      </td>
-                      {/* ✅ Improvement 2: Total Credit Amount Calculation */}
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {/* सुनिश्चित करें कि क्रेडिट नोट ऑब्जेक्ट और आइटम्स एरे मौजूद हों */}
-                        ₹{" "}
-                        {creditNote?.items
-                          ? calculateTotalCNAmount(creditNote.items)
-                          : "0.00"}
-                      </td>
-                      {/* ✅ Improvement 1: Date Formatting (Created Date) */}
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {formatDate(creditNote?.created_at)}
-                      </td>
-                      {/* ✅ Improvement 1: Date Formatting (Updated Date) */}
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {formatDate(creditNote?.updated_date)}
-                      </td>
-                      <td className="border border-gray-300 px-2 py-3 text-center text-gray-500">
-                        {creditNote?.added_by}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
   );
 };

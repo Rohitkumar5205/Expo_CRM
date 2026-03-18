@@ -6,7 +6,15 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPerformaInvoices } from "../../features/performaInvoice/performaInvoiceSlice";
 import { fetchCompanies } from "../../features/company/companySlice";
-import { fetchEstimates } from "../../features/estimates/estimateSlice";
+import {
+  fetchCountries,
+} from "../../features/add_by_admin/country/countrySlice";
+import { fetchStates } from "../../features/state/stateSlice";
+import { fetchCities } from "../../features/city/citySlice";
+import {
+  fetchEstimates,
+  fetchEstimateById,
+} from "../../features/estimates/estimateSlice";
 
 const PerformaInvoiceDetails = () => {
   const { id } = useParams();
@@ -14,35 +22,36 @@ const PerformaInvoiceDetails = () => {
   const sameRef = useRef();
   const [matchedPerIvo, setMatchedPerIvo] = useState(null);
   const [company, setCompany] = useState(null);
-  const [matchedEstimate, setMatchedEstimate] = useState(null);
 
-  //   const { estimate } = useSelector((state) => state.estimates);
   const { companies } = useSelector((state) => state.companies);
   const { perInvoices } = useSelector((state) => state.perinvoice);
-  const { estimates, loading } = useSelector((state) => state.estimates);
-
-  //   console.log("companies", companies);
-    console.log("matchedPerIvo...", matchedPerIvo);
-  console.log("matchedEstimate:", matchedEstimate);
-  //   console.log(" estimates...", estimates);
+  const { estimates, selectedEstimate, loading } = useSelector(
+    (state) => state.estimates,
+  );
+  const { countries } = useSelector((state) => state.countries);
+  const { states } = useSelector((state) => state.states);
+  const { cities } = useSelector((state) => state.cities);
+  const matchedEstimate = selectedEstimate;
 
   useEffect(() => {
     dispatch(fetchPerformaInvoices());
     dispatch(fetchCompanies());
-    dispatch(fetchEstimates());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchCities());
   }, [dispatch]);
 
   const totalAmount =
     matchedEstimate?.items?.reduce(
       (sum, item) => sum + (parseFloat(item.tax) || 0),
-      0
+      0,
     ) || 0;
 
   // Calculate the grand total from all items
   const grandTotal =
     matchedEstimate?.items?.reduce(
       (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
-      0
+      0,
     ) || 0;
 
   useEffect(() => {
@@ -54,10 +63,16 @@ const PerformaInvoiceDetails = () => {
   }, [id, perInvoices]);
 
   useEffect(() => {
+    if (matchedPerIvo?.companyId) {
+      dispatch(fetchEstimates(matchedPerIvo.companyId));
+    }
+  }, [dispatch, matchedPerIvo]);
+
+  useEffect(() => {
     if (matchedPerIvo && companies.length > 0) {
       // Match company using the companyId from the matched estimate
       const matchedCompany = companies.find(
-        (c) => c._id === matchedPerIvo.companyId
+        (c) => c._id === matchedPerIvo.companyId,
       );
       setCompany(matchedCompany || null);
     }
@@ -65,26 +80,27 @@ const PerformaInvoiceDetails = () => {
 
   useEffect(() => {
     // Match estimate using est_no (since your route uses est_no like "NGW/25-26/EST/009")
-    if (estimates && estimates.length > 0) {
-      const match = estimates.find((e) => e.est_no === matchedPerIvo?.est_no);
-      setMatchedEstimate(match || null);
-    }
-  }, [id, estimates]);
-
-  useEffect(() => {
-    if (matchedEstimate && companies.length > 0) {
-      // Match company using the companyId from the matched estimate
-      const matchedCompany = companies.find(
-        (c) => c._id === matchedEstimate.companyId
+    if (estimates && estimates.length > 0 && matchedPerIvo) {
+      const estimateToSelect = estimates.find(
+        (e) => e.est_no === matchedPerIvo.est_no,
       );
-      setCompany(matchedCompany || null);
+      if (estimateToSelect) {
+        dispatch(fetchEstimateById(estimateToSelect._id));
+      }
     }
-  }, [matchedEstimate, companies]);
+  }, [estimates, matchedPerIvo, dispatch]);
 
   const handleprint = useReactToPrint({
     contentRef: sameRef, // Changed from contentRef to content
     documentTitle: "invoice",
   });
+
+  const estimateStateName =
+    states?.find((s) => s.stateCode == matchedEstimate?.state)?.name ||
+    matchedEstimate?.state;
+  const estimateCityName =
+    cities?.find((c) => c.cityCode == matchedEstimate?.city)?.name ||
+    matchedEstimate?.city;
 
   return (
     <>
@@ -179,7 +195,7 @@ const PerformaInvoiceDetails = () => {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
-                        }
+                        },
                       )
                     : ""}
                 </td>
@@ -256,7 +272,7 @@ const PerformaInvoiceDetails = () => {
             </thead>
             <tbody>
               {matchedEstimate &&
-                matchedEstimate?.items.map((item, index) => (
+                matchedEstimate?.items?.map((item, index) => (
                   <tr key={index}>
                     <td className="border px-2 py-0.5 text-[11px] text-center">
                       {index + 1}
@@ -349,7 +365,7 @@ const PerformaInvoiceDetails = () => {
             </thead>
             <tbody>
               {matchedEstimate &&
-                matchedEstimate?.items.map((item, index) => (
+              matchedEstimate?.items?.map((item, index) => (
                   <tr key={index}>
                     <td className="border px-2 py-0.5 text-[11px] text-center">
                       {index + 1}

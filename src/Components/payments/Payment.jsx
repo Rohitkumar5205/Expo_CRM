@@ -17,6 +17,7 @@ import {
   fetchReviews,
   createReview,
 } from "../../features/crm-exhibator-reviews/crmExhibatorReviewSlice";
+import { fetchCreditNotes } from "../../features/creditNote/creditNoteSlice";
 
 const Payments = ({ client, onBack }) => {
   const dispatch = useDispatch();
@@ -65,14 +66,14 @@ const Payments = ({ client, onBack }) => {
 
   // redux logic
   const { estimates, loading: estimatesLoading } = useSelector(
-    (state) => state.estimates
+    (state) => state.estimates,
   );
   const { payments: allPayments, loading: paymentsLoading } = useSelector(
-    (state) => state.payment
+    (state) => state.payment,
   );
   const { invoices } = useSelector((state) => state.invoice);
   const { perInvoices, loading: piLoading } = useSelector(
-    (state) => state.perinvoice
+    (state) => state.perinvoice,
   );
   const { users } = useSelector((state) => state.users);
   const { reviews } = useSelector((state) => state.reviews);
@@ -86,19 +87,22 @@ const Payments = ({ client, onBack }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchEstimates());
+    if (id) {
+      dispatch(fetchEstimates(id));
+      dispatch(fetchCreditNotes());
+    }
     dispatch(fetchPayments());
     dispatch(fetchInvoices());
     dispatch(fetchPerformaInvoices());
     dispatch(fetchUsers());
     dispatch(fetchReviews());
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (reviews && reviews.length > 0 && id) {
       // Array.find() ka use karke pehla (first) matching review dhundo
       const firstMatchingReview = reviews.find(
-        (review) => review.cmpny_id === id
+        (review) => review.cmpny_id === id,
       );
 
       if (firstMatchingReview) {
@@ -178,15 +182,15 @@ const Payments = ({ client, onBack }) => {
 
     if (value === "PerInvoice") {
       const companyPerInvoices = perInvoices.filter(
-        (pi) => pi.companyId === id
+        (pi) => pi.companyId === id,
       );
+
       setDocumentOptions(
         companyPerInvoices.map((pi) => ({
           value: pi.pi_no,
-          // label: `${pi.pi_no} - ₹${pi.finalAmount?.toFixed(2) || "0.00"}`,
-          label: pi.pi_no,
+          label: `${pi.pi_no} - ₹${pi.finalAmount?.toFixed(2) || "0.00"}`,
           est_no: pi.est_no,
-        }))
+        })),
       );
     } else if (value === "Invoice") {
       const companyInvoices = invoices.filter((inv) => inv.companyId === id);
@@ -195,7 +199,7 @@ const Payments = ({ client, onBack }) => {
           value: inv.invoice_no,
           label: inv.invoice_no,
           est_no: inv.estimate_no,
-        }))
+        })),
       );
     } else {
       setDocumentOptions([]);
@@ -204,29 +208,37 @@ const Payments = ({ client, onBack }) => {
 
   const handleDocumentChange = (e) => {
     const { name, value } = e.target;
+
     const selectedDoc = documentOptions.find((doc) => doc.value === value);
 
     let finalAmount = "";
-    if (selectedDoc && selectedDoc.est_no) {
-      // Find the corresponding estimate from the Redux store
-      const relatedEstimate = estimates.find(
-        (est) => est.est_no === selectedDoc.est_no && est.companyId === id
-      );
 
-      if (relatedEstimate && relatedEstimate.items) {
-        // Calculate the total final amount from the estimate's items
-        const totalAmount = relatedEstimate.items.reduce(
-          (sum, item) => sum + (parseFloat(item.finalAmount) || 0),
-          0
-        );
-        finalAmount = totalAmount.toFixed(2);
+    if (selectedDoc) {
+      // 🔥 CASE 1: Performa Invoice
+      if (formData.pymtAgainst === "PerInvoice") {
+        const pi = perInvoices.find((p) => p.pi_no === value);
+
+        if (pi) {
+          finalAmount = pi.finalAmount?.toFixed(2) || "0.00";
+        }
+      }
+
+      // 🔥 CASE 2: Invoice
+      if (formData.pymtAgainst === "Invoice") {
+        const inv = invoices.find((i) => i.invoice_no === value);
+
+        if (inv) {
+          // 🔥 invoice → estimate से match करके amount लो
+          const est = estimates.find((e) => e.est_no === inv.estimate_no);
+
+          finalAmount = est?.finalAmount?.toFixed(2) || "0.00";
+        }
       }
     }
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      // f_amount: selectedDoc ? (selectedDoc.amount || "").toString() : "",
       f_amount: finalAmount,
     }));
   };
@@ -259,10 +271,15 @@ const Payments = ({ client, onBack }) => {
     const finalFormData = {
       ...formData,
       ...reviewData,
+
+      // 🔥 ADD THIS
+      pymnt_type: reviewData.status_short,
+
+      ex_no: formData.invoice_id, // OR generate later
+
       bankId: bankName || "N/A (Cash/UPI/e-Wallet)",
       companyId: id,
       added_by: added_By,
-      status_short: reviewData.status_short,
     };
 
     try {
@@ -300,7 +317,7 @@ const Payments = ({ client, onBack }) => {
     } catch (error) {
       console.error("Failed to delete payment:", error);
       showError(
-        error.message || "An error occurred while deleting the payment."
+        error.message || "An error occurred while deleting the payment.",
       );
     }
   };
@@ -803,7 +820,7 @@ const Payments = ({ client, onBack }) => {
               </div>
             </div>
           )}
-        <hr className="w-full opacity-10 pb-1 pt-2" />
+          <hr className="w-full opacity-10 pb-1 pt-2" />
           <div className="flex justify-between">
             <div>
               <p className="text-red-500 text-xs mt-2">* Required Fields</p>
